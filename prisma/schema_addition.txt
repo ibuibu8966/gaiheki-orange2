@@ -1,0 +1,17 @@
+model company_settings {
+  id                          Int       @id @default(autoincrement())
+  company_name                String    @db.VarChar(255)
+  postal_code                 String?   @db.VarChar(20)
+  address                     String?
+  phone                       String?   @db.VarChar(50)
+  email                       String?   @db.VarChar(255)
+  invoice_registration_number String?   @db.VarChar(50)
+  bank_name                   String?   @db.VarChar(255)
+  bank_branch_name            String?   @db.VarChar(255)
+  bank_account_type           String?   @db.VarChar(50)
+  bank_account_number         String?   @db.VarChar(50)
+  bank_account_holder         String?   @db.VarChar(255)
+  created_at                  DateTime  @default(now())
+  updated_at                  DateTime  @updatedAt
+}
+

@@ -1,0 +1,127 @@
+### フェーズ2 API動作確認テスト
+### 注意: 実行前に加盟店としてログインしてセッションCookieを取得する必要があります
+
+### 1. 加盟店ログイン（まずこれを実行）
+POST http://localhost:3000/api/partner/login
+Content-Type: application/json
+
+{
+  "email": "test@partner.com",
+  "password": "password123"
+}
+
+###
+
+### 2. ダッシュボードKPI取得（当月）
+GET http://localhost:3000/api/partner/dashboard?period=current_month
+
+###
+
+### 3. ダッシュボードKPI取得（先月）
+GET http://localhost:3000/api/partner/dashboard?period=last_month
+
+###
+
+### 4. ダッシュボードKPI取得（今年）
+GET http://localhost:3000/api/partner/dashboard?period=current_year
+
+###
+
+### 5. ダッシュボードKPI取得（カスタム期間）
+GET http://localhost:3000/api/partner/dashboard?period=custom&start_date=2025-01-01&end_date=2025-01-31
+
+###
+
+### 6. 請求書一覧取得（全件）
+GET http://localhost:3000/api/partner/invoices
+
+###
+
+### 7. 請求書一覧取得（ステータスフィルタ）
+GET http://localhost:3000/api/partner/invoices?status=UNPAID
+
+###
+
+### 8. 請求書一覧取得（検索）
+GET http://localhost:3000/api/partner/invoices?search=山田
+
+###
+
+### 9. 請求書一覧取得（ページネーション）
+GET http://localhost:3000/api/partner/invoices?page=1&limit=10
+
+###
+
+### 10. 請求書作成
+POST http://localhost:3000/api/partner/invoices
+Content-Type: application/json
+
+{
+  "order_id": 1,
+  "issue_date": "2025-01-15",
+  "due_date": "2025-02-15",
+  "items": [
+    {
+      "description": "外壁塗装工事一式",
+      "quantity": 1,
+      "unit": "式",
+      "unit_price": 2000000,
+      "amount": 2000000
+    },
+    {
+      "description": "足場設置・撤去",
+      "quantity": 150,
+      "unit": "㎡",
+      "unit_price": 1000,
+      "amount": 150000
+    }
+  ]
+}
+
+###
+
+### 11. 請求書詳細取得（IDは作成後に変更）
+GET http://localhost:3000/api/partner/invoices/1
+
+###
+
+### 12. 請求書更新（下書きのみ）
+PUT http://localhost:3000/api/partner/invoices/1
+Content-Type: application/json
+
+{
+  "issue_date": "2025-01-20",
+  "due_date": "2025-02-20",
+  "items": [
+    {
+      "description": "外壁塗装工事一式（更新版）",
+      "quantity": 1,
+      "unit": "式",
+      "unit_price": 2200000,
+      "amount": 2200000
+    }
+  ]
+}
+
+###
+
+### 13. 請求書ステータス更新（下書き→未払い）
+PUT http://localhost:3000/api/partner/invoices/1/status
+Content-Type: application/json
+
+{
+  "status": "UNPAID"
+}
+
+###
+
+### 14. 請求書ステータス更新（未払い→支払い済み）
+PUT http://localhost:3000/api/partner/invoices/1/status
+Content-Type: application/json
+
+{
+  "status": "PAID",
+  "payment_date": "2025-02-10"
+}
+
+###

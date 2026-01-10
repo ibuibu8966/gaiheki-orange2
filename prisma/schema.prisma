@@ -1,0 +1,511 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Admin {
+  id                           Int                            @id @default(autoincrement())
+  username                     String                         @unique @db.VarChar(50)
+  email                        String                         @unique @db.VarChar(100)
+  passwordHash                 String                         @map("password_hash") @db.VarChar(255)
+  role                         AdminRole                      @default(ADMIN)
+  isActive                     Boolean                        @default(true) @map("is_active")
+  lastLoginAt                  DateTime?                      @map("last_login_at")
+  createdAt                    DateTime                       @default(now()) @map("created_at")
+  updatedAt                    DateTime                       @updatedAt @map("updated_at")
+  sessions                     AdminSession[]
+  application_status_histories application_status_histories[]
+  articles                     articles[]
+  partner_applications         partner_applications[]
+
+  @@map("admins")
+}
+
+model AdminSession {
+  id        String   @id @default(cuid())
+  adminId   Int      @map("admin_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+  @@index([expiresAt])
+  @@map("admin_sessions")
+}
+
+model application_status_histories {
+  id                   Int                  @id @default(autoincrement())
+  application_id       Int
+  previous_status      ApplicationStatus?
+  new_status           ApplicationStatus
+  changed_by           Int
+  change_reason        String?
+  created_at           DateTime             @default(now())
+  partner_applications partner_applications @relation(fields: [application_id], references: [id], onDelete: Cascade)
+  admins               Admin                @relation(fields: [changed_by], references: [id])
+}
+
+model articles {
+  id              Int             @id @default(autoincrement())
+  admin_id        Int
+  title           String          @db.VarChar(200)
+  thumbnail_image String?         @db.Text
+  category        ArticleCategory
+  content         String          @db.Text
+  is_published    Boolean         @default(false)
+  sort_order      Int             @default(0)
+  post_name       String          @db.VarChar(100)
+  created_at      DateTime        @default(now())
+  updated_at      DateTime
+  admins          Admin           @relation(fields: [admin_id], references: [id])
+}
+
+model customers {
+  id                         Int                      @id @default(autoincrement())
+  partner_id                 Int
+  customer_name              String                   @db.VarChar(100)
+  customer_phone             String                   @db.VarChar(20)
+  customer_email             String                   @db.VarChar(150)
+  construction_address       String                   @db.VarChar(500)
+  customer_construction_type CustomerConstructionType
+  construction_amount        Int
+  construction_completed_at  DateTime?
+  customer_status            CustomerStatus           @default(ORDERED)
+  customer_completion_date   DateTime?
+  customer_rating            Int?                     @db.SmallInt
+  customer_review_title      String?                  @db.VarChar(200)
+  customer_review            String?
+  customer_review_date       DateTime?
+  customer_comment           String?
+  created_at                 DateTime                 @default(now())
+  updated_at                 DateTime
+  partners                   partners                 @relation(fields: [partner_id], references: [id])
+  diagnosis_requests         diagnosis_requests[]
+  inquiries                  inquiries[]
+}
+
+model diagnosis_requests {
+  id                   Int              @id @default(autoincrement())
+  diagnosis_number     String           @unique @db.VarChar(20)
+  customer_id          Int
+  designated_partner_id Int?
+  prefecture           Prefecture
+  floor_area           FloorArea
+  current_situation    CurrentSituation
+  construction_type    ConstructionType
+  status               DiagnosisStatus  @default(RECRUITING)
+  created_at           DateTime         @default(now())
+  updated_at           DateTime
+  customers            customers        @relation(fields: [customer_id], references: [id])
+  designated_partner   partners?        @relation("DesignatedDiagnoses", fields: [designated_partner_id], references: [id])
+  quotations           quotations[]
+}
+
+model inquiries {
+  id              Int           @id @default(autoincrement())
+  customer_id     Int
+  subject         String        @db.VarChar(200)
+  inquiry_content String
+  inquiry_status  InquiryStatus @default(PENDING)
+  admin_memo      String?
+  created_at      DateTime      @default(now())
+  updated_at      DateTime
+  customers       customers     @relation(fields: [customer_id], references: [id])
+}
+
+model orders {
+  id                       Int                @id @default(autoincrement())
+  quotation_id             Int                @unique
+  partner_memo             String?
+  admin_memo               String?
+  construction_amount      Int?
+  construction_start_date  DateTime?          @db.Date
+  construction_end_date    DateTime?          @db.Date
+  order_status             OrderStatus        @default(ORDERED)
+  order_date               DateTime           @default(now())
+  completion_date          DateTime?
+  evaluation_token         String?            @unique @db.VarChar(100)
+  evaluation_token_sent_at DateTime?
+  created_at               DateTime           @default(now())
+  updated_at               DateTime
+  quotations               quotations         @relation(fields: [quotation_id], references: [id])
+  order_photos             order_photos[]
+  customer_invoices        customer_invoices?
+}
+
+model order_photos {
+  id          Int      @id @default(autoincrement())
+  order_id    Int
+  photo_url   String   @db.VarChar(500)
+  photo_type  String?  @db.VarChar(50)
+  description String?  @db.VarChar(200)
+  uploaded_at DateTime @default(now())
+  created_at  DateTime @default(now())
+  orders      orders   @relation(fields: [order_id], references: [id], onDelete: Cascade)
+
+  @@index([order_id])
+}
+
+model partner_application_prefectures {
+  id                   Int                  @id @default(autoincrement())
+  partner_id           Int
+  supported_prefecture Prefecture
+  created_at           DateTime             @default(now())
+  partner_applications partner_applications @relation(fields: [partner_id], references: [id], onDelete: Cascade)
+
+  @@unique([partner_id, supported_prefecture])
+}
+
+model partner_applications {
+  id                              Int                               @id @default(autoincrement())
+  company_name                    String                            @db.VarChar(200)
+  representative_name             String                            @db.VarChar(100)
+  address                         String                            @db.VarChar(500)
+  phone_number                    String                            @db.VarChar(20)
+  email                           String                            @db.VarChar(150)
+  website_url                     String?                           @db.VarChar(500)
+  business_description            String
+  self_pr                         String
+  application_status              ApplicationStatus                 @default(UNDER_REVIEW)
+  admin_memo                      String?
+  review_notes                    String?
+  reviewed_by                     Int?
+  reviewed_at                     DateTime?
+  created_at                      DateTime                          @default(now())
+  updated_at                      DateTime
+  application_status_histories    application_status_histories[]
+  partner_application_prefectures partner_application_prefectures[]
+  admins                          Admin?                            @relation(fields: [reviewed_by], references: [id])
+}
+
+model partner_details {
+  id                      Int            @id @default(autoincrement())
+  partner_id              Int            @unique
+  company_name            String         @db.VarChar(200)
+  phone_number            String         @db.VarChar(20)
+  address                 String         @db.VarChar(500)
+  representative_name     String         @db.VarChar(100)
+  fax_number              String?        @db.VarChar(20)
+  website_url             String?        @db.VarChar(500)
+  business_description    String
+  appeal_text             String
+  business_hours          String?        @db.VarChar(200)
+  closed_days             String?        @db.VarChar(200)
+  site_reprint_prefecture Prefecture?
+  partners_status              PartnersStatus @default(INACTIVE)
+  invoice_registration_number  String?        @db.VarChar(50)
+  bank_name                    String?        @db.VarChar(255)
+  bank_branch_name             String?        @db.VarChar(255)
+  bank_account_type            String?        @db.VarChar(50)
+  bank_account_number          String?        @db.VarChar(50)
+  bank_account_holder          String?        @db.VarChar(255)
+  created_at                   DateTime       @default(now())
+  updated_at                   DateTime
+  partners                     partners       @relation(fields: [partner_id], references: [id], onDelete: Cascade)
+}
+
+model partner_prefectures {
+  id                   Int        @id @default(autoincrement())
+  partner_id           Int
+  supported_prefecture Prefecture
+  created_at           DateTime   @default(now())
+  updated_at           DateTime
+  partners             partners   @relation(fields: [partner_id], references: [id], onDelete: Cascade)
+
+  @@unique([partner_id, supported_prefecture])
+}
+
+model partners {
+  id                     Int                   @id @default(autoincrement())
+  username               String                @unique @db.VarChar(100)
+  login_email            String                @unique @db.VarChar(150)
+  password_hash          String                @db.VarChar(255)
+  is_active              Boolean               @default(true)
+  last_login_at          DateTime?
+  fee_plan_id            Int?
+  created_at             DateTime              @default(now())
+  updated_at             DateTime
+  customers              customers[]
+  partner_details        partner_details?
+  partner_prefectures    partner_prefectures[]
+  quotations             quotations[]
+  designated_diagnoses   diagnosis_requests[]  @relation("DesignatedDiagnoses")
+  fee_plans              fee_plans?            @relation(fields: [fee_plan_id], references: [id])
+  company_invoices       company_invoices[]
+}
+
+model quotations {
+  id                   Int                @id @default(autoincrement())
+  diagnosis_request_id Int
+  partner_id           Int
+  quotation_amount     Int
+  appeal_text          String?
+  is_selected          Boolean            @default(false)
+  created_at           DateTime           @default(now())
+  updated_at           DateTime
+  orders               orders?
+  diagnosis_requests   diagnosis_requests @relation(fields: [diagnosis_request_id], references: [id])
+  partners             partners           @relation(fields: [partner_id], references: [id])
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  OPERATOR
+}
+
+enum ApplicationStatus {
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum ArticleCategory {
+  BASIC_KNOWLEDGE
+  PAINT_TYPES
+  CASE_STUDIES
+  MAINTENANCE
+  CONTRACTOR_SELECTION
+  COST_ESTIMATE
+  TROUBLESHOOTING
+  SEASONAL_WEATHER
+}
+
+enum ConstructionType {
+  EXTERIOR_PAINTING
+  ROOF_PAINTING
+  EXTERIOR_AND_ROOF
+  PARTIAL_REPAIR
+  WATERPROOFING
+  SIDING_REPLACEMENT
+  FULL_REPLACEMENT
+}
+
+enum CurrentSituation {
+  MARKET_RESEARCH
+  CONSIDERING_CONSTRUCTION
+  COMPARING_CONTRACTORS
+  READY_TO_ORDER
+  CONSTRUCTION_COMPLETED
+}
+
+enum CustomerConstructionType {
+  EXTERIOR_PAINTING
+  ROOF_PAINTING
+  EXTERIOR_AND_ROOF
+  PARTIAL_REPAIR
+  WATERPROOFING
+  SIDING_REPLACEMENT
+  FULL_REPLACEMENT
+}
+
+enum CustomerStatus {
+  ORDERED
+  IN_PROGRESS
+  COMPLETED
+  REVIEW_COMPLETED
+  CANCELLED
+}
+
+enum DiagnosisStatus {
+  DESIGNATED
+  RECRUITING
+  COMPARING
+  DECIDED
+  CANCELLED
+}
+
+enum FloorArea {
+  UNKNOWN
+  UNDER_80
+  FROM_80_TO_100
+  FROM_101_TO_120
+  FROM_121_TO_140
+  FROM_141_TO_160
+  FROM_161_TO_180
+  FROM_181_TO_200
+  FROM_201_TO_250
+  FROM_251_TO_300
+  FROM_301_TO_500
+  OVER_501
+}
+
+enum InquiryStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum OrderStatus {
+  ORDERED
+  IN_PROGRESS
+  COMPLETED
+  REVIEW_COMPLETED
+  CANCELLED
+}
+
+enum PartnersStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum Prefecture {
+  Hokkaido
+  Aomori
+  Iwate
+  Miyagi
+  Akita
+  Yamagata
+  Fukushima
+  Ibaraki
+  Tochigi
+  Gunma
+  Saitama
+  Chiba
+  Tokyo
+  Kanagawa
+  Niigata
+  Toyama
+  Ishikawa
+  Fukui
+  Yamanashi
+  Nagano
+  Gifu
+  Shizuoka
+  Aichi
+  Mie
+  Shiga
+  Kyoto
+  Osaka
+  Hyogo
+  Nara
+  Wakayama
+  Tottori
+  Shimane
+  Okayama
+  Hiroshima
+  Yamaguchi
+  Tokushima
+  Kagawa
+  Ehime
+  Kochi
+  Fukuoka
+  Saga
+  Nagasaki
+  Kumamoto
+  Oita
+  Miyazaki
+  Kagoshima
+  Okinawa
+}
+
+enum InvoiceStatus {
+  DRAFT
+  UNPAID
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+model customer_invoices {
+  id              Int                        @id @default(autoincrement())
+  invoice_number  String                     @unique @db.VarChar(50)
+  order_id        Int                        @unique
+  issue_date      DateTime                   @db.Date
+  due_date        DateTime                   @db.Date
+  total_amount    Int
+  tax_amount      Int
+  grand_total     Int
+  status          InvoiceStatus              @default(UNPAID)
+  payment_date    DateTime?                  @db.Date
+  created_at      DateTime                   @default(now())
+  updated_at      DateTime                   @updatedAt
+  order           orders                     @relation(fields: [order_id], references: [id])
+  invoice_items   customer_invoice_items[]
+}
+
+model customer_invoice_items {
+  id          Int      @id @default(autoincrement())
+  invoice_id  Int
+  description String   @db.VarChar(255)
+  quantity    Float
+  unit        String   @db.VarChar(20)
+  unit_price  Int
+  amount      Int
+  created_at  DateTime @default(now())
+  invoice     customer_invoices @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+}
+
+model fee_plans {
+  id              Int        @id @default(autoincrement())
+  name            String     @db.VarChar(100)
+  monthly_fee     Int?
+  per_order_fee   Int?
+  per_project_fee Int?
+  project_fee_rate Float?
+  is_default      Boolean    @default(false)
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+  partners        partners[]
+}
+
+model company_invoices {
+  id                   Int                      @id @default(autoincrement())
+  invoice_number       String                   @unique @db.VarChar(50)
+  partner_id           Int
+  issue_date           DateTime                 @db.Date
+  due_date             DateTime                 @db.Date
+  billing_period_start DateTime                 @db.Date
+  billing_period_end   DateTime                 @db.Date
+  total_amount         Int
+  tax_amount           Int
+  grand_total          Int
+  status               InvoiceStatus            @default(UNPAID)
+  payment_date         DateTime?                @db.Date
+  created_at           DateTime                 @default(now())
+  updated_at           DateTime                 @updatedAt
+  partner              partners                 @relation(fields: [partner_id], references: [id])
+  invoice_items        company_invoice_items[]
+}
+
+model company_invoice_items {
+  id               Int      @id @default(autoincrement())
+  invoice_id       Int
+  description      String   @db.VarChar(255)
+  amount           Int
+  related_order_id Int?
+  created_at       DateTime @default(now())
+  invoice          company_invoices @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+}
+
+model system_settings {
+  id            Int      @id @default(autoincrement())
+  setting_key   String   @unique @db.VarChar(100)
+  setting_value String   @db.VarChar(255)
+  description   String?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+}
+
+model company_settings {
+  id                            Int      @id @default(autoincrement())
+  company_name                  String   @db.VarChar(255)
+  postal_code                   String?  @db.VarChar(10)
+  address                       String?  @db.Text
+  phone                         String?  @db.VarChar(20)
+  email                         String?  @db.VarChar(255)
+  invoice_registration_number   String?  @db.VarChar(20)
+  bank_name                     String?  @db.VarChar(100)
+  bank_branch_name              String?  @db.VarChar(100)
+  bank_account_type             String?  @db.VarChar(20)
+  bank_account_number           String?  @db.VarChar(20)
+  bank_account_holder           String?  @db.VarChar(100)
+  created_at                    DateTime @default(now())
+  updated_at                    DateTime @updatedAt
+}
+

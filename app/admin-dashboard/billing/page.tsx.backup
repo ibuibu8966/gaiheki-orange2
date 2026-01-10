@@ -1,0 +1,353 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import AdminSidebar from '../../components/Admin/Common/AdminSidebar';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+interface Invoice {
+  id: number;
+  invoice_number: string;
+  partner_id: number;
+  company_name: string;
+  billing_period_start: string;
+  billing_period_end: string;
+  grand_total: number;
+  issue_date: string;
+  due_date: string;
+  status: string;
+}
+
+interface GeneratedInvoice {
+  partner_id: number;
+  company_name: string;
+  total_amount: number;
+  tax_amount: number;
+  grand_total: number;
+  items: Array<{
+    description: string;
+    amount: number;
+  }>;
+}
+
+export default function BillingManagementPage() {
+  const router = useRouter();
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState('all');
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+  const [billingPeriod, setBillingPeriod] = useState({
+    start: '',
+    end: '',
+  });
+  const [generatedResult, setGeneratedResult] = useState<{
+    generated: number;
+    invoices: GeneratedInvoice[];
+  } | null>(null);
+  const [generating, setGenerating] = useState(false);
+
+  useEffect(() => {
+    fetchInvoices();
+  }, [status]);
+
+  const fetchInvoices = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({ page: '1', limit: '50' });
+      if (status !== 'all') params.append('status', status);
+
+      const res = await fetch(`/api/admin/invoices?${params}`);
+      const data = await res.json();
+
+      if (data.success) {
+        setInvoices(data.data.invoices);
+      }
+    } catch (error) {
+      console.error('請求書一覧の取得に失敗しました:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGenerateInvoices = async () => {
+    if (!billingPeriod.start || !billingPeriod.end) {
+      alert('請求期間を入力してください');
+      return;
+    }
+
+    try {
+      setGenerating(true);
+      const res = await fetch('/api/admin/invoices/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          billing_period_start: billingPeriod.start,
+          billing_period_end: billingPeriod.end,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setGeneratedResult(data.data);
+        fetchInvoices();
+      } else {
+        alert(data.error || '請求書の生成に失敗しました');
+      }
+    } catch (error) {
+      console.error('請求書生成エラー:', error);
+      alert('請求書の生成に失敗しました');
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const handleIssueInvoices = async () => {
+    const draftInvoices = invoices.filter((inv) => inv.status === 'DRAFT');
+
+    if (draftInvoices.length === 0) {
+      alert('発行可能な下書き請求書がありません');
+      return;
+    }
+
+    if (!confirm(`${draftInvoices.length}件の請求書を発行しますか？`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/admin/invoices/issue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          invoice_ids: draftInvoices.map((inv) => inv.id),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert(`${data.data.issued}件の請求書を発行しました`);
+        fetchInvoices();
+      } else {
+        alert(data.error || '請求書の発行に失敗しました');
+      }
+    } catch (error) {
+      console.error('請求書発行エラー:', error);
+      alert('請求書の発行に失敗しました');
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    const variants: { [key: string]: 'default' | 'secondary' | 'destructive' | 'outline' } = {
+      DRAFT: 'secondary',
+      UNPAID: 'outline',
+      PAID: 'default',
+      OVERDUE: 'destructive',
+      CANCELLED: 'outline',
+    };
+
+    const labels: { [key: string]: string } = {
+      DRAFT: '下書き',
+      UNPAID: '未払い',
+      PAID: '支払い済み',
+      OVERDUE: '遅延',
+      CANCELLED: 'キャンセル',
+    };
+
+    return <Badge variant={variants[status] || 'default'}>{labels[status] || status}</Badge>;
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 flex">
+      <AdminSidebar />
+      <main className="flex-1 p-8 min-w-0 overflow-y-auto h-screen">
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold text-gray-800">手数料請求管理</h1>
+            <div className="flex gap-2">
+          <Dialog open={isGenerateModalOpen} onOpenChange={setIsGenerateModalOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm">請求データ生成</Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>請求データ生成</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label>請求期間（開始日）</Label>
+                  <Input
+                    type="date"
+                    value={billingPeriod.start}
+                    onChange={(e) =>
+                      setBillingPeriod({ ...billingPeriod, start: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label>請求期間（終了日）</Label>
+                  <Input
+                    type="date"
+                    value={billingPeriod.end}
+                    onChange={(e) => setBillingPeriod({ ...billingPeriod, end: e.target.value })}
+                  />
+                </div>
+                <Button
+                  onClick={handleGenerateInvoices}
+                  className="w-full"
+                  disabled={generating}
+                >
+                  {generating ? '生成中...' : '生成'}
+                </Button>
+
+                {generatedResult && (
+                  <Card className="mt-4">
+                    <CardHeader>
+                      <CardTitle className="text-lg">
+                        生成結果: {generatedResult.generated}件
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2 max-h-60 overflow-y-auto">
+                        {generatedResult.invoices.map((invoice, index) => (
+                          <div key={index} className="p-3 border rounded-lg">
+                            <p className="font-semibold">{invoice.company_name}</p>
+                            <p className="text-sm text-gray-600">
+                              請求額: ¥{invoice.grand_total.toLocaleString()}（税込）
+                            </p>
+                            <div className="text-xs text-gray-500 mt-1">
+                              {invoice.items.map((item, i) => (
+                                <div key={i}>
+                                  {item.description}: ¥{item.amount.toLocaleString()}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Button onClick={handleIssueInvoices} variant="outline" className="border-gray-300 hover:bg-gray-50">
+            一括発行
+          </Button>
+        </div>
+      </div>
+
+      {/* フィルター */}
+      <Card className="shadow-sm border-gray-200">
+        <CardContent className="pt-6">
+          <div className="flex gap-4">
+            <div className="w-48">
+              <Label className="text-sm font-medium text-gray-700">ステータスで絞り込み</Label>
+              <Select value={status} onValueChange={setStatus}>
+                <SelectTrigger className="mt-1.5 bg-white border-gray-300 hover:border-gray-400">
+                  <SelectValue placeholder="すべて" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">すべて</SelectItem>
+                  <SelectItem value="DRAFT">下書き</SelectItem>
+                  <SelectItem value="UNPAID">未払い</SelectItem>
+                  <SelectItem value="PAID">支払い済み</SelectItem>
+                  <SelectItem value="OVERDUE">遅延</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 請求書一覧 */}
+      <Card className="shadow-sm border-gray-200">
+        <CardHeader className="bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+          <CardTitle className="text-xl font-bold text-gray-800">請求書一覧</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+              <p className="mt-2 text-gray-600">読み込み中...</p>
+            </div>
+          ) : invoices.length > 0 ? (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="font-semibold text-gray-700">請求書番号</TableHead>
+                    <TableHead className="font-semibold text-gray-700">加盟店名</TableHead>
+                    <TableHead className="font-semibold text-gray-700">請求期間</TableHead>
+                    <TableHead className="text-right font-semibold text-gray-700">請求額</TableHead>
+                    <TableHead className="font-semibold text-gray-700">発行日</TableHead>
+                    <TableHead className="font-semibold text-gray-700">支払期日</TableHead>
+                    <TableHead className="font-semibold text-gray-700">ステータス</TableHead>
+                    <TableHead className="font-semibold text-gray-700">操作</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {invoices.map((invoice) => (
+                    <TableRow key={invoice.id}>
+                      <TableCell className="font-mono">{invoice.invoice_number}</TableCell>
+                      <TableCell>{invoice.company_name}</TableCell>
+                      <TableCell className="text-sm">
+                        {invoice.billing_period_start} 〜 {invoice.billing_period_end}
+                      </TableCell>
+                      <TableCell className="text-right font-semibold">
+                        ¥{invoice.grand_total.toLocaleString()}
+                      </TableCell>
+                      <TableCell>{invoice.issue_date}</TableCell>
+                      <TableCell>{invoice.due_date}</TableCell>
+                      <TableCell>{getStatusBadge(invoice.status)}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => router.push(`/admin-dashboard/billing/${invoice.id}`)}
+                        >
+                          詳細
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <p className="text-center text-gray-500 py-8">請求書がありません</p>
+          )}
+        </CardContent>
+      </Card>
+        </div>
+      </main>
+    </div>
+  );
+}

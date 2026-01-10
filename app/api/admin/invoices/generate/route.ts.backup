@@ -1,0 +1,158 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/src/infrastructure/database/prisma.client';
+import { requireAdminAuth } from '@/lib/utils/adminAuth';
+import {
+  generateCompanyInvoiceNumber,
+  calculateFees,
+  calculateTax,
+  calculateDueDate,
+} from '@/lib/utils/invoiceNumber';
+
+// POST: 月次手数料請求書を一括生成
+export async function POST(request: NextRequest) {
+  try {
+    // 認証チェック
+    const { error } = await requireAdminAuth();
+    if (error) return error;
+
+    const body = await request.json();
+    const { billing_period_start, billing_period_end } = body;
+
+    // バリデーション
+    if (!billing_period_start || !billing_period_end) {
+      return NextResponse.json(
+        { success: false, error: '請求期間の開始日と終了日が必要です' },
+        { status: 400 }
+      );
+    }
+
+    const startDate = new Date(billing_period_start);
+    const endDate = new Date(billing_period_end);
+
+    // システム設定を取得
+    const systemSettings = await prisma.system_settings.findFirst();
+    const taxRate = systemSettings?.tax_rate || 0.1;
+    const paymentDay = systemSettings?.billing_cycle_payment_day || 20;
+
+    // 全加盟店を取得
+    const partners = await prisma.partners.findMany({
+      include: {
+        fee_plans: true,
+        partner_details: true,
+        quotations: {
+          where: {
+            created_at: {
+              gte: startDate,
+              lte: endDate,
+            },
+          },
+          include: {
+            orders: {
+              include: {
+                customer_invoices: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const generatedInvoices = [];
+
+    // 各加盟店の請求書を生成
+    for (const partner of partners) {
+      // 受注件数
+      const orderCount = partner.quotations.filter((q) => q.orders.length > 0).length;
+
+      // 施工完了件数と金額
+      const completedOrders = partner.quotations.flatMap((q) =>
+        q.orders.filter(
+          (o) => o.construction_status === 'COMPLETED' || o.review_status === 'REVIEW_COMPLETED'
+        )
+      );
+      const projectCount = completedOrders.length;
+      const projectTotalAmount = completedOrders.reduce(
+        (sum, order) => sum + (order.customer_invoices?.grand_total || 0),
+        0
+      );
+
+      // 手数料計算
+      if (!partner.fee_plans) {
+        console.warn(`Partner ${partner.id} has no fee plan, skipping`);
+        continue;
+      }
+
+      const feeData = calculateFees(partner.fee_plans, {
+        order_count: orderCount,
+        project_count: projectCount,
+        project_total_amount: projectTotalAmount,
+      });
+
+      // 手数料が0円の場合はスキップ
+      if (feeData.total === 0) {
+        continue;
+      }
+
+      // 消費税計算
+      const taxAmount = calculateTax(feeData.total, taxRate);
+      const grandTotal = feeData.total + taxAmount;
+
+      // 請求書番号を生成
+      const invoiceNumber = await generateCompanyInvoiceNumber();
+
+      // トランザクションで請求書と明細を作成
+      const invoice = await prisma.$transaction(async (tx) => {
+        const createdInvoice = await tx.company_invoices.create({
+          data: {
+            invoice_number: invoiceNumber,
+            partner_id: partner.id,
+            billing_period_start: startDate,
+            billing_period_end: endDate,
+            issue_date: new Date(), // 生成時は現在日時
+            due_date: calculateDueDate(new Date(), paymentDay),
+            total_amount: feeData.total,
+            tax_amount: taxAmount,
+            grand_total: grandTotal,
+            status: 'DRAFT',
+            invoice_items: {
+              create: feeData.items.map((item) => ({
+                description: item.description,
+                amount: item.amount,
+                related_order_id: item.related_order_id,
+              })),
+            },
+          },
+          include: {
+            invoice_items: true,
+          },
+        });
+
+        return createdInvoice;
+      });
+
+      generatedInvoices.push({
+        partner_id: partner.id,
+        company_name: partner.partner_details?.company_name || partner.email,
+        total_amount: feeData.total,
+        tax_amount: taxAmount,
+        grand_total: grandTotal,
+        items: feeData.items,
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `${generatedInvoices.length}件の請求書を生成しました`,
+      data: {
+        generated: generatedInvoices.length,
+        invoices: generatedInvoices,
+      },
+    });
+  } catch (error) {
+    console.error('Generate company invoices error:', error);
+    return NextResponse.json(
+      { success: false, error: '請求書の生成に失敗しました' },
+      { status: 500 }
+    );
+  }
+}
