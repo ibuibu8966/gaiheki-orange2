@@ -66,34 +66,11 @@ model articles {
   admins          Admin           @relation(fields: [admin_id], references: [id])
 }
 
-model customers {
-  id                         Int                      @id @default(autoincrement())
-  partner_id                 Int
-  customer_name              String                   @db.VarChar(100)
-  customer_phone             String                   @db.VarChar(20)
-  customer_email             String                   @db.VarChar(150)
-  construction_address       String                   @db.VarChar(500)
-  customer_construction_type CustomerConstructionType
-  construction_amount        Int
-  construction_completed_at  DateTime?
-  customer_status            CustomerStatus           @default(ORDERED)
-  customer_completion_date   DateTime?
-  customer_rating            Int?                     @db.SmallInt
-  customer_review_title      String?                  @db.VarChar(200)
-  customer_review            String?
-  customer_review_date       DateTime?
-  customer_comment           String?
-  created_at                 DateTime                 @default(now())
-  updated_at                 DateTime
-  partners                   partners                 @relation(fields: [partner_id], references: [id])
-  diagnosis_requests         diagnosis_requests[]
-  inquiries                  inquiries[]
-}
+// customersテーブルは削除（顧客管理機能は不要）
 
 model diagnosis_requests {
   id                    Int              @id @default(autoincrement())
   diagnosis_number      String           @unique @db.VarChar(20)
-  customer_id           Int
   designated_partner_id Int?
   prefecture            Prefecture
   floor_area            FloorArea
@@ -103,6 +80,11 @@ model diagnosis_requests {
   created_at            DateTime         @default(now())
   updated_at            DateTime
 
+  // 顧客情報（customersテーブル削除に伴い直接保持）
+  customer_name           String  @map("customer_name") @db.VarChar(100)
+  customer_phone          String  @map("customer_phone") @db.VarChar(20)
+  customer_email          String? @map("customer_email") @db.VarChar(150)
+
   // 新規追加フィールド（ヒアリング情報・紹介システム）
   customer_enthusiasm     Int?    @map("customer_enthusiasm") @db.SmallInt
   desired_partner_count   Int?    @default(3) @map("desired_partner_count")
@@ -111,57 +93,27 @@ model diagnosis_requests {
   customer_address        String? @map("customer_address") @db.VarChar(500)
   customer_phone_verified String? @map("customer_phone_verified") @db.VarChar(20)
 
-  customers          customers        @relation(fields: [customer_id], references: [id])
   designated_partner partners?        @relation("DesignatedDiagnoses", fields: [designated_partner_id], references: [id])
-  quotations         quotations[]
   referrals          Referral[]
   deposit_histories  DepositHistory[]
 }
 
 model inquiries {
   id              Int           @id @default(autoincrement())
-  customer_id     Int
+  customer_name   String        @db.VarChar(100)
+  customer_email  String        @db.VarChar(150)
+  customer_phone  String?       @db.VarChar(20)
   subject         String        @db.VarChar(200)
   inquiry_content String
   inquiry_status  InquiryStatus @default(PENDING)
   admin_memo      String?
   created_at      DateTime      @default(now())
   updated_at      DateTime
-  customers       customers     @relation(fields: [customer_id], references: [id])
+
+  @@map("inquiries")
 }
 
-model orders {
-  id                       Int                @id @default(autoincrement())
-  quotation_id             Int                @unique
-  partner_memo             String?
-  admin_memo               String?
-  construction_amount      Int?
-  construction_start_date  DateTime?          @db.Date
-  construction_end_date    DateTime?          @db.Date
-  order_status             OrderStatus        @default(ORDERED)
-  order_date               DateTime           @default(now())
-  completion_date          DateTime?
-  evaluation_token         String?            @unique @db.VarChar(100)
-  evaluation_token_sent_at DateTime?
-  created_at               DateTime           @default(now())
-  updated_at               DateTime
-  quotations               quotations         @relation(fields: [quotation_id], references: [id])
-  order_photos             order_photos[]
-  customer_invoices        customer_invoices?
-}
-
-model order_photos {
-  id          Int      @id @default(autoincrement())
-  order_id    Int
-  photo_url   String   @db.VarChar(500)
-  photo_type  String?  @db.VarChar(50)
-  description String?  @db.VarChar(200)
-  uploaded_at DateTime @default(now())
-  created_at  DateTime @default(now())
-  orders      orders   @relation(fields: [order_id], references: [id], onDelete: Cascade)
-
-  @@index([order_id])
-}
+// orders, order_photosテーブルは削除（注文・施工管理機能は不要）
 
 model partner_application_prefectures {
   id                   Int                  @id @default(autoincrement())
@@ -239,7 +191,6 @@ model partners {
   password_hash String    @db.VarChar(255)
   is_active     Boolean   @default(true)
   last_login_at DateTime?
-  fee_plan_id   Int?
   created_at    DateTime  @default(now())
   updated_at    DateTime
 
@@ -249,31 +200,15 @@ model partners {
   monthly_leads_count   Int       @default(0) @map("monthly_leads_count")
   last_leads_reset      DateTime? @map("last_leads_reset")
 
-  customers            customers[]
   partner_details      partner_details?
   partner_prefectures  partner_prefectures[]
-  quotations           quotations[]
   designated_diagnoses diagnosis_requests[]  @relation("DesignatedDiagnoses")
-  fee_plans            fee_plans?            @relation(fields: [fee_plan_id], references: [id])
-  company_invoices     company_invoices[]
   deposit_histories    DepositHistory[]
   deposit_requests     DepositRequest[]
   referrals            Referral[]
 }
 
-model quotations {
-  id                   Int                @id @default(autoincrement())
-  diagnosis_request_id Int
-  partner_id           Int
-  quotation_amount     Int
-  appeal_text          String?
-  is_selected          Boolean            @default(false)
-  created_at           DateTime           @default(now())
-  updated_at           DateTime
-  orders               orders?
-  diagnosis_requests   diagnosis_requests @relation(fields: [diagnosis_request_id], references: [id])
-  partners             partners           @relation(fields: [partner_id], references: [id])
-}
+// quotationsテーブルは削除（見積もり提出機能は不要）
 
 enum AdminRole {
   SUPER_ADMIN
@@ -323,23 +258,7 @@ enum CurrentSituation {
   CONSTRUCTION_COMPLETED
 }
 
-enum CustomerConstructionType {
-  EXTERIOR_PAINTING
-  ROOF_PAINTING
-  EXTERIOR_AND_ROOF
-  PARTIAL_REPAIR
-  WATERPROOFING
-  SIDING_REPLACEMENT
-  FULL_REPLACEMENT
-}
-
-enum CustomerStatus {
-  ORDERED
-  IN_PROGRESS
-  COMPLETED
-  REVIEW_COMPLETED
-  CANCELLED
-}
+// CustomerConstructionType, CustomerStatus enumは削除（customersテーブル削除に伴い不要）
 
 enum DiagnosisStatus {
   DESIGNATED
@@ -370,13 +289,7 @@ enum InquiryStatus {
   COMPLETED
 }
 
-enum OrderStatus {
-  ORDERED
-  IN_PROGRESS
-  COMPLETED
-  REVIEW_COMPLETED
-  CANCELLED
-}
+// OrderStatus enumは削除（ordersテーブル削除に伴い不要）
 
 enum PartnersStatus {
   ACTIVE
@@ -433,110 +346,9 @@ enum Prefecture {
   Okinawa
 }
 
-enum InvoiceStatus {
-  DRAFT
-  UNPAID
-  PAID
-  OVERDUE
-  CANCELLED
-}
-
-model customer_invoices {
-  id             Int                      @id @default(autoincrement())
-  invoice_number String                   @unique @db.VarChar(50)
-  order_id       Int                      @unique
-  issue_date     DateTime                 @db.Date
-  due_date       DateTime                 @db.Date
-  total_amount   Int
-  tax_amount     Int
-  grand_total    Int
-  status         InvoiceStatus            @default(UNPAID)
-  payment_date   DateTime?                @db.Date
-  created_at     DateTime                 @default(now())
-  updated_at     DateTime                 @updatedAt
-  order          orders                   @relation(fields: [order_id], references: [id])
-  invoice_items  customer_invoice_items[]
-}
-
-model customer_invoice_items {
-  id          Int               @id @default(autoincrement())
-  invoice_id  Int
-  description String            @db.VarChar(255)
-  quantity    Float
-  unit        String            @db.VarChar(20)
-  unit_price  Int
-  amount      Int
-  created_at  DateTime          @default(now())
-  invoice     customer_invoices @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
-}
-
-model fee_plans {
-  id               Int        @id @default(autoincrement())
-  name             String     @db.VarChar(100)
-  monthly_fee      Int?
-  per_order_fee    Int?
-  per_project_fee  Int?
-  project_fee_rate Float?
-  is_default       Boolean    @default(false)
-  created_at       DateTime   @default(now())
-  updated_at       DateTime   @updatedAt
-  partners         partners[]
-}
-
-model company_invoices {
-  id                   Int                     @id @default(autoincrement())
-  invoice_number       String                  @unique @db.VarChar(50)
-  partner_id           Int
-  issue_date           DateTime                @db.Date
-  due_date             DateTime                @db.Date
-  billing_period_start DateTime                @db.Date
-  billing_period_end   DateTime                @db.Date
-  total_amount         Int
-  tax_amount           Int
-  grand_total          Int
-  status               InvoiceStatus           @default(UNPAID)
-  payment_date         DateTime?               @db.Date
-  created_at           DateTime                @default(now())
-  updated_at           DateTime                @updatedAt
-  partner              partners                @relation(fields: [partner_id], references: [id])
-  invoice_items        company_invoice_items[]
-}
-
-model company_invoice_items {
-  id               Int              @id @default(autoincrement())
-  invoice_id       Int
-  description      String           @db.VarChar(255)
-  amount           Int
-  related_order_id Int?
-  created_at       DateTime         @default(now())
-  invoice          company_invoices @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
-}
-
-model system_settings {
-  id            Int      @id @default(autoincrement())
-  setting_key   String   @unique @db.VarChar(100)
-  setting_value String   @db.VarChar(255)
-  description   String?
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-}
-
-model company_settings {
-  id                          Int      @id @default(autoincrement())
-  company_name                String   @db.VarChar(255)
-  postal_code                 String?  @db.VarChar(10)
-  address                     String?  @db.Text
-  phone                       String?  @db.VarChar(20)
-  email                       String?  @db.VarChar(255)
-  invoice_registration_number String?  @db.VarChar(20)
-  bank_name                   String?  @db.VarChar(100)
-  bank_branch_name            String?  @db.VarChar(100)
-  bank_account_type           String?  @db.VarChar(20)
-  bank_account_number         String?  @db.VarChar(20)
-  bank_account_holder         String?  @db.VarChar(100)
-  created_at                  DateTime @default(now())
-  updated_at                  DateTime @updatedAt
-}
+// InvoiceStatus enumは削除（請求書機能は不要）
+// customer_invoices, customer_invoice_items, company_invoices, company_invoice_itemsテーブルは削除（請求書機能は不要）
+// fee_plans, system_settings, company_settingsテーブルは削除（システム設定機能は不要）
 
 // ===== 新規追加: 保証金・紹介システム関連 =====
 

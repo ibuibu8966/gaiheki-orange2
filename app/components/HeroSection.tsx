@@ -1,7 +1,5 @@
 "use client";
 
-import JapanMapWithStats from "./JapanMapWithStats";
-
 const HeroSection = () => {
   const scrollToDiagnosisForm = () => {
     const element = document.getElementById('diagnosis-form');
@@ -86,10 +84,7 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* 右側: 日本地図（地域別統計付き） */}
-          <div className="w-full lg:w-1/2 flex justify-center lg:justify-end">
-            <JapanMapWithStats />
-          </div>
+          {/* 右側は削除（地図表示を削除） */}
         </div>
       </div>
     </section>

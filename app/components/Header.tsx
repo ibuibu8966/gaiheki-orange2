@@ -58,9 +58,6 @@ const Header = () => {
 
           {/* ナビゲーションメニュー */}
           <nav className="hidden md:flex items-center space-x-4 whitespace-nowrap">
-            <Link href="/#service-areas" className={getLinkClass('/#service-areas')}>
-              施工店一覧
-            </Link>
             <Link href="/columns" className={getLinkClass('/columns')}>
               外壁塗装コラム
             </Link>
@@ -126,13 +123,6 @@ const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden bg-white border-t border-gray-200 py-4">
             <nav className="flex flex-col space-y-3 px-4">
-              <Link
-                href="/#service-areas"
-                className="text-gray-700 hover:text-[#f16f21] py-2 text-sm font-medium transition-colors duration-300"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                施工店一覧
-              </Link>
               <Link
                 href="/columns"
                 className="text-gray-700 hover:text-[#f16f21] py-2 text-sm font-medium transition-colors duration-300"
