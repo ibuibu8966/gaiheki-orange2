@@ -83,56 +83,6 @@ async function main() {
 
   console.log(`🧹 期限切れセッション ${deletedSessions.count} 件を削除しました`);
 
-  // デフォルトの料金プラン
-  const defaultFeePlan = await prisma.fee_plans.upsert({
-    where: { id: 1 },
-    update: {},
-    create: {
-      name: 'スタンダードプラン',
-      monthly_fee: 30000,      // 月額30,000円
-      per_order_fee: 5000,     // 受注1件につき5,000円
-      per_project_fee: null,
-      project_fee_rate: 0.05,  // 施工完了金額の5%
-      is_default: true,
-    },
-  });
-
-  console.log('✅ デフォルトの料金プランが作成されました:', {
-    id: defaultFeePlan.id,
-    name: defaultFeePlan.name,
-    monthly_fee: defaultFeePlan.monthly_fee,
-    per_order_fee: defaultFeePlan.per_order_fee,
-    project_fee_rate: defaultFeePlan.project_fee_rate,
-  });
-
-  // システム設定
-  const systemSettings = [
-    {
-      setting_key: 'billing_cycle_closing_day',
-      setting_value: '31',
-      description: '請求締め日（月末）',
-    },
-    {
-      setting_key: 'billing_cycle_payment_day',
-      setting_value: '20',
-      description: '支払期日（翌月20日）',
-    },
-    {
-      setting_key: 'tax_rate',
-      setting_value: '0.10',
-      description: '消費税率（10%）',
-    },
-  ];
-
-  for (const setting of systemSettings) {
-    await prisma.system_settings.upsert({
-      where: { setting_key: setting.setting_key },
-      update: {},
-      create: setting,
-    });
-  }
-
-  console.log('✅ システム設定が作成されました（3件）');
 
   console.log('🎉 Seed完了!');
 
