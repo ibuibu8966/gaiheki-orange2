@@ -253,11 +253,12 @@ const DiagnosisForm = () => {
                   <option value="">選択してください</option>
                   <option value="EXTERIOR_PAINTING">外壁塗装</option>
                   <option value="ROOF_PAINTING">屋根塗装</option>
-                  <option value="EXTERIOR_AND_ROOF">外壁・屋根塗装</option>
-                  <option value="PARTIAL_REPAIR">部分補修</option>
+                  <option value="SCAFFOLDING_WORK">足場工事</option>
                   <option value="WATERPROOFING">防水工事</option>
-                  <option value="SIDING_REPLACEMENT">サイディング張替</option>
-                  <option value="FULL_REPLACEMENT">全面改装</option>
+                  <option value="LARGE_SCALE_WORK">大規模工事</option>
+                  <option value="INTERIOR_WORK">内装工事</option>
+                  <option value="EXTERIOR_WORK">外構工事</option>
+                  <option value="OTHER">その他</option>
                 </select>
               </div>
 

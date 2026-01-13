@@ -12,42 +12,40 @@ import {
 import {
   BarChart,
   Bar,
-  PieChart,
-  Pie,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from 'recharts';
 
 interface KPI {
-  inquiries: number;
-  orders: number;
-  completed: number;
-  revenue: number;
-  unpaid: number;
+  referralCount: number;
+  referralFeeTotal: number;
+  designatedCount: number;
+  depositBalance: number;
+  monthlyDesiredLeads: number;
+  monthlyLeadsCount: number;
 }
 
-interface RevenueTrend {
+interface ReferralTrend {
   month: string;
-  revenue: number;
+  referrals: number;
 }
 
-interface StatusDistribution {
-  inquiries: number;
-  quotations: number;
-  orders: number;
-  in_progress: number;
-  completed: number;
+interface DepositHistoryItem {
+  id: string;
+  amount: number;
+  type: 'DEPOSIT' | 'DEDUCTION';
+  balance: number;
+  description: string | null;
+  createdAt: string;
 }
 
 interface DashboardData {
   kpi: KPI;
-  revenue_trend: RevenueTrend[];
-  status_distribution: StatusDistribution;
+  referral_trend: ReferralTrend[];
+  deposit_history: DepositHistoryItem[];
 }
 
 export default function PartnerDashboardPage() {
@@ -94,18 +92,6 @@ export default function PartnerDashboardPage() {
     );
   }
 
-  // 円グラフの色設定
-  const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
-
-  // ステータス分布を配列に変換
-  const statusCountsArray = dashboardData.status_distribution ? [
-    { status: '問い合わせ', count: dashboardData.status_distribution.inquiries },
-    { status: '見積提出', count: dashboardData.status_distribution.quotations },
-    { status: '受注', count: dashboardData.status_distribution.orders },
-    { status: '施工中', count: dashboardData.status_distribution.in_progress },
-    { status: '完了', count: dashboardData.status_distribution.completed },
-  ].filter(item => item.count > 0) : [];
-
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
@@ -123,206 +109,193 @@ export default function PartnerDashboardPage() {
       </div>
 
       {/* KPIサマリーカード */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-blue-600">
-              問い合わせ件数
+              紹介案件数
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-blue-900">
-              {dashboardData.kpi.inquiries}
+              {dashboardData.kpi.referralCount}
             </p>
             <p className="text-xs text-blue-600 mt-1">件</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-green-50 to-white border-green-100">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-green-600">
-              受注件数
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-green-900">
-              {dashboardData.kpi.orders}
-            </p>
-            <p className="text-xs text-green-600 mt-1">件</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-purple-50 to-white border-purple-100">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-purple-600">
-              施工完了件数
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-purple-900">
-              {dashboardData.kpi.completed}
-            </p>
-            <p className="text-xs text-purple-600 mt-1">件</p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-orange-50 to-white border-orange-100">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-orange-600">
-              売上
+              紹介料合計
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-orange-900">
-              ¥{dashboardData.kpi.revenue.toLocaleString()}
+              ¥{dashboardData.kpi.referralFeeTotal.toLocaleString()}
             </p>
             <p className="text-xs text-orange-600 mt-1">税込</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-red-50 to-white border-red-100">
+        <Card className="bg-gradient-to-br from-green-50 to-white border-green-100">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-red-600">
-              未入金額
+            <CardTitle className="text-sm font-medium text-green-600">
+              保証金残高
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-red-900">
-              ¥{dashboardData.kpi.unpaid.toLocaleString()}
+            <p className="text-3xl font-bold text-green-900">
+              ¥{dashboardData.kpi.depositBalance.toLocaleString()}
             </p>
-            <p className="text-xs text-red-600 mt-1">税込</p>
+            <p className="text-xs text-green-600 mt-1">現在の残高</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-purple-50 to-white border-purple-100">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-purple-600">
+              今月の紹介枠
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-purple-900">
+              {dashboardData.kpi.monthlyLeadsCount}
+              <span className="text-lg font-normal">
+                {dashboardData.kpi.monthlyDesiredLeads > 0 && ` / ${dashboardData.kpi.monthlyDesiredLeads}`}
+              </span>
+            </p>
+            <p className="text-xs text-purple-600 mt-1">件</p>
           </CardContent>
         </Card>
       </div>
 
       {/* グラフエリア */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* 月次売上推移グラフ */}
+        {/* 月次紹介数推移グラフ */}
         <Card>
           <CardHeader>
-            <CardTitle>月次売上推移</CardTitle>
+            <CardTitle>月次紹介数推移</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={dashboardData.revenue_trend}>
+              <BarChart data={dashboardData.referral_trend}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="month"
                   tick={{ fontSize: 12 }}
                   tickFormatter={(value) => {
-                    const [year, month] = value.split('-');
+                    const [, month] = value.split('-');
                     return `${month}月`;
                   }}
                 />
-                <YAxis
-                  tick={{ fontSize: 12 }}
-                  tickFormatter={(value) => `¥${(value / 10000).toFixed(0)}万`}
-                />
+                <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip
-                  formatter={(value: number) => [
-                    `¥${value.toLocaleString()}`,
-                    '売上',
-                  ]}
+                  formatter={(value: number) => [`${value}件`, '紹介数']}
                   labelFormatter={(label) => {
                     const [year, month] = label.split('-');
                     return `${year}年${month}月`;
                   }}
                 />
-                <Bar dataKey="revenue" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="referrals" fill="#3b82f6" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        {/* 案件ステータス別件数グラフ */}
+        {/* 入出金履歴 */}
         <Card>
           <CardHeader>
-            <CardTitle>案件ステータス別件数</CardTitle>
+            <CardTitle>入出金履歴</CardTitle>
           </CardHeader>
           <CardContent>
-            {statusCountsArray.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={statusCountsArray}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ status, count, percent }) =>
-                      `${status}: ${count}件 (${(percent * 100).toFixed(0)}%)`
-                    }
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="count"
+            {dashboardData.deposit_history.length > 0 ? (
+              <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                {dashboardData.deposit_history.map((item) => (
+                  <div
+                    key={item.id}
+                    className={`flex items-center justify-between p-3 rounded-lg ${
+                      item.type === 'DEPOSIT' ? 'bg-green-50' : 'bg-red-50'
+                    }`}
                   >
-                    {statusCountsArray.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value: number, name: string) => [
-                      `${value}件`,
-                      name,
-                    ]}
-                  />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+                    <div>
+                      <p className={`text-sm font-medium ${
+                        item.type === 'DEPOSIT' ? 'text-green-700' : 'text-red-700'
+                      }`}>
+                        {item.type === 'DEPOSIT' ? '入金' : '紹介料'}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(item.createdAt).toLocaleDateString('ja-JP')}
+                      </p>
+                      {item.description && (
+                        <p className="text-xs text-gray-600 mt-1">{item.description}</p>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <p className={`font-semibold ${
+                        item.type === 'DEPOSIT' ? 'text-green-700' : 'text-red-700'
+                      }`}>
+                        {item.type === 'DEPOSIT' ? '+' : '-'}¥{Math.abs(item.amount).toLocaleString()}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        残高: ¥{item.balance.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             ) : (
               <div className="flex items-center justify-center h-[300px] text-gray-500">
-                データがありません
+                入出金履歴がありません
               </div>
             )}
           </CardContent>
         </Card>
       </div>
 
-      {/* 最近のアクティビティ */}
+      {/* クイックリンク */}
       <Card>
         <CardHeader>
-          <CardTitle>最近のアクティビティ</CardTitle>
+          <CardTitle>クイックアクション</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {dashboardData.kpi.inquiries === 0 &&
-            dashboardData.kpi.orders === 0 &&
-            dashboardData.kpi.completed === 0 ? (
-              <p className="text-center text-gray-500 py-8">
-                まだアクティビティがありません
-              </p>
-            ) : (
-              <div className="space-y-2">
-                {dashboardData.kpi.inquiries > 0 && (
-                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                    <span className="text-sm text-blue-700">
-                      新規問い合わせ
-                    </span>
-                    <span className="font-semibold text-blue-900">
-                      {dashboardData.kpi.inquiries}件
-                    </span>
-                  </div>
-                )}
-                {dashboardData.kpi.orders > 0 && (
-                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                    <span className="text-sm text-green-700">受注</span>
-                    <span className="font-semibold text-green-900">
-                      {dashboardData.kpi.orders}件
-                    </span>
-                  </div>
-                )}
-                {dashboardData.kpi.completed > 0 && (
-                  <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
-                    <span className="text-sm text-purple-700">施工完了</span>
-                    <span className="font-semibold text-purple-900">
-                      {dashboardData.kpi.completed}件
-                    </span>
-                  </div>
-                )}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a
+              href="/partner-dashboard/referrals"
+              className="flex items-center justify-between p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+            >
+              <div>
+                <p className="font-medium text-blue-900">購入案件一覧</p>
+                <p className="text-sm text-blue-600">紹介された案件を確認</p>
               </div>
-            )}
+              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+            <a
+              href="/partner-dashboard/profile"
+              className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <div>
+                <p className="font-medium text-gray-900">会社情報</p>
+                <p className="text-sm text-gray-600">プロフィールを編集</p>
+              </div>
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+            <a
+              href="/partner-dashboard/settings"
+              className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <div>
+                <p className="font-medium text-gray-900">設定</p>
+                <p className="text-sm text-gray-600">希望リード数を変更</p>
+              </div>
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
           </div>
         </CardContent>
       </Card>

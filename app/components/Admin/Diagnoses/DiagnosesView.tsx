@@ -59,9 +59,15 @@ const CURRENT_SITUATION_LABELS: Record<string, string> = {
 const CONSTRUCTION_TYPE_LABELS: Record<string, string> = {
   EXTERIOR_PAINTING: '外壁塗装',
   ROOF_PAINTING: '屋根塗装',
+  SCAFFOLDING_WORK: '足場工事',
+  WATERPROOFING: '防水工事',
+  LARGE_SCALE_WORK: '大規模工事',
+  INTERIOR_WORK: '内装工事',
+  EXTERIOR_WORK: '外構工事',
+  OTHER: 'その他',
+  // 旧データ用
   EXTERIOR_AND_ROOF: '外壁・屋根塗装',
   SIDING_REPLACEMENT: 'サイディング張替',
-  WATERPROOFING: '防水工事',
   PARTIAL_REPAIR: '部分補修',
   FULL_REPLACEMENT: '全面張替'
 };
