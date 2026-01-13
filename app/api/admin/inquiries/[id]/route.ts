@@ -23,14 +23,6 @@ export async function GET(
 
     const inquiry = await prisma.inquiries.findUnique({
       where: { id: inquiryId },
-      include: {
-        customers: {
-          select: {
-            customer_name: true,
-            customer_email: true,
-          },
-        },
-      },
     });
 
     if (!inquiry) {
@@ -45,9 +37,9 @@ export async function GET(
 
     const formattedInquiry = {
       id: inquiry.id,
-      customerName: inquiry.customers.customer_name,
-      customerEmail: inquiry.customers.customer_email,
-      customerPhone: "",
+      customerName: inquiry.customer_name,
+      customerEmail: inquiry.customer_email,
+      customerPhone: inquiry.customer_phone || "",
       subject: inquiry.subject,
       content: inquiry.inquiry_content,
       status: inquiry.inquiry_status,
@@ -114,21 +106,13 @@ export async function PATCH(
     const updatedInquiry = await prisma.inquiries.update({
       where: { id: inquiryId },
       data: updateData,
-      include: {
-        customers: {
-          select: {
-            customer_name: true,
-            customer_email: true,
-          },
-        },
-      },
     });
 
     const formattedInquiry = {
       id: updatedInquiry.id,
-      customerName: updatedInquiry.customers.customer_name,
-      customerEmail: updatedInquiry.customers.customer_email,
-      customerPhone: "",
+      customerName: updatedInquiry.customer_name,
+      customerEmail: updatedInquiry.customer_email,
+      customerPhone: updatedInquiry.customer_phone || "",
       subject: updatedInquiry.subject,
       content: updatedInquiry.inquiry_content,
       status: updatedInquiry.inquiry_status,

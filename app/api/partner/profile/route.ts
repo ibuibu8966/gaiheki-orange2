@@ -22,7 +22,12 @@ export async function GET(request: NextRequest) {
       where: { id: session.partnerId },
       include: {
         partner_details: true,
-        partner_prefectures: true
+        partner_prefectures: true,
+        _count: {
+          select: {
+            referrals: true
+          }
+        }
       }
     });
 
@@ -32,59 +37,6 @@ export async function GET(request: NextRequest) {
         error: '加盟店情報が見つかりません'
       }, { status: 404 });
     }
-
-    // レビューがある完了案件を取得（reviews/route.tsと同じロジック）
-    const completedOrdersWithReviews = await prisma.orders.findMany({
-      where: {
-        order_status: 'COMPLETED',
-        quotations: {
-          partner_id: partner.id,
-          is_selected: true,
-          diagnosis_requests: {
-            customers: {
-              customer_rating: {
-                not: null
-              }
-            }
-          }
-        }
-      },
-      include: {
-        quotations: {
-          include: {
-            diagnosis_requests: {
-              include: {
-                customers: {
-                  select: {
-                    customer_rating: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    });
-
-    // レビューの平均評価を計算
-    const ratings = completedOrdersWithReviews
-      .map(order => order.quotations.diagnosis_requests.customers.customer_rating)
-      .filter((rating): rating is number => rating !== null);
-
-    const averageRating = ratings.length > 0
-      ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length
-      : 0;
-
-    // 施工完了件数を計算（レビューの有無に関わらず）
-    const completedCount = await prisma.orders.count({
-      where: {
-        quotations: {
-          partner_id: partner.id,
-          is_selected: true
-        },
-        order_status: 'COMPLETED'
-      }
-    });
 
     const profileData = {
       id: partner.id,
@@ -99,16 +51,17 @@ export async function GET(request: NextRequest) {
       businessContent: partner.partner_details?.business_description || '',
       appeal: partner.partner_details?.appeal_text || '',
       loginEmail: partner.login_email,
-      rating: parseFloat(averageRating.toFixed(1)),
-      reviewCount: ratings.length,
-      workCount: completedCount,
+      rating: 0,
+      reviewCount: 0,
+      workCount: partner._count.referrals,
       serviceAreas: partner.partner_prefectures.map(pp => pp.supported_prefecture),
       invoiceRegistrationNumber: partner.partner_details?.invoice_registration_number || '',
       bankName: partner.partner_details?.bank_name || '',
       bankBranchName: partner.partner_details?.bank_branch_name || '',
       bankAccountType: partner.partner_details?.bank_account_type || '',
       bankAccountNumber: partner.partner_details?.bank_account_number || '',
-      bankAccountHolder: partner.partner_details?.bank_account_holder || ''
+      bankAccountHolder: partner.partner_details?.bank_account_holder || '',
+      depositBalance: partner.deposit_balance
     };
 
     return NextResponse.json({

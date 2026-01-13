@@ -8,64 +8,38 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { name, phone, email, prefecture, floorArea, currentSituation, constructionType, designatedPartnerId } = body;
 
-    if (!name || !phone || !email || !prefecture) {
+    if (!name || !phone || !prefecture) {
       return NextResponse.json(
         { success: false, error: 'Required fields are missing' },
         { status: 400 }
       );
     }
 
-    // 顧客を作成または取得
-    let customer = await prisma.customers.findFirst({
-      where: { customer_email: email }
-    });
-
-    if (!customer) {
-      customer = await prisma.customers.create({
-        data: {
-          partner_id: designatedPartnerId || 1,
-          customer_name: name,
-          customer_phone: phone,
-          customer_email: email,
-          construction_address: prefecture,
-          customer_construction_type: constructionType || 'EXTERIOR_PAINTING',
-          construction_amount: 0,
-          customer_status: 'ORDERED',
-          updated_at: new Date()
-        }
-      });
-    }
-
     // 診断番号を生成
     const diagnosisNumber = await generateDiagnosisNumber();
 
-    // 診断依頼を作成（業者指定があればステータスをDESIGNATEDに）
-    const diagnosisData: any = {
-      diagnosis_number: diagnosisNumber,
-      customer_id: customer.id,
-      prefecture: prefecture,
-      floor_area: floorArea || 'UNKNOWN',
-      current_situation: currentSituation || 'CONSIDERING_CONSTRUCTION',
-      construction_type: constructionType || 'EXTERIOR_PAINTING',
-      status: designatedPartnerId ? 'DESIGNATED' : 'RECRUITING',
-      updated_at: new Date()
-    };
-
-    // designated_partner_idフィールドが存在する場合のみ追加
-    if (designatedPartnerId) {
-      diagnosisData.designated_partner_id = designatedPartnerId;
-    }
-
+    // 診断依頼を作成（顧客情報は直接保存）
     const diagnosis = await prisma.diagnosis_requests.create({
-      data: diagnosisData
+      data: {
+        diagnosis_number: diagnosisNumber,
+        customer_name: name,
+        customer_phone: phone,
+        customer_email: email || null,
+        prefecture: prefecture,
+        floor_area: floorArea || 'UNKNOWN',
+        current_situation: currentSituation || 'CONSIDERING_CONSTRUCTION',
+        construction_type: constructionType || 'EXTERIOR_PAINTING',
+        status: designatedPartnerId ? 'DESIGNATED' : 'RECRUITING',
+        designated_partner_id: designatedPartnerId || null,
+        updated_at: new Date()
+      }
     });
 
     return NextResponse.json({
       success: true,
       data: {
         id: diagnosis.id,
-        diagnosisNumber: diagnosis.diagnosis_number,
-        customerId: customer.id
+        diagnosisNumber: diagnosis.diagnosis_number
       }
     });
 
@@ -103,29 +77,19 @@ export async function GET(request: Request) {
       console.log('Filtering by status:', status);
     }
 
-    // 検索条件
+    // 検索条件（顧客情報はdiagnosis_requestsに直接保存）
     if (search) {
-      where.customers = {
-        OR: [
-          { customer_name: { contains: search, mode: 'insensitive' } },
-          { customer_email: { contains: search, mode: 'insensitive' } },
-          { customer_phone: { contains: search, mode: 'insensitive' } }
-        ]
-      };
+      where.OR = [
+        { customer_name: { contains: search, mode: 'insensitive' } },
+        { customer_email: { contains: search, mode: 'insensitive' } },
+        { customer_phone: { contains: search, mode: 'insensitive' } }
+      ];
     }
 
     console.log('Query where condition:', JSON.stringify(where));
     const diagnoses = await prisma.diagnosis_requests.findMany({
       where,
       include: {
-        customers: {
-          select: {
-            customer_name: true,
-            customer_email: true,
-            customer_phone: true,
-            construction_address: true
-          }
-        },
         designated_partner: {
           include: {
             partner_details: {
@@ -135,9 +99,9 @@ export async function GET(request: Request) {
             }
           }
         },
-        quotations: {
+        referrals: {
           include: {
-            partners: {
+            partner: {
               include: {
                 partner_details: {
                   select: {
@@ -156,41 +120,28 @@ export async function GET(request: Request) {
 
     console.log(`Found ${diagnoses.length} diagnoses`);
     const formattedDiagnoses = diagnoses.map(diag => {
-      // 見積もりを金額順にソート
-      const sortedQuotations = [...diag.quotations].sort((a, b) =>
-        a.quotation_amount - b.quotation_amount
-      );
-
-      // 最安値を取得
-      const lowestAmount = sortedQuotations.length > 0
-        ? sortedQuotations[0].quotation_amount
-        : null;
-
       return {
         id: diag.id,
         diagnosisNumber: diag.diagnosis_number,
-        customerId: diag.customer_id,
-        customerName: diag.customers.customer_name,
-        customerEmail: diag.customers.customer_email,
-        customerPhone: diag.customers.customer_phone,
-        address: diag.customers.construction_address,
+        customerName: diag.customer_name,
+        customerEmail: diag.customer_email,
+        customerPhone: diag.customer_phone,
+        address: diag.customer_address,
         prefecture: diag.prefecture,
         floorArea: diag.floor_area,
         currentSituation: diag.current_situation,
         constructionType: diag.construction_type,
         status: diag.status,
         statusLabel: getStatusLabel(diag.status),
-        designatedPartnerId: (diag as any).designated_partner_id || null,
-        designatedPartnerName: (diag as any).designated_partner?.partner_details?.company_name || null,
-        quotationCount: sortedQuotations.length,
-        quotations: sortedQuotations.map(q => ({
-          id: q.id,
-          partnerId: q.partner_id,
-          partnerName: q.partners.partner_details?.company_name || '未設定',
-          amount: q.quotation_amount,
-          appealText: q.appeal_text,
-          isSelected: q.is_selected,
-          isLowest: lowestAmount !== null && q.quotation_amount === lowestAmount
+        designatedPartnerId: diag.designated_partner_id || null,
+        designatedPartnerName: diag.designated_partner?.partner_details?.company_name || null,
+        referralCount: diag.referrals.length,
+        referrals: diag.referrals.map(r => ({
+          id: r.id,
+          partnerId: r.partner_id,
+          partnerName: r.partner.partner_details?.company_name || '未設定',
+          referralFee: r.referral_fee,
+          emailSent: r.email_sent
         })),
         createdAt: diag.created_at.toISOString().split('T')[0]
       };

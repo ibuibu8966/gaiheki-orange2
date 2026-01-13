@@ -15,33 +15,18 @@ export async function GET(request: Request) {
       where.inquiry_status = status;
     }
 
-    // 検索条件
+    // 検索条件（顧客情報はinquiriesテーブルに直接保存）
     if (search) {
       where.OR = [
         { subject: { contains: search, mode: 'insensitive' } },
         { inquiry_content: { contains: search, mode: 'insensitive' } },
-        {
-          customers: {
-            OR: [
-              { customer_name: { contains: search, mode: 'insensitive' } },
-              { customer_email: { contains: search, mode: 'insensitive' } }
-            ]
-          }
-        }
+        { customer_name: { contains: search, mode: 'insensitive' } },
+        { customer_email: { contains: search, mode: 'insensitive' } }
       ];
     }
 
     const inquiries = await prisma.inquiries.findMany({
       where,
-      include: {
-        customers: {
-          select: {
-            customer_name: true,
-            customer_email: true,
-            customer_phone: true
-          }
-        }
-      },
       orderBy: {
         created_at: 'desc'
       }
@@ -49,10 +34,9 @@ export async function GET(request: Request) {
 
     const formattedInquiries = inquiries.map(inquiry => ({
       id: inquiry.id,
-      customerId: inquiry.customer_id,
-      customerName: inquiry.customers.customer_name,
-      customerEmail: inquiry.customers.customer_email,
-      customerPhone: inquiry.customers.customer_phone,
+      customerName: inquiry.customer_name,
+      customerEmail: inquiry.customer_email,
+      customerPhone: inquiry.customer_phone,
       subject: inquiry.subject,
       content: inquiry.inquiry_content,
       status: inquiry.inquiry_status,
@@ -88,39 +72,19 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { name, phone, email, subject, message } = body;
 
-    if (!name || !phone || !email || !subject || !message) {
+    if (!name || !email || !subject || !message) {
       return NextResponse.json(
         { success: false, error: 'All fields are required' },
         { status: 400 }
       );
     }
 
-    // 顧客を作成または取得
-    let customer = await prisma.customers.findFirst({
-      where: { customer_email: email }
-    });
-
-    if (!customer) {
-      // 新規顧客を作成（partner_idは1をデフォルトとする）
-      customer = await prisma.customers.create({
-        data: {
-          partner_id: 1,
-          customer_name: name,
-          customer_phone: phone,
-          customer_email: email,
-          construction_address: '',
-          customer_construction_type: 'EXTERIOR_PAINTING',
-          construction_amount: 0,
-          customer_status: 'ORDERED',
-          updated_at: new Date()
-        }
-      });
-    }
-
-    // 問い合わせを作成
+    // 問い合わせを作成（顧客情報は直接保存）
     const inquiry = await prisma.inquiries.create({
       data: {
-        customer_id: customer.id,
+        customer_name: name,
+        customer_email: email,
+        customer_phone: phone || null,
         subject: subject,
         inquiry_content: message,
         inquiry_status: 'PENDING',
@@ -131,8 +95,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       data: {
-        id: inquiry.id,
-        customerId: customer.id
+        id: inquiry.id
       }
     });
 

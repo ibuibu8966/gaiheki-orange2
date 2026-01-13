@@ -43,112 +43,18 @@ export async function GET(request: NextRequest) {
         dateFrom = new Date(dateTo.getFullYear(), dateTo.getMonth(), 1);
     }
 
-    // 問い合わせ件数（診断依頼数）
-    const inquiries = await prisma.diagnosis_requests.count({
-      where: {
-        designated_partner_id: partnerId,
-        created_at: {
-          gte: dateFrom,
-          lte: dateTo,
-        },
-      },
+    // パートナー情報（保証金残高を含む）
+    const partner = await prisma.partners.findUnique({
+      where: { id: partnerId },
+      select: {
+        deposit_balance: true,
+        monthly_desired_leads: true,
+        monthly_leads_count: true
+      }
     });
 
-    // 受注件数
-    const orders = await prisma.orders.count({
-      where: {
-        quotations: {
-          partner_id: partnerId,
-        },
-        order_date: {
-          gte: dateFrom,
-          lte: dateTo,
-        },
-      },
-    });
-
-    // 施工完了件数
-    const completed = await prisma.orders.count({
-      where: {
-        quotations: {
-          partner_id: partnerId,
-        },
-        order_status: {
-          in: ['COMPLETED', 'REVIEW_COMPLETED'],
-        },
-        completion_date: {
-          gte: dateFrom,
-          lte: dateTo,
-        },
-      },
-    });
-
-    // 売上（顧客への請求額合計）
-    const revenueData = await prisma.customer_invoices.aggregate({
-      where: {
-        order: {
-          quotations: {
-            partner_id: partnerId,
-          },
-        },
-        created_at: {
-          gte: dateFrom,
-          lte: dateTo,
-        },
-      },
-      _sum: {
-        grand_total: true,
-      },
-    });
-
-    // 未入金額
-    const unpaidData = await prisma.customer_invoices.aggregate({
-      where: {
-        order: {
-          quotations: {
-            partner_id: partnerId,
-          },
-        },
-        status: {
-          in: ['UNPAID', 'OVERDUE'],
-        },
-      },
-      _sum: {
-        grand_total: true,
-      },
-    });
-
-    // 過去12ヶ月の月次売上推移
-    const revenueTrend = [];
-    for (let i = 11; i >= 0; i--) {
-      const monthStart = new Date(dateTo.getFullYear(), dateTo.getMonth() - i, 1);
-      const monthEnd = new Date(dateTo.getFullYear(), dateTo.getMonth() - i + 1, 0);
-
-      const monthRevenue = await prisma.customer_invoices.aggregate({
-        where: {
-          order: {
-            quotations: {
-              partner_id: partnerId,
-            },
-          },
-          created_at: {
-            gte: monthStart,
-            lte: monthEnd,
-          },
-        },
-        _sum: {
-          grand_total: true,
-        },
-      });
-
-      revenueTrend.push({
-        month: monthStart.toISOString().slice(0, 7), // YYYY-MM形式
-        revenue: monthRevenue._sum.grand_total || 0,
-      });
-    }
-
-    // ステータス別分布（簡易版）
-    const quotationsCount = await prisma.quotations.count({
+    // 紹介数（期間内）
+    const referralCount = await prisma.referral.count({
       where: {
         partner_id: partnerId,
         created_at: {
@@ -158,37 +64,88 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const inProgressCount = await prisma.orders.count({
+    // 紹介料合計（期間内）
+    const referralFeeData = await prisma.referral.aggregate({
       where: {
-        quotations: {
-          partner_id: partnerId,
+        partner_id: partnerId,
+        created_at: {
+          gte: dateFrom,
+          lte: dateTo,
         },
-        order_status: 'IN_PROGRESS',
-        order_date: {
+      },
+      _sum: {
+        referral_fee: true,
+      },
+    });
+
+    // 診断依頼数（指定業者として）
+    const designatedCount = await prisma.diagnosis_requests.count({
+      where: {
+        designated_partner_id: partnerId,
+        created_at: {
           gte: dateFrom,
           lte: dateTo,
         },
       },
     });
 
+    // 過去12ヶ月の月次紹介数推移
+    const referralTrend = [];
+    for (let i = 11; i >= 0; i--) {
+      const monthStart = new Date(dateTo.getFullYear(), dateTo.getMonth() - i, 1);
+      const monthEnd = new Date(dateTo.getFullYear(), dateTo.getMonth() - i + 1, 0);
+
+      const monthReferrals = await prisma.referral.count({
+        where: {
+          partner_id: partnerId,
+          created_at: {
+            gte: monthStart,
+            lte: monthEnd,
+          },
+        },
+      });
+
+      referralTrend.push({
+        month: monthStart.toISOString().slice(0, 7), // YYYY-MM形式
+        referrals: monthReferrals,
+      });
+    }
+
+    // 最近の入金履歴
+    const depositHistory = await prisma.depositHistory.findMany({
+      where: { partner_id: partnerId },
+      orderBy: { created_at: 'desc' },
+      take: 10,
+      select: {
+        id: true,
+        amount: true,
+        type: true,
+        balance: true,
+        description: true,
+        created_at: true,
+      }
+    });
+
     return NextResponse.json({
       success: true,
       data: {
         kpi: {
-          inquiries,
-          orders,
-          completed,
-          revenue: revenueData._sum.grand_total || 0,
-          unpaid: unpaidData._sum.grand_total || 0,
+          referralCount,
+          referralFeeTotal: referralFeeData._sum.referral_fee || 0,
+          designatedCount,
+          depositBalance: partner?.deposit_balance || 0,
+          monthlyDesiredLeads: partner?.monthly_desired_leads || 0,
+          monthlyLeadsCount: partner?.monthly_leads_count || 0,
         },
-        revenue_trend: revenueTrend,
-        status_distribution: {
-          inquiries,
-          quotations: quotationsCount,
-          orders,
-          in_progress: inProgressCount,
-          completed,
-        },
+        referral_trend: referralTrend,
+        deposit_history: depositHistory.map(h => ({
+          id: h.id,
+          amount: h.amount,
+          type: h.type,
+          balance: h.balance,
+          description: h.description,
+          createdAt: h.created_at.toISOString(),
+        })),
       },
     });
   } catch (error) {

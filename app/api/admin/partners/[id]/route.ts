@@ -15,20 +15,12 @@ export async function GET(
       include: {
         partner_details: true,
         partner_prefectures: true,
-        customers: {
+        referrals: {
           select: {
             id: true,
-            customer_name: true,
-            customer_rating: true,
-            customer_review: true,
-            customer_review_title: true
-          }
-        },
-        quotations: {
-          select: {
-            id: true,
-            quotation_amount: true,
-            is_selected: true
+            referral_fee: true,
+            email_sent: true,
+            created_at: true
           }
         }
       }
@@ -40,12 +32,6 @@ export async function GET(
         { status: 404 }
       );
     }
-
-    // レビュー統計を計算
-    const reviews = partner.customers.filter(c => c.customer_rating);
-    const averageRating = reviews.length > 0
-      ? reviews.reduce((sum, c) => sum + (c.customer_rating || 0), 0) / reviews.length
-      : 0;
 
     const formattedPartner = {
       id: partner.id,
@@ -70,19 +56,9 @@ export async function GET(
       prefectures: partner.partner_prefectures.map(p => p.supported_prefecture),
 
       // 統計情報
-      customerCount: partner.customers.length,
-      quotationCount: partner.quotations.length,
-      selectedQuotationCount: partner.quotations.filter(q => q.is_selected).length,
-      reviewCount: reviews.length,
-      averageRating: Math.round(averageRating * 10) / 10,
-
-      // レビュー
-      reviews: reviews.map(c => ({
-        customerName: c.customer_name,
-        rating: c.customer_rating,
-        title: c.customer_review_title,
-        review: c.customer_review
-      }))
+      depositBalance: partner.deposit_balance,
+      referralCount: partner.referrals.length,
+      totalReferralFee: partner.referrals.reduce((sum, r) => sum + r.referral_fee, 0)
     };
 
     return NextResponse.json({

@@ -40,8 +40,7 @@ export async function GET(request: Request) {
         partner_prefectures: true,
         _count: {
           select: {
-            customers: true,
-            quotations: true
+            referrals: true
           }
         }
       },
@@ -64,8 +63,8 @@ export async function GET(request: Request) {
       detailsStatus: partner.partner_details?.partners_status || 'INACTIVE',
       registrationDate: partner.created_at.toISOString().split('T')[0],
       lastLoginAt: partner.last_login_at?.toISOString() || null,
-      customerCount: partner._count.customers,
-      quotationCount: partner._count.quotations
+      depositBalance: partner.deposit_balance,
+      referralCount: partner._count.referrals
     }));
 
     return NextResponse.json({
@@ -327,74 +326,9 @@ export async function DELETE(request: Request) {
     const id = parseInt(partnerId);
 
     // トランザクションで関連データを削除してから加盟店を削除
+    // Prismaスキーマでカスケード削除が設定されているため、シンプルに削除可能
     await prisma.$transaction(async (tx) => {
-      // 1. 顧客に紐づく診断依頼の見積もりを削除
-      const customers = await tx.customers.findMany({
-        where: { partner_id: id },
-        select: { id: true }
-      });
-
-      if (customers.length > 0) {
-        const customerIds = customers.map(c => c.id);
-
-        // 診断依頼のIDを取得
-        const diagnosisRequests = await tx.diagnosis_requests.findMany({
-          where: { customer_id: { in: customerIds } },
-          select: { id: true }
-        });
-
-        const diagnosisIds = diagnosisRequests.map(d => d.id);
-
-        if (diagnosisIds.length > 0) {
-          // 見積もりに紐づく注文を削除
-          await tx.orders.deleteMany({
-            where: {
-              quotations: {
-                diagnosis_request_id: { in: diagnosisIds }
-              }
-            }
-          });
-
-          // 見積もりを削除
-          await tx.quotations.deleteMany({
-            where: { diagnosis_request_id: { in: diagnosisIds } }
-          });
-        }
-
-        // 診断依頼を削除
-        await tx.diagnosis_requests.deleteMany({
-          where: { customer_id: { in: customerIds } }
-        });
-
-        // 問い合わせを削除
-        await tx.inquiries.deleteMany({
-          where: { customer_id: { in: customerIds } }
-        });
-
-        // 顧客を削除
-        await tx.customers.deleteMany({
-          where: { partner_id: id }
-        });
-      }
-
-      // 2. 加盟店の見積もりに紐づく注文を削除
-      const quotations = await tx.quotations.findMany({
-        where: { partner_id: id },
-        select: { id: true }
-      });
-
-      if (quotations.length > 0) {
-        await tx.orders.deleteMany({
-          where: { quotation_id: { in: quotations.map(q => q.id) } }
-        });
-      }
-
-      // 3. 加盟店の見積もりを削除
-      await tx.quotations.deleteMany({
-        where: { partner_id: id }
-      });
-
-      // 4. 加盟店の詳細と都道府県を削除（これらはカスケード削除されるが明示的に削除）
+      // 加盟店の詳細と都道府県を削除（カスケード削除されるが明示的に削除）
       await tx.partner_prefectures.deleteMany({
         where: { partner_id: id }
       });
@@ -403,12 +337,7 @@ export async function DELETE(request: Request) {
         where: { partner_id: id }
       });
 
-      // 5. 加盟店申請関連を削除
-      await tx.partner_application_prefectures.deleteMany({
-        where: { partner_id: id }
-      });
-
-      // 6. 最後に加盟店を削除
+      // 最後に加盟店を削除（referrals, deposit_histories, deposit_requestsはカスケード削除）
       await tx.partners.delete({
         where: { id }
       });
