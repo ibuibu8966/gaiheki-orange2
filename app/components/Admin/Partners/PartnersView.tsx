@@ -14,8 +14,8 @@ interface Partner {
   status: string;
   isActive: boolean;
   registrationDate: string;
-  customerCount: number;
-  quotationCount: number;
+  depositBalance: number;
+  referralCount: number;
 }
 
 const PREFECTURE_NAMES: Record<string, string> = {

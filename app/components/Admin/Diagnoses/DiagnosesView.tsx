@@ -2,33 +2,40 @@
 
 import { useState, useEffect } from "react";
 
-interface Quotation {
-  id: number;
+interface Referral {
+  id: string;
   partnerId: number;
   partnerName: string;
-  amount: number;
-  appealText: string | null;
-  isSelected: boolean;
-  isLowest: boolean;
+  referralFee: number;
+  emailSent: boolean;
 }
 
 interface Diagnosis {
   id: number;
   diagnosisNumber: string;
-  customerId: number;
   customerName: string;
-  customerEmail: string;
+  customerEmail: string | null;
   customerPhone: string;
-  address: string;
+  address: string | null;
   prefecture: string;
   floorArea: string;
   currentSituation: string;
   constructionType: string;
   status: string;
   statusLabel: string;
-  quotationCount: number;
-  quotations: Quotation[];
+  referralCount: number;
+  referrals: Referral[];
   createdAt: string;
+  referralFee?: number;
+  adminNote?: string;
+}
+
+interface Partner {
+  id: number;
+  companyName: string;
+  prefectures: string[];
+  depositBalance: number;
+  isActive: boolean;
 }
 
 // ラベル変換用マッピング
@@ -45,7 +52,6 @@ const FLOOR_AREA_LABELS: Record<string, string> = {
   FROM_251_TO_300: '251〜300㎡',
   FROM_301_TO_500: '301〜500㎡',
   OVER_501: '501㎡以上',
-  OVER_300: '300㎡以上'
 };
 
 const CURRENT_SITUATION_LABELS: Record<string, string> = {
@@ -65,7 +71,6 @@ const CONSTRUCTION_TYPE_LABELS: Record<string, string> = {
   INTERIOR_WORK: '内装工事',
   EXTERIOR_WORK: '外構工事',
   OTHER: 'その他',
-  // 旧データ用
   EXTERIOR_AND_ROOF: '外壁・屋根塗装',
   SIDING_REPLACEMENT: 'サイディング張替',
   PARTIAL_REPAIR: '部分補修',
@@ -92,9 +97,13 @@ const DiagnosesView = () => {
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState<Diagnosis | null>(null);
-  const [showQuotationModal, setShowQuotationModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showReferralModal, setShowReferralModal] = useState(false);
+  const [partners, setPartners] = useState<Partner[]>([]);
+  const [loadingPartners, setLoadingPartners] = useState(false);
+  const [referralFee, setReferralFee] = useState(30000);
+  const [submittingReferral, setSubmittingReferral] = useState(false);
 
-  // データ取得
   useEffect(() => {
     fetchDiagnoses();
   }, [diagnosisFilter]);
@@ -107,11 +116,8 @@ const DiagnosesView = () => {
         params.append('status', diagnosisFilter);
       }
 
-      const url = `/api/admin/diagnoses?${params}`;
-      console.log('Fetching diagnoses with filter:', diagnosisFilter, 'URL:', url);
-      const response = await fetch(url);
+      const response = await fetch(`/api/admin/diagnoses?${params}`);
       const result = await response.json();
-      console.log('Diagnoses result:', result);
 
       if (result.success) {
         setDiagnoses(result.data);
@@ -123,37 +129,78 @@ const DiagnosesView = () => {
     }
   };
 
-  // 業者決定処理
-  const handleDecidePartner = async (diagnosisId: number, quotationId: number) => {
-    if (!confirm('この業者に決定しますか？')) return;
+  const fetchPartners = async (prefecture: string) => {
+    try {
+      setLoadingPartners(true);
+      const response = await fetch('/api/admin/partners');
+      const result = await response.json();
+
+      if (result.success) {
+        // 対応都道府県でフィルタ & アクティブなパートナーのみ
+        const filteredPartners = result.data.filter((p: Partner) =>
+          p.isActive && p.prefectures.includes(prefecture)
+        );
+        setPartners(filteredPartners);
+      }
+    } catch (error) {
+      console.error('加盟店取得エラー:', error);
+    } finally {
+      setLoadingPartners(false);
+    }
+  };
+
+  const openDetailModal = (diagnosis: Diagnosis) => {
+    setSelectedDiagnosis(diagnosis);
+    setShowDetailModal(true);
+  };
+
+  const openReferralModal = async (diagnosis: Diagnosis) => {
+    setSelectedDiagnosis(diagnosis);
+    setReferralFee(diagnosis.referralFee || 30000);
+    await fetchPartners(diagnosis.prefecture);
+    setShowReferralModal(true);
+  };
+
+  const handleCreateReferral = async (partnerId: number) => {
+    if (!selectedDiagnosis) return;
+
+    // 既に紹介済みかチェック
+    const alreadyReferred = selectedDiagnosis.referrals.some(r => r.partnerId === partnerId);
+    if (alreadyReferred) {
+      alert('この加盟店には既に紹介済みです');
+      return;
+    }
+
+    if (!confirm(`この加盟店に紹介しますか？\n紹介料: ¥${referralFee.toLocaleString()}`)) return;
 
     try {
-      const response = await fetch(`/api/admin/diagnoses/${diagnosisId}/decide`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ quotationId }),
+      setSubmittingReferral(true);
+      const response = await fetch('/api/admin/referrals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          diagnosisId: selectedDiagnosis.id,
+          partnerId,
+          referralFee,
+        }),
       });
 
       const result = await response.json();
 
       if (result.success) {
-        alert('業者を決定しました');
-        setShowQuotationModal(false);
+        alert('紹介を作成しました');
+        setShowReferralModal(false);
+        setShowDetailModal(false);
         fetchDiagnoses();
       } else {
-        alert('業者決定に失敗しました: ' + result.error);
+        alert('紹介作成に失敗しました: ' + result.error);
       }
     } catch (error) {
-      console.error('業者決定エラー:', error);
-      alert('業者決定に失敗しました');
+      console.error('紹介作成エラー:', error);
+      alert('紹介作成に失敗しました');
+    } finally {
+      setSubmittingReferral(false);
     }
-  };
-
-  const openQuotationModal = (diagnosis: Diagnosis) => {
-    setSelectedDiagnosis(diagnosis);
-    setShowQuotationModal(true);
   };
 
   return (
@@ -162,15 +209,15 @@ const DiagnosesView = () => {
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-gray-900">診断管理</h2>
         </div>
-        
+
         {/* ステータスフィルタータブ */}
         <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
           <div className="flex space-x-2">
             {[
               { value: "all", label: "すべて" },
               { value: "DESIGNATED", label: "業者指定" },
-              { value: "RECRUITING", label: "見積もり募集中" },
-              { value: "COMPARING", label: "見積もり比較中" },
+              { value: "RECRUITING", label: "紹介募集中" },
+              { value: "COMPARING", label: "紹介中" },
               { value: "DECIDED", label: "業者決定" },
             ].map((filter) => (
               <button
@@ -195,10 +242,10 @@ const DiagnosesView = () => {
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">診断ID</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">顧客名</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">延床面積</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">現在の状況</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">都道府県</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">工事箇所</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">診断依頼日</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">紹介数</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">ステータス</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">操作</th>
               </tr>
@@ -226,16 +273,18 @@ const DiagnosesView = () => {
                       {diagnosis.customerName}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {FLOOR_AREA_LABELS[diagnosis.floorArea] || diagnosis.floorArea}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {CURRENT_SITUATION_LABELS[diagnosis.currentSituation] || diagnosis.currentSituation}
+                      {PREFECTURE_LABELS[diagnosis.prefecture] || diagnosis.prefecture}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {CONSTRUCTION_TYPE_LABELS[diagnosis.constructionType] || diagnosis.constructionType}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {diagnosis.createdAt}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span className={`font-semibold ${diagnosis.referralCount > 0 ? 'text-blue-600' : 'text-gray-400'}`}>
+                        {diagnosis.referralCount}件
+                      </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-3 py-1 text-xs font-medium rounded-md ${
@@ -245,12 +294,12 @@ const DiagnosesView = () => {
                         diagnosis.status === "DECIDED" ? "bg-green-100 text-green-800" :
                         "bg-gray-100 text-gray-800"
                       }`}>
-                        {diagnosis.statusLabel} ({diagnosis.quotationCount})
+                        {diagnosis.statusLabel}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button
-                        onClick={() => openQuotationModal(diagnosis)}
+                        onClick={() => openDetailModal(diagnosis)}
                         className="text-blue-600 hover:text-blue-900"
                       >
                         詳細を見る
@@ -264,33 +313,39 @@ const DiagnosesView = () => {
         </div>
       </div>
 
-      {/* 見積もり詳細モーダル */}
-      {showQuotationModal && selectedDiagnosis && (
+      {/* 案件詳細モーダル */}
+      {showDetailModal && selectedDiagnosis && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto m-4">
             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
               <h3 className="text-xl font-bold text-gray-900">
-                見積もり詳細 - {selectedDiagnosis.diagnosisNumber}
+                案件詳細 - {selectedDiagnosis.diagnosisNumber}
               </h3>
               <button
-                onClick={() => setShowQuotationModal(false)}
-                className="text-gray-400 hover:text-gray-900"
+                onClick={() => setShowDetailModal(false)}
+                className="text-gray-400 hover:text-gray-900 text-2xl"
               >
-                ✕
+                ×
               </button>
             </div>
 
             <div className="px-6 py-4">
+              {/* 顧客情報 */}
               <div className="mb-6">
                 <h4 className="font-semibold text-gray-900 mb-2">顧客情報</h4>
                 <div className="bg-gray-50 p-4 rounded-md space-y-2 text-gray-900">
                   <p><span className="font-medium">氏名:</span> {selectedDiagnosis.customerName}</p>
-                  <p><span className="font-medium">メール:</span> {selectedDiagnosis.customerEmail}</p>
                   <p><span className="font-medium">電話:</span> {selectedDiagnosis.customerPhone}</p>
-                  <p><span className="font-medium">住所:</span> {selectedDiagnosis.address}</p>
+                  {selectedDiagnosis.customerEmail && (
+                    <p><span className="font-medium">メール:</span> {selectedDiagnosis.customerEmail}</p>
+                  )}
+                  {selectedDiagnosis.address && (
+                    <p><span className="font-medium">住所:</span> {selectedDiagnosis.address}</p>
+                  )}
                 </div>
               </div>
 
+              {/* 診断情報 */}
               <div className="mb-6">
                 <h4 className="font-semibold text-gray-900 mb-2">診断情報</h4>
                 <div className="bg-gray-50 p-4 rounded-md space-y-2 text-gray-900">
@@ -301,64 +356,52 @@ const DiagnosesView = () => {
                 </div>
               </div>
 
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-4">
-                  見積もり一覧 ({selectedDiagnosis.quotationCount}件)
-                </h4>
+              {/* 紹介済み加盟店 */}
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-2">
+                  <h4 className="font-semibold text-gray-900">
+                    紹介済み加盟店 ({selectedDiagnosis.referralCount}件)
+                  </h4>
+                  {selectedDiagnosis.status !== 'DECIDED' && selectedDiagnosis.status !== 'CANCELLED' && (
+                    <button
+                      onClick={() => openReferralModal(selectedDiagnosis)}
+                      className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
+                    >
+                      新規紹介
+                    </button>
+                  )}
+                </div>
 
-                {selectedDiagnosis.quotationCount === 0 ? (
-                  <p className="text-gray-800 text-center py-8">見積もりがまだありません</p>
+                {selectedDiagnosis.referralCount === 0 ? (
+                  <div className="bg-gray-50 p-4 rounded-md text-center text-gray-500">
+                    まだ紹介がありません
+                  </div>
                 ) : (
-                  <div className="space-y-4">
-                    {selectedDiagnosis.quotations.map((quotation) => (
+                  <div className="space-y-3">
+                    {selectedDiagnosis.referrals.map((referral) => (
                       <div
-                        key={quotation.id}
-                        className={`border rounded-lg p-4 ${
-                          quotation.isSelected
-                            ? 'border-green-500 bg-green-50'
-                            : 'border-gray-200'
-                        }`}
+                        key={referral.id}
+                        className="border rounded-lg p-4 bg-white"
                       >
-                        <div className="flex justify-between items-start mb-2">
+                        <div className="flex justify-between items-center">
                           <div>
-                            <h5 className="font-semibold text-gray-900">
-                              {quotation.partnerName}
-                            </h5>
-                            <p className="text-2xl font-bold text-blue-600 mt-2">
-                              ¥{quotation.amount.toLocaleString()}
-                              {quotation.isLowest && (
-                                <span className="ml-2 text-sm font-normal text-red-600">
-                                  最安値
-                                </span>
-                              )}
+                            <h5 className="font-semibold text-gray-900">{referral.partnerName}</h5>
+                            <p className="text-sm text-gray-600">
+                              紹介料: ¥{referral.referralFee.toLocaleString()}
                             </p>
                           </div>
-                          <div className="flex flex-col gap-2">
-                            {quotation.isSelected ? (
-                              <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-md">
-                                決定済み
+                          <div className="flex items-center gap-2">
+                            {referral.emailSent ? (
+                              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
+                                メール送信済み
                               </span>
-                            ) : selectedDiagnosis.status !== 'DECIDED' ? (
-                              <button
-                                onClick={() =>
-                                  handleDecidePartner(selectedDiagnosis.id, quotation.id)
-                                }
-                                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
-                              >
-                                この業者に決定
-                              </button>
-                            ) : null}
+                            ) : (
+                              <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded">
+                                メール未送信
+                              </span>
+                            )}
                           </div>
                         </div>
-
-                        {quotation.appealText && (
-                          <div className="mt-3 p-3 bg-gray-50 rounded-md">
-                            <p className="text-sm text-gray-700 font-medium mb-1">
-                              アピール文
-                            </p>
-                            <p className="text-sm text-gray-900">{quotation.appealText}</p>
-                          </div>
-                        )}
                       </div>
                     ))}
                   </div>
@@ -368,7 +411,116 @@ const DiagnosesView = () => {
 
             <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
               <button
-                onClick={() => setShowQuotationModal(false)}
+                onClick={() => setShowDetailModal(false)}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+              >
+                閉じる
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 新規紹介モーダル */}
+      {showReferralModal && selectedDiagnosis && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto m-4">
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-900">
+                加盟店に紹介 - {selectedDiagnosis.diagnosisNumber}
+              </h3>
+              <button
+                onClick={() => setShowReferralModal(false)}
+                className="text-gray-400 hover:text-gray-900 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="px-6 py-4">
+              {/* 紹介料設定 */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  紹介料
+                </label>
+                <input
+                  type="number"
+                  value={referralFee}
+                  onChange={(e) => setReferralFee(Number(e.target.value))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="mt-1 text-sm text-gray-500">
+                  紹介時に加盟店の保証金から引き落とされます
+                </p>
+              </div>
+
+              {/* 対応可能な加盟店一覧 */}
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-2">
+                  {PREFECTURE_LABELS[selectedDiagnosis.prefecture]}対応の加盟店
+                </h4>
+
+                {loadingPartners ? (
+                  <div className="text-center py-8 text-gray-500">
+                    読み込み中...
+                  </div>
+                ) : partners.length === 0 ? (
+                  <div className="bg-yellow-50 p-4 rounded-md text-yellow-700">
+                    対応可能な加盟店がありません
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {partners.map((partner) => {
+                      const isAlreadyReferred = selectedDiagnosis.referrals.some(
+                        r => r.partnerId === partner.id
+                      );
+                      const hasEnoughBalance = partner.depositBalance >= referralFee;
+
+                      return (
+                        <div
+                          key={partner.id}
+                          className={`border rounded-lg p-4 ${
+                            isAlreadyReferred ? 'bg-gray-100 border-gray-300' : 'bg-white'
+                          }`}
+                        >
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <h5 className="font-semibold text-gray-900">{partner.companyName}</h5>
+                              <p className={`text-sm ${hasEnoughBalance ? 'text-green-600' : 'text-red-600'}`}>
+                                保証金残高: ¥{partner.depositBalance.toLocaleString()}
+                              </p>
+                            </div>
+                            <div>
+                              {isAlreadyReferred ? (
+                                <span className="px-3 py-1 bg-gray-200 text-gray-600 text-sm font-medium rounded-md">
+                                  紹介済み
+                                </span>
+                              ) : !hasEnoughBalance ? (
+                                <span className="px-3 py-1 bg-red-100 text-red-600 text-sm font-medium rounded-md">
+                                  残高不足
+                                </span>
+                              ) : (
+                                <button
+                                  onClick={() => handleCreateReferral(partner.id)}
+                                  disabled={submittingReferral}
+                                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50"
+                                >
+                                  {submittingReferral ? '処理中...' : '紹介する'}
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
+              <button
+                onClick={() => setShowReferralModal(false)}
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
               >
                 閉じる
