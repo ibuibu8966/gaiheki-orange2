@@ -143,7 +143,12 @@ export async function GET(request: Request) {
           referralFee: r.referral_fee,
           emailSent: r.email_sent
         })),
-        createdAt: diag.created_at.toISOString().split('T')[0]
+        createdAt: diag.created_at.toISOString().split('T')[0],
+        // ヒアリング情報
+        customerEnthusiasm: diag.customer_enthusiasm,
+        desiredPartnerCount: diag.desired_partner_count,
+        referralFee: diag.referral_fee,
+        adminNote: diag.admin_note
       };
     });
 
@@ -159,6 +164,70 @@ export async function GET(request: Request) {
       {
         success: false,
         error: 'Failed to fetch diagnoses',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// PATCH: 診断依頼更新
+export async function PATCH(request: Request) {
+  try {
+    const body = await request.json();
+    const {
+      id,
+      customerName,
+      customerEmail,
+      customerPhone,
+      customerAddress,
+      customerEnthusiasm,
+      desiredPartnerCount,
+      referralFee,
+      adminNote
+    } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'Diagnosis ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // 更新データを構築
+    const updateData: Record<string, unknown> = {
+      updated_at: new Date()
+    };
+
+    if (customerName !== undefined) updateData.customer_name = customerName;
+    if (customerEmail !== undefined) updateData.customer_email = customerEmail || null;
+    if (customerPhone !== undefined) updateData.customer_phone = customerPhone;
+    if (customerAddress !== undefined) updateData.customer_address = customerAddress || null;
+    if (customerEnthusiasm !== undefined) updateData.customer_enthusiasm = customerEnthusiasm;
+    if (desiredPartnerCount !== undefined) updateData.desired_partner_count = desiredPartnerCount;
+    if (referralFee !== undefined) updateData.referral_fee = referralFee;
+    if (adminNote !== undefined) updateData.admin_note = adminNote || null;
+
+    const updatedDiagnosis = await prisma.diagnosis_requests.update({
+      where: { id },
+      data: updateData
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        id: updatedDiagnosis.id,
+        diagnosisNumber: updatedDiagnosis.diagnosis_number
+      },
+      message: '診断情報を更新しました'
+    });
+
+  } catch (error) {
+    console.error('Diagnosis update error:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to update diagnosis',
         message: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }

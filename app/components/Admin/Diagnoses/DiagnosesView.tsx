@@ -26,8 +26,11 @@ interface Diagnosis {
   referralCount: number;
   referrals: Referral[];
   createdAt: string;
-  referralFee?: number;
-  adminNote?: string;
+  // ヒアリング情報
+  customerEnthusiasm: number | null;
+  desiredPartnerCount: number | null;
+  referralFee: number;
+  adminNote: string | null;
 }
 
 interface Partner {
@@ -36,6 +39,17 @@ interface Partner {
   prefectures: string[];
   depositBalance: number;
   isActive: boolean;
+}
+
+interface EditFormData {
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  customerAddress: string;
+  customerEnthusiasm: number | null;
+  desiredPartnerCount: number;
+  referralFee: number;
+  adminNote: string;
 }
 
 // ラベル変換用マッピング
@@ -92,6 +106,38 @@ const PREFECTURE_LABELS: Record<string, string> = {
   Miyazaki: '宮崎県', Kagoshima: '鹿児島県', Okinawa: '沖縄県'
 };
 
+// 星評価コンポーネント
+const StarRating = ({
+  value,
+  onChange,
+  readonly = false
+}: {
+  value: number | null;
+  onChange?: (value: number) => void;
+  readonly?: boolean;
+}) => {
+  return (
+    <div className="flex items-center gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          onClick={() => !readonly && onChange?.(star)}
+          disabled={readonly}
+          className={`text-2xl ${readonly ? 'cursor-default' : 'cursor-pointer hover:scale-110'} transition-transform`}
+        >
+          {value && star <= value ? (
+            <span className="text-yellow-400">★</span>
+          ) : (
+            <span className="text-gray-300">☆</span>
+          )}
+        </button>
+      ))}
+      {value && <span className="ml-2 text-sm text-gray-600">({value}/5)</span>}
+    </div>
+  );
+};
+
 const DiagnosesView = () => {
   const [diagnosisFilter, setDiagnosisFilter] = useState("all");
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
@@ -101,8 +147,22 @@ const DiagnosesView = () => {
   const [showReferralModal, setShowReferralModal] = useState(false);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loadingPartners, setLoadingPartners] = useState(false);
-  const [referralFee, setReferralFee] = useState(30000);
+  const [newReferralFee, setNewReferralFee] = useState(30000);
   const [submittingReferral, setSubmittingReferral] = useState(false);
+
+  // 編集モード関連
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editFormData, setEditFormData] = useState<EditFormData>({
+    customerName: '',
+    customerEmail: '',
+    customerPhone: '',
+    customerAddress: '',
+    customerEnthusiasm: null,
+    desiredPartnerCount: 3,
+    referralFee: 30000,
+    adminNote: ''
+  });
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetchDiagnoses();
@@ -136,7 +196,6 @@ const DiagnosesView = () => {
       const result = await response.json();
 
       if (result.success) {
-        // 対応都道府県でフィルタ & アクティブなパートナーのみ
         const filteredPartners = result.data.filter((p: Partner) =>
           p.isActive && p.prefectures.includes(prefecture)
         );
@@ -151,27 +210,85 @@ const DiagnosesView = () => {
 
   const openDetailModal = (diagnosis: Diagnosis) => {
     setSelectedDiagnosis(diagnosis);
+    setIsEditMode(false);
     setShowDetailModal(true);
   };
 
   const openReferralModal = async (diagnosis: Diagnosis) => {
     setSelectedDiagnosis(diagnosis);
-    setReferralFee(diagnosis.referralFee || 30000);
+    setNewReferralFee(diagnosis.referralFee || 30000);
     await fetchPartners(diagnosis.prefecture);
     setShowReferralModal(true);
+  };
+
+  const enterEditMode = () => {
+    if (!selectedDiagnosis) return;
+    setEditFormData({
+      customerName: selectedDiagnosis.customerName,
+      customerEmail: selectedDiagnosis.customerEmail || '',
+      customerPhone: selectedDiagnosis.customerPhone,
+      customerAddress: selectedDiagnosis.address || '',
+      customerEnthusiasm: selectedDiagnosis.customerEnthusiasm,
+      desiredPartnerCount: selectedDiagnosis.desiredPartnerCount || 3,
+      referralFee: selectedDiagnosis.referralFee || 30000,
+      adminNote: selectedDiagnosis.adminNote || ''
+    });
+    setIsEditMode(true);
+  };
+
+  const cancelEditMode = () => {
+    setIsEditMode(false);
+  };
+
+  const handleSave = async () => {
+    if (!selectedDiagnosis) return;
+
+    try {
+      setSaving(true);
+      const response = await fetch('/api/admin/diagnoses', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: selectedDiagnosis.id,
+          customerName: editFormData.customerName,
+          customerEmail: editFormData.customerEmail || null,
+          customerPhone: editFormData.customerPhone,
+          customerAddress: editFormData.customerAddress || null,
+          customerEnthusiasm: editFormData.customerEnthusiasm,
+          desiredPartnerCount: editFormData.desiredPartnerCount,
+          referralFee: editFormData.referralFee,
+          adminNote: editFormData.adminNote || null
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert('保存しました');
+        setIsEditMode(false);
+        setShowDetailModal(false);
+        fetchDiagnoses();
+      } else {
+        alert('保存に失敗しました: ' + result.error);
+      }
+    } catch (error) {
+      console.error('保存エラー:', error);
+      alert('保存に失敗しました');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCreateReferral = async (partnerId: number) => {
     if (!selectedDiagnosis) return;
 
-    // 既に紹介済みかチェック
     const alreadyReferred = selectedDiagnosis.referrals.some(r => r.partnerId === partnerId);
     if (alreadyReferred) {
       alert('この加盟店には既に紹介済みです');
       return;
     }
 
-    if (!confirm(`この加盟店に紹介しますか？\n紹介料: ¥${referralFee.toLocaleString()}`)) return;
+    if (!confirm(`この加盟店に紹介しますか？\n紹介料: ¥${newReferralFee.toLocaleString()}`)) return;
 
     try {
       setSubmittingReferral(true);
@@ -181,7 +298,7 @@ const DiagnosesView = () => {
         body: JSON.stringify({
           diagnosisId: selectedDiagnosis.id,
           partnerId,
-          referralFee,
+          referralFee: newReferralFee,
         }),
       });
 
@@ -319,103 +436,264 @@ const DiagnosesView = () => {
           <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto m-4">
             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
               <h3 className="text-xl font-bold text-gray-900">
-                案件詳細 - {selectedDiagnosis.diagnosisNumber}
+                {isEditMode ? '案件編集' : '案件詳細'} - {selectedDiagnosis.diagnosisNumber}
               </h3>
-              <button
-                onClick={() => setShowDetailModal(false)}
-                className="text-gray-400 hover:text-gray-900 text-2xl"
-              >
-                ×
-              </button>
+              <div className="flex items-center gap-2">
+                {!isEditMode && (
+                  <button
+                    onClick={enterEditMode}
+                    className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
+                  >
+                    編集
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    setShowDetailModal(false);
+                    setIsEditMode(false);
+                  }}
+                  className="text-gray-400 hover:text-gray-900 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
             </div>
 
             <div className="px-6 py-4">
-              {/* 顧客情報 */}
-              <div className="mb-6">
-                <h4 className="font-semibold text-gray-900 mb-2">顧客情報</h4>
-                <div className="bg-gray-50 p-4 rounded-md space-y-2 text-gray-900">
-                  <p><span className="font-medium">氏名:</span> {selectedDiagnosis.customerName}</p>
-                  <p><span className="font-medium">電話:</span> {selectedDiagnosis.customerPhone}</p>
-                  {selectedDiagnosis.customerEmail && (
-                    <p><span className="font-medium">メール:</span> {selectedDiagnosis.customerEmail}</p>
-                  )}
-                  {selectedDiagnosis.address && (
-                    <p><span className="font-medium">住所:</span> {selectedDiagnosis.address}</p>
-                  )}
-                </div>
-              </div>
-
-              {/* 診断情報 */}
-              <div className="mb-6">
-                <h4 className="font-semibold text-gray-900 mb-2">診断情報</h4>
-                <div className="bg-gray-50 p-4 rounded-md space-y-2 text-gray-900">
-                  <p><span className="font-medium">都道府県:</span> {PREFECTURE_LABELS[selectedDiagnosis.prefecture] || selectedDiagnosis.prefecture}</p>
-                  <p><span className="font-medium">延床面積:</span> {FLOOR_AREA_LABELS[selectedDiagnosis.floorArea] || selectedDiagnosis.floorArea}</p>
-                  <p><span className="font-medium">現在の状況:</span> {CURRENT_SITUATION_LABELS[selectedDiagnosis.currentSituation] || selectedDiagnosis.currentSituation}</p>
-                  <p><span className="font-medium">工事箇所:</span> {CONSTRUCTION_TYPE_LABELS[selectedDiagnosis.constructionType] || selectedDiagnosis.constructionType}</p>
-                </div>
-              </div>
-
-              {/* 紹介済み加盟店 */}
-              <div className="mb-6">
-                <div className="flex justify-between items-center mb-2">
-                  <h4 className="font-semibold text-gray-900">
-                    紹介済み加盟店 ({selectedDiagnosis.referralCount}件)
-                  </h4>
-                  {selectedDiagnosis.status !== 'DECIDED' && selectedDiagnosis.status !== 'CANCELLED' && (
-                    <button
-                      onClick={() => openReferralModal(selectedDiagnosis)}
-                      className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
-                    >
-                      新規紹介
-                    </button>
-                  )}
-                </div>
-
-                {selectedDiagnosis.referralCount === 0 ? (
-                  <div className="bg-gray-50 p-4 rounded-md text-center text-gray-500">
-                    まだ紹介がありません
+              {isEditMode ? (
+                // 編集モード
+                <>
+                  {/* 顧客情報（編集） */}
+                  <div className="mb-6">
+                    <h4 className="font-semibold text-gray-900 mb-3">顧客情報</h4>
+                    <div className="bg-gray-50 p-4 rounded-md space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">氏名</label>
+                          <input
+                            type="text"
+                            value={editFormData.customerName}
+                            onChange={(e) => setEditFormData({ ...editFormData, customerName: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">電話番号</label>
+                          <input
+                            type="text"
+                            value={editFormData.customerPhone}
+                            onChange={(e) => setEditFormData({ ...editFormData, customerPhone: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
+                        <input
+                          type="email"
+                          value={editFormData.customerEmail}
+                          onChange={(e) => setEditFormData({ ...editFormData, customerEmail: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">住所</label>
+                        <input
+                          type="text"
+                          value={editFormData.customerAddress}
+                          onChange={(e) => setEditFormData({ ...editFormData, customerAddress: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
                   </div>
-                ) : (
-                  <div className="space-y-3">
-                    {selectedDiagnosis.referrals.map((referral) => (
-                      <div
-                        key={referral.id}
-                        className="border rounded-lg p-4 bg-white"
-                      >
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <h5 className="font-semibold text-gray-900">{referral.partnerName}</h5>
-                            <p className="text-sm text-gray-600">
-                              紹介料: ¥{referral.referralFee.toLocaleString()}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {referral.emailSent ? (
-                              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
-                                メール送信済み
-                              </span>
-                            ) : (
-                              <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded">
-                                メール未送信
-                              </span>
-                            )}
+
+                  {/* ヒアリング情報（編集） */}
+                  <div className="mb-6">
+                    <h4 className="font-semibold text-gray-900 mb-3">ヒアリング情報</h4>
+                    <div className="bg-gray-50 p-4 rounded-md space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">熱量</label>
+                        <StarRating
+                          value={editFormData.customerEnthusiasm}
+                          onChange={(value) => setEditFormData({ ...editFormData, customerEnthusiasm: value })}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">紹介希望業者数</label>
+                          <select
+                            value={editFormData.desiredPartnerCount}
+                            onChange={(e) => setEditFormData({ ...editFormData, desiredPartnerCount: Number(e.target.value) })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            {[1, 2, 3, 4].map((n) => (
+                              <option key={n} value={n}>{n}社</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">情報単価</label>
+                          <div className="flex items-center">
+                            <input
+                              type="number"
+                              value={editFormData.referralFee}
+                              onChange={(e) => setEditFormData({ ...editFormData, referralFee: Number(e.target.value) })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <span className="ml-2 text-gray-600">円</span>
                           </div>
                         </div>
                       </div>
-                    ))}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">求めている業者（メモ）</label>
+                        <textarea
+                          value={editFormData.adminNote}
+                          onChange={(e) => setEditFormData({ ...editFormData, adminNote: e.target.value })}
+                          rows={3}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="顧客が求めている業者の条件など..."
+                        />
+                      </div>
+                    </div>
                   </div>
-                )}
-              </div>
+                </>
+              ) : (
+                // 閲覧モード
+                <>
+                  {/* 顧客情報（閲覧） */}
+                  <div className="mb-6">
+                    <h4 className="font-semibold text-gray-900 mb-2">顧客情報</h4>
+                    <div className="bg-gray-50 p-4 rounded-md space-y-2 text-gray-900">
+                      <p><span className="font-medium">氏名:</span> {selectedDiagnosis.customerName}</p>
+                      <p><span className="font-medium">電話:</span> {selectedDiagnosis.customerPhone}</p>
+                      {selectedDiagnosis.customerEmail && (
+                        <p><span className="font-medium">メール:</span> {selectedDiagnosis.customerEmail}</p>
+                      )}
+                      {selectedDiagnosis.address && (
+                        <p><span className="font-medium">住所:</span> {selectedDiagnosis.address}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* ヒアリング情報（閲覧） */}
+                  <div className="mb-6">
+                    <h4 className="font-semibold text-gray-900 mb-2">ヒアリング情報</h4>
+                    <div className="bg-gray-50 p-4 rounded-md space-y-3 text-gray-900">
+                      <div className="flex items-center">
+                        <span className="font-medium w-32">熱量:</span>
+                        <StarRating value={selectedDiagnosis.customerEnthusiasm} readonly />
+                      </div>
+                      <p>
+                        <span className="font-medium">紹介希望業者数:</span>{' '}
+                        {selectedDiagnosis.desiredPartnerCount || 3}社
+                      </p>
+                      <p>
+                        <span className="font-medium">情報単価:</span>{' '}
+                        ¥{(selectedDiagnosis.referralFee || 30000).toLocaleString()}
+                      </p>
+                      {selectedDiagnosis.adminNote && (
+                        <div>
+                          <span className="font-medium">求めている業者:</span>
+                          <div className="mt-1 p-3 bg-white rounded border border-gray-200 text-sm whitespace-pre-wrap">
+                            {selectedDiagnosis.adminNote}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 診断情報（閲覧） */}
+                  <div className="mb-6">
+                    <h4 className="font-semibold text-gray-900 mb-2">診断情報</h4>
+                    <div className="bg-gray-50 p-4 rounded-md space-y-2 text-gray-900">
+                      <p><span className="font-medium">都道府県:</span> {PREFECTURE_LABELS[selectedDiagnosis.prefecture] || selectedDiagnosis.prefecture}</p>
+                      <p><span className="font-medium">延床面積:</span> {FLOOR_AREA_LABELS[selectedDiagnosis.floorArea] || selectedDiagnosis.floorArea}</p>
+                      <p><span className="font-medium">現在の状況:</span> {CURRENT_SITUATION_LABELS[selectedDiagnosis.currentSituation] || selectedDiagnosis.currentSituation}</p>
+                      <p><span className="font-medium">工事箇所:</span> {CONSTRUCTION_TYPE_LABELS[selectedDiagnosis.constructionType] || selectedDiagnosis.constructionType}</p>
+                    </div>
+                  </div>
+
+                  {/* 紹介済み加盟店（閲覧） */}
+                  <div className="mb-6">
+                    <div className="flex justify-between items-center mb-2">
+                      <h4 className="font-semibold text-gray-900">
+                        紹介済み加盟店 ({selectedDiagnosis.referralCount}件)
+                      </h4>
+                      {selectedDiagnosis.status !== 'DECIDED' && selectedDiagnosis.status !== 'CANCELLED' && (
+                        <button
+                          onClick={() => openReferralModal(selectedDiagnosis)}
+                          className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
+                        >
+                          新規紹介
+                        </button>
+                      )}
+                    </div>
+
+                    {selectedDiagnosis.referralCount === 0 ? (
+                      <div className="bg-gray-50 p-4 rounded-md text-center text-gray-500">
+                        まだ紹介がありません
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {selectedDiagnosis.referrals.map((referral) => (
+                          <div
+                            key={referral.id}
+                            className="border rounded-lg p-4 bg-white"
+                          >
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <h5 className="font-semibold text-gray-900">{referral.partnerName}</h5>
+                                <p className="text-sm text-gray-600">
+                                  紹介料: ¥{referral.referralFee.toLocaleString()}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {referral.emailSent ? (
+                                  <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
+                                    メール送信済み
+                                  </span>
+                                ) : (
+                                  <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded">
+                                    メール未送信
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
 
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
-              <button
-                onClick={() => setShowDetailModal(false)}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-              >
-                閉じる
-              </button>
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-2">
+              {isEditMode ? (
+                <>
+                  <button
+                    onClick={cancelEditMode}
+                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                  >
+                    キャンセル
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {saving ? '保存中...' : '保存'}
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setShowDetailModal(false)}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                >
+                  閉じる
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -445,8 +723,8 @@ const DiagnosesView = () => {
                 </label>
                 <input
                   type="number"
-                  value={referralFee}
-                  onChange={(e) => setReferralFee(Number(e.target.value))}
+                  value={newReferralFee}
+                  onChange={(e) => setNewReferralFee(Number(e.target.value))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="mt-1 text-sm text-gray-500">
@@ -474,7 +752,7 @@ const DiagnosesView = () => {
                       const isAlreadyReferred = selectedDiagnosis.referrals.some(
                         r => r.partnerId === partner.id
                       );
-                      const hasEnoughBalance = partner.depositBalance >= referralFee;
+                      const hasEnoughBalance = partner.depositBalance >= newReferralFee;
 
                       return (
                         <div
