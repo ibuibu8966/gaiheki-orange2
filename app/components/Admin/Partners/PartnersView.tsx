@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import PartnerFormModal from "./PartnerFormModal";
 import PartnerDetailModal from "./PartnerDetailModal";
+import { ResponsiveTable } from "../../Common/ResponsiveTable";
 
 interface Partner {
   id: number;
@@ -252,38 +253,38 @@ const PartnersView = () => {
         </div>
 
         {/* ツールバー */}
-        <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+        <div className="px-4 sm:px-6 py-4 bg-gray-50 border-b border-gray-200">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
               <button
                 onClick={openCreateModal}
-                className="bg-gray-800 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
+                className="w-full sm:w-auto bg-gray-800 text-white px-4 py-3 min-h-[44px] rounded-md text-sm font-medium hover:bg-gray-700 active:bg-gray-900 transition-colors"
               >
                 新規追加
               </button>
               <select
                 value={partnerFilter}
                 onChange={(e) => setPartnerFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+                className="w-full sm:w-auto px-3 py-3 min-h-[44px] border border-gray-300 rounded-md text-sm"
               >
                 <option value="すべて">すべて</option>
                 <option value="表示">表示</option>
                 <option value="非表示">非表示</option>
               </select>
-              <div className="relative">
+              <div className="relative w-full sm:w-64">
                 <input
                   type="text"
                   value={partnerSearch}
                   onChange={(e) => setPartnerSearch(e.target.value)}
                   placeholder="会社名、メールアドレスで検索..."
-                  className="pl-3 pr-10 py-2 border border-gray-300 rounded-md text-sm w-64"
+                  className="w-full pl-3 pr-10 py-3 min-h-[44px] border border-gray-300 rounded-md text-sm"
                 />
                 <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
             </div>
-            <div className="text-right">
+            <div className="text-center sm:text-right">
               <div className="text-2xl font-bold text-blue-500">{partners.length}</div>
               <div className="text-sm text-gray-500">登録加盟店数</div>
             </div>
@@ -291,71 +292,70 @@ const PartnersView = () => {
         </div>
 
         {/* テーブル */}
-        <div className="overflow-x-auto">
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-              <p className="mt-2 text-sm text-gray-500">読み込み中...</p>
-            </div>
-          ) : error ? (
+        <div className="p-4 sm:p-0">
+          {error ? (
             <div className="text-center py-12">
               <p className="text-red-500">{error}</p>
               <button
                 onClick={fetchPartners}
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                className="mt-4 px-4 py-3 min-h-[44px] bg-blue-500 text-white rounded-md hover:bg-blue-600 active:bg-blue-700 transition-colors"
               >
                 再読み込み
               </button>
             </div>
-          ) : partners.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500">加盟店が見つかりません</p>
-            </div>
           ) : (
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">会社名</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">メールアドレス</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">電話番号</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">対応都道府県</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ステータス</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">作成日</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {partners.map((partner) => (
-                <tr key={partner.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {partner.companyName}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {partner.email}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {partner.phone}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
+            <ResponsiveTable
+              data={partners}
+              keyField="id"
+              isLoading={loading}
+              emptyMessage="加盟店が見つかりません"
+              columns={[
+                {
+                  key: "companyName",
+                  label: "会社名",
+                  priority: 10,
+                  render: (p) => <span className="font-medium">{p.companyName}</span>,
+                },
+                {
+                  key: "email",
+                  label: "メールアドレス",
+                  hideOnMobile: true,
+                },
+                {
+                  key: "phone",
+                  label: "電話番号",
+                  priority: 8,
+                },
+                {
+                  key: "prefectures",
+                  label: "対応都道府県",
+                  priority: 7,
+                  render: (p) => (
                     <div className="flex flex-wrap gap-1">
-                      {partner.prefectures.slice(0, 2).map((pref, idx) => (
+                      {p.prefectures.slice(0, 2).map((pref, idx) => (
                         <span key={idx} className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
                           {PREFECTURE_NAMES[pref] || pref}
                         </span>
                       ))}
-                      {partner.prefectures.length > 2 && (
+                      {p.prefectures.length > 2 && (
                         <span className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
-                          +{partner.prefectures.length - 2}
+                          +{p.prefectures.length - 2}
                         </span>
                       )}
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  ),
+                },
+                {
+                  key: "status",
+                  label: "ステータス",
+                  priority: 9,
+                  render: (p) => (
                     <select
-                      value={partner.status}
-                      onChange={(e) => handlePartnerStatusChange(partner.id, e.target.value)}
-                      className={`px-3 py-1 text-xs font-medium rounded-md border-0 ${
-                        partner.status === "表示"
+                      value={p.status}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(e) => handlePartnerStatusChange(p.id, e.target.value)}
+                      className={`px-3 py-2 min-h-[36px] text-xs font-medium rounded-md border-0 ${
+                        p.status === "表示"
                           ? "bg-green-100 text-green-800"
                           : "bg-gray-100 text-gray-800"
                       }`}
@@ -363,34 +363,42 @@ const PartnersView = () => {
                       <option value="表示">表示</option>
                       <option value="非表示">非表示</option>
                     </select>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {partner.registrationDate}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openDetailModal(partner.id);
-                      }}
-                      className="text-blue-600 hover:text-blue-900 font-medium"
-                    >
-                      詳細
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeletePartner(partner.id, partner.companyName);
-                      }}
-                      className="text-red-600 hover:text-red-900 font-medium"
-                    >
-                      削除
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  ),
+                },
+                {
+                  key: "registrationDate",
+                  label: "作成日",
+                  hideOnMobile: true,
+                },
+              ]}
+              onRowClick={(p) => openDetailModal(p.id)}
+              mobileCardTitle={(p) => (
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold">{p.companyName}</span>
+                  <span className={`px-2 py-1 text-xs font-medium rounded ${
+                    p.status === "表示" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
+                  }`}>
+                    {p.status}
+                  </span>
+                </div>
+              )}
+              mobileCardActions={(p) => (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => openDetailModal(p.id)}
+                    className="flex-1 py-2 text-center text-blue-600 font-medium min-h-[44px] hover:bg-blue-50 rounded transition-colors"
+                  >
+                    詳細
+                  </button>
+                  <button
+                    onClick={() => handleDeletePartner(p.id, p.companyName)}
+                    className="flex-1 py-2 text-center text-red-600 font-medium min-h-[44px] hover:bg-red-50 rounded transition-colors"
+                  >
+                    削除
+                  </button>
+                </div>
+              )}
+            />
           )}
         </div>
       </div>

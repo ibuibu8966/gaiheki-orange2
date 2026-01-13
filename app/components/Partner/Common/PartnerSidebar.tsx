@@ -1,12 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
+import { ResponsiveSidebar } from "../../Common/ResponsiveSidebar";
 
 const PartnerSidebar = () => {
   const router = useRouter();
-  const pathname = usePathname();
 
   const handleLogout = async () => {
     try {
@@ -75,55 +73,12 @@ const PartnerSidebar = () => {
   ];
 
   return (
-    <aside className="w-64 min-w-64 bg-white shadow-sm flex-shrink-0 h-screen sticky top-0 flex flex-col">
-      {/* サイドバーヘッダー */}
-      <div className="p-6 border-b border-gray-200">
-        <h1 className="text-xl font-bold text-gray-800">加盟店ダッシュボード</h1>
-      </div>
-
-      {/* メニューリスト */}
-      <nav className="p-4 flex-1 overflow-y-auto">
-        <ul className="space-y-2">
-          {menuItems.map((item) => (
-            <li key={item.id}>
-              <Link
-                href={item.href}
-                className={`w-full flex items-center px-4 py-3 text-left rounded-md transition-colors ${
-                  pathname === item.href
-                    ? "bg-blue-50 text-blue-600 border-r-2 border-blue-600"
-                    : "text-gray-700 hover:bg-gray-50"
-                }`}
-              >
-                {item.icon}
-                <span className="ml-3 whitespace-nowrap">{item.label}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      {/* トップ画面・ログアウトボタン */}
-      <div className="p-4 border-t border-gray-200 space-y-2">
-        <button
-          onClick={() => router.push("/")}
-          className="w-full flex items-center px-4 py-3 text-left rounded-md transition-colors text-gray-700 hover:bg-gray-50"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-          <span className="ml-3">トップ画面に戻る</span>
-        </button>
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center px-4 py-3 text-left rounded-md transition-colors text-gray-700 hover:bg-gray-50"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
-          <span className="ml-3">ログアウト</span>
-        </button>
-      </div>
-    </aside>
+    <ResponsiveSidebar
+      title="加盟店ダッシュボード"
+      menuItems={menuItems}
+      onLogout={handleLogout}
+      onHomeClick={() => router.push("/")}
+    />
   );
 };
 

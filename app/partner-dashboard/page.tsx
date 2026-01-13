@@ -93,11 +93,11 @@ export default function PartnerDashboardPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">ダッシュボード</h1>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold">ダッシュボード</h1>
         <Select value={period} onValueChange={setPeriod}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px] min-h-[44px]">
             <SelectValue placeholder="期間を選択" />
           </SelectTrigger>
           <SelectContent>
@@ -109,15 +109,15 @@ export default function PartnerDashboardPage() {
       </div>
 
       {/* KPIサマリーカード */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-blue-600">
+          <CardHeader className="pb-2 p-3 sm:p-4">
+            <CardTitle className="text-xs sm:text-sm font-medium text-blue-600">
               紹介案件数
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-blue-900">
+          <CardContent className="p-3 sm:p-4 pt-0">
+            <p className="text-2xl sm:text-3xl font-bold text-blue-900">
               {dashboardData.kpi.referralCount}
             </p>
             <p className="text-xs text-blue-600 mt-1">件</p>
@@ -125,43 +125,45 @@ export default function PartnerDashboardPage() {
         </Card>
 
         <Card className="bg-gradient-to-br from-orange-50 to-white border-orange-100">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-orange-600">
+          <CardHeader className="pb-2 p-3 sm:p-4">
+            <CardTitle className="text-xs sm:text-sm font-medium text-orange-600">
               紹介料合計
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-orange-900">
-              ¥{dashboardData.kpi.referralFeeTotal.toLocaleString()}
+          <CardContent className="p-3 sm:p-4 pt-0">
+            <p className="text-xl sm:text-3xl font-bold text-orange-900">
+              ¥{(dashboardData.kpi.referralFeeTotal / 10000).toFixed(0)}
+              <span className="text-sm sm:text-lg">万</span>
             </p>
             <p className="text-xs text-orange-600 mt-1">税込</p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-green-50 to-white border-green-100">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-green-600">
+          <CardHeader className="pb-2 p-3 sm:p-4">
+            <CardTitle className="text-xs sm:text-sm font-medium text-green-600">
               保証金残高
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-green-900">
-              ¥{dashboardData.kpi.depositBalance.toLocaleString()}
+          <CardContent className="p-3 sm:p-4 pt-0">
+            <p className="text-xl sm:text-3xl font-bold text-green-900">
+              ¥{(dashboardData.kpi.depositBalance / 10000).toFixed(0)}
+              <span className="text-sm sm:text-lg">万</span>
             </p>
             <p className="text-xs text-green-600 mt-1">現在の残高</p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-purple-50 to-white border-purple-100">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-purple-600">
+          <CardHeader className="pb-2 p-3 sm:p-4">
+            <CardTitle className="text-xs sm:text-sm font-medium text-purple-600">
               今月の紹介枠
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-purple-900">
+          <CardContent className="p-3 sm:p-4 pt-0">
+            <p className="text-2xl sm:text-3xl font-bold text-purple-900">
               {dashboardData.kpi.monthlyLeadsCount}
-              <span className="text-lg font-normal">
+              <span className="text-base sm:text-lg font-normal">
                 {dashboardData.kpi.monthlyDesiredLeads > 0 && ` / ${dashboardData.kpi.monthlyDesiredLeads}`}
               </span>
             </p>
@@ -171,25 +173,25 @@ export default function PartnerDashboardPage() {
       </div>
 
       {/* グラフエリア */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* 月次紹介数推移グラフ */}
         <Card>
-          <CardHeader>
-            <CardTitle>月次紹介数推移</CardTitle>
+          <CardHeader className="p-3 sm:p-6">
+            <CardTitle className="text-base sm:text-lg">月次紹介数推移</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+          <CardContent className="p-2 sm:p-6">
+            <ResponsiveContainer width="100%" height={250} className="sm:!h-[300px]">
               <BarChart data={dashboardData.referral_trend}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="month"
-                  tick={{ fontSize: 12 }}
+                  tick={{ fontSize: 11 }}
                   tickFormatter={(value) => {
                     const [, month] = value.split('-');
                     return `${month}月`;
                   }}
                 />
-                <YAxis tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 11 }} />
                 <Tooltip
                   formatter={(value: number) => [`${value}件`, '紹介数']}
                   labelFormatter={(label) => {
@@ -205,12 +207,12 @@ export default function PartnerDashboardPage() {
 
         {/* 入出金履歴 */}
         <Card>
-          <CardHeader>
-            <CardTitle>入出金履歴</CardTitle>
+          <CardHeader className="p-3 sm:p-6">
+            <CardTitle className="text-base sm:text-lg">入出金履歴</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 sm:p-6">
             {dashboardData.deposit_history.length > 0 ? (
-              <div className="space-y-2 max-h-[300px] overflow-y-auto">
+              <div className="space-y-2 max-h-[250px] sm:max-h-[300px] overflow-y-auto">
                 {dashboardData.deposit_history.map((item) => (
                   <div
                     key={item.id}
@@ -218,7 +220,7 @@ export default function PartnerDashboardPage() {
                       item.type === 'DEPOSIT' ? 'bg-green-50' : 'bg-red-50'
                     }`}
                   >
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <p className={`text-sm font-medium ${
                         item.type === 'DEPOSIT' ? 'text-green-700' : 'text-red-700'
                       }`}>
@@ -228,11 +230,11 @@ export default function PartnerDashboardPage() {
                         {new Date(item.createdAt).toLocaleDateString('ja-JP')}
                       </p>
                       {item.description && (
-                        <p className="text-xs text-gray-600 mt-1">{item.description}</p>
+                        <p className="text-xs text-gray-600 mt-1 truncate">{item.description}</p>
                       )}
                     </div>
-                    <div className="text-right">
-                      <p className={`font-semibold ${
+                    <div className="text-right flex-shrink-0 ml-3">
+                      <p className={`font-semibold text-sm sm:text-base ${
                         item.type === 'DEPOSIT' ? 'text-green-700' : 'text-red-700'
                       }`}>
                         {item.type === 'DEPOSIT' ? '+' : '-'}¥{Math.abs(item.amount).toLocaleString()}
@@ -245,7 +247,7 @@ export default function PartnerDashboardPage() {
                 ))}
               </div>
             ) : (
-              <div className="flex items-center justify-center h-[300px] text-gray-500">
+              <div className="flex items-center justify-center h-[250px] sm:h-[300px] text-gray-500">
                 入出金履歴がありません
               </div>
             )}
@@ -255,44 +257,44 @@ export default function PartnerDashboardPage() {
 
       {/* クイックリンク */}
       <Card>
-        <CardHeader>
-          <CardTitle>クイックアクション</CardTitle>
+        <CardHeader className="p-3 sm:p-6">
+          <CardTitle className="text-base sm:text-lg">クイックアクション</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <CardContent className="p-3 sm:p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <a
               href="/partner-dashboard/referrals"
-              className="flex items-center justify-between p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+              className="flex items-center justify-between p-4 min-h-[72px] bg-blue-50 rounded-lg hover:bg-blue-100 active:bg-blue-200 transition-colors"
             >
               <div>
                 <p className="font-medium text-blue-900">購入案件一覧</p>
                 <p className="text-sm text-blue-600">紹介された案件を確認</p>
               </div>
-              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-blue-600 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
               </svg>
             </a>
             <a
               href="/partner-dashboard/profile"
-              className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+              className="flex items-center justify-between p-4 min-h-[72px] bg-gray-50 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors"
             >
               <div>
                 <p className="font-medium text-gray-900">会社情報</p>
                 <p className="text-sm text-gray-600">プロフィールを編集</p>
               </div>
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-gray-600 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
               </svg>
             </a>
             <a
               href="/partner-dashboard/settings"
-              className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+              className="flex items-center justify-between p-4 min-h-[72px] bg-gray-50 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors"
             >
               <div>
                 <p className="font-medium text-gray-900">設定</p>
                 <p className="text-sm text-gray-600">希望リード数を変更</p>
               </div>
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-gray-600 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
               </svg>
             </a>

@@ -2,14 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { ResponsiveTable } from '../../components/Common/ResponsiveTable';
+import { ResponsiveModal } from '../../components/Common/ResponsiveModal';
 
 interface Referral {
   id: string;
@@ -126,12 +120,12 @@ export default function PartnerReferralsPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">購入案件一覧</h1>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold">購入案件一覧</h1>
         <a
           href="/partner-dashboard"
-          className="text-blue-600 hover:text-blue-800 text-sm"
+          className="text-blue-600 hover:text-blue-800 text-sm min-h-[44px] flex items-center"
         >
           ← ダッシュボードに戻る
         </a>
@@ -175,188 +169,188 @@ export default function PartnerReferralsPage() {
         <CardHeader>
           <CardTitle>紹介案件</CardTitle>
         </CardHeader>
-        <CardContent>
-          {referrals.length > 0 ? (
-            <>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>診断番号</TableHead>
-                      <TableHead>顧客名</TableHead>
-                      <TableHead>都道府県</TableHead>
-                      <TableHead>工事種別</TableHead>
-                      <TableHead>紹介料</TableHead>
-                      <TableHead>紹介日</TableHead>
-                      <TableHead>操作</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {referrals.map((referral) => (
-                      <TableRow key={referral.id}>
-                        <TableCell className="font-medium">
-                          {referral.diagnosisNumber}
-                        </TableCell>
-                        <TableCell>{referral.customerName}</TableCell>
-                        <TableCell>
-                          {PREFECTURE_LABELS[referral.prefecture] || referral.prefecture}
-                        </TableCell>
-                        <TableCell>
-                          {CONSTRUCTION_TYPE_LABELS[referral.constructionType] || referral.constructionType}
-                        </TableCell>
-                        <TableCell className="font-semibold text-orange-600">
-                          ¥{referral.referralFee.toLocaleString()}
-                        </TableCell>
-                        <TableCell>
-                          {new Date(referral.createdAt).toLocaleDateString('ja-JP')}
-                        </TableCell>
-                        <TableCell>
-                          <button
-                            onClick={() => setSelectedReferral(referral)}
-                            className="text-blue-600 hover:text-blue-800 text-sm"
-                          >
-                            詳細
-                          </button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-
-              {/* ページネーション */}
-              {pagination && pagination.totalPages > 1 && (
-                <div className="flex justify-center gap-2 mt-4">
-                  <button
-                    onClick={() => fetchReferrals(pagination.page - 1)}
-                    disabled={pagination.page === 1}
-                    className="px-3 py-1 border rounded disabled:opacity-50"
-                  >
-                    前へ
-                  </button>
-                  <span className="px-3 py-1">
-                    {pagination.page} / {pagination.totalPages}
+        <CardContent className="p-2 sm:p-6">
+          <ResponsiveTable
+            data={referrals}
+            keyField="id"
+            emptyMessage="紹介案件がありません"
+            columns={[
+              {
+                key: 'diagnosisNumber',
+                label: '診断番号',
+                priority: 10,
+                render: (r) => <span className="font-medium">{r.diagnosisNumber}</span>,
+              },
+              {
+                key: 'customerName',
+                label: '顧客名',
+                priority: 9,
+              },
+              {
+                key: 'prefecture',
+                label: '都道府県',
+                priority: 7,
+                render: (r) => PREFECTURE_LABELS[r.prefecture] || r.prefecture,
+              },
+              {
+                key: 'constructionType',
+                label: '工事種別',
+                hideOnMobile: true,
+                render: (r) => CONSTRUCTION_TYPE_LABELS[r.constructionType] || r.constructionType,
+              },
+              {
+                key: 'referralFee',
+                label: '紹介料',
+                priority: 8,
+                render: (r) => (
+                  <span className="font-semibold text-orange-600">
+                    ¥{r.referralFee.toLocaleString()}
                   </span>
-                  <button
-                    onClick={() => fetchReferrals(pagination.page + 1)}
-                    disabled={pagination.page === pagination.totalPages}
-                    className="px-3 py-1 border rounded disabled:opacity-50"
-                  >
-                    次へ
-                  </button>
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="text-center py-12 text-gray-500">
-              紹介案件がありません
+                ),
+              },
+              {
+                key: 'createdAt',
+                label: '紹介日',
+                hideOnMobile: true,
+                render: (r) => new Date(r.createdAt).toLocaleDateString('ja-JP'),
+              },
+            ]}
+            onRowClick={(r) => setSelectedReferral(r)}
+            mobileCardTitle={(r) => (
+              <div className="flex items-center justify-between">
+                <span>{r.diagnosisNumber}</span>
+                <span className="font-semibold text-orange-600">
+                  ¥{r.referralFee.toLocaleString()}
+                </span>
+              </div>
+            )}
+            mobileCardActions={(r) => (
+              <button
+                onClick={() => setSelectedReferral(r)}
+                className="w-full py-2 text-center text-blue-600 font-medium min-h-[44px]"
+              >
+                詳細を見る
+              </button>
+            )}
+          />
+
+          {/* ページネーション */}
+          {pagination && pagination.totalPages > 1 && (
+            <div className="flex justify-center gap-2 mt-4">
+              <button
+                onClick={() => fetchReferrals(pagination.page - 1)}
+                disabled={pagination.page === 1}
+                className="px-4 py-3 min-h-[44px] border rounded-md disabled:opacity-50 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+              >
+                前へ
+              </button>
+              <span className="px-4 py-3 min-h-[44px] flex items-center">
+                {pagination.page} / {pagination.totalPages}
+              </span>
+              <button
+                onClick={() => fetchReferrals(pagination.page + 1)}
+                disabled={pagination.page === pagination.totalPages}
+                className="px-4 py-3 min-h-[44px] border rounded-md disabled:opacity-50 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+              >
+                次へ
+              </button>
             </div>
           )}
         </CardContent>
       </Card>
 
       {/* 詳細モーダル */}
-      {selectedReferral && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto m-4">
-            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-xl font-bold text-gray-900">
-                案件詳細 - {selectedReferral.diagnosisNumber}
-              </h3>
-              <button
-                onClick={() => setSelectedReferral(null)}
-                className="text-gray-400 hover:text-gray-900 text-2xl"
-              >
-                ×
-              </button>
+      <ResponsiveModal
+        isOpen={!!selectedReferral}
+        onClose={() => setSelectedReferral(null)}
+        title={`案件詳細 - ${selectedReferral?.diagnosisNumber || ''}`}
+        size="lg"
+        footer={
+          <button
+            onClick={() => setSelectedReferral(null)}
+            className="w-full sm:w-auto px-4 py-3 min-h-[44px] bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors"
+          >
+            閉じる
+          </button>
+        }
+      >
+        {selectedReferral && (
+          <div className="space-y-6">
+            {/* 顧客情報 */}
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-3">顧客情報</h4>
+              <div className="bg-gray-50 p-4 rounded-lg space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500">顧客名</p>
+                    <p className="font-medium">{selectedReferral.customerName}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">電話番号</p>
+                    <p className="font-medium">{selectedReferral.customerPhone}</p>
+                  </div>
+                </div>
+                {selectedReferral.customerEmail && (
+                  <div>
+                    <p className="text-sm text-gray-500">メールアドレス</p>
+                    <p className="font-medium break-all">{selectedReferral.customerEmail}</p>
+                  </div>
+                )}
+                {selectedReferral.customerAddress && (
+                  <div>
+                    <p className="text-sm text-gray-500">住所</p>
+                    <p className="font-medium">{selectedReferral.customerAddress}</p>
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="px-6 py-4 space-y-6">
-              {/* 顧客情報 */}
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-3">顧客情報</h4>
-                <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-500">顧客名</p>
-                      <p className="font-medium">{selectedReferral.customerName}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">電話番号</p>
-                      <p className="font-medium">{selectedReferral.customerPhone}</p>
-                    </div>
+            {/* 工事情報 */}
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-3">工事情報</h4>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500">都道府県</p>
+                    <p className="font-medium">
+                      {PREFECTURE_LABELS[selectedReferral.prefecture] || selectedReferral.prefecture}
+                    </p>
                   </div>
-                  {selectedReferral.customerEmail && (
-                    <div>
-                      <p className="text-sm text-gray-500">メールアドレス</p>
-                      <p className="font-medium">{selectedReferral.customerEmail}</p>
-                    </div>
-                  )}
-                  {selectedReferral.customerAddress && (
-                    <div>
-                      <p className="text-sm text-gray-500">住所</p>
-                      <p className="font-medium">{selectedReferral.customerAddress}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* 工事情報 */}
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-3">工事情報</h4>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-500">都道府県</p>
-                      <p className="font-medium">
-                        {PREFECTURE_LABELS[selectedReferral.prefecture] || selectedReferral.prefecture}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">工事種別</p>
-                      <p className="font-medium">
-                        {CONSTRUCTION_TYPE_LABELS[selectedReferral.constructionType] || selectedReferral.constructionType}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">延床面積</p>
-                      <p className="font-medium">
-                        {FLOOR_AREA_LABELS[selectedReferral.floorArea] || selectedReferral.floorArea}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">紹介日</p>
-                      <p className="font-medium">
-                        {new Date(selectedReferral.createdAt).toLocaleDateString('ja-JP')}
-                      </p>
-                    </div>
+                  <div>
+                    <p className="text-sm text-gray-500">工事種別</p>
+                    <p className="font-medium">
+                      {CONSTRUCTION_TYPE_LABELS[selectedReferral.constructionType] || selectedReferral.constructionType}
+                    </p>
                   </div>
-                </div>
-              </div>
-
-              {/* 紹介料 */}
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-3">紹介料</h4>
-                <div className="bg-orange-50 p-4 rounded-lg">
-                  <p className="text-3xl font-bold text-orange-600">
-                    ¥{selectedReferral.referralFee.toLocaleString()}
-                  </p>
-                  <p className="text-sm text-orange-600 mt-1">税込</p>
+                  <div>
+                    <p className="text-sm text-gray-500">延床面積</p>
+                    <p className="font-medium">
+                      {FLOOR_AREA_LABELS[selectedReferral.floorArea] || selectedReferral.floorArea}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">紹介日</p>
+                    <p className="font-medium">
+                      {new Date(selectedReferral.createdAt).toLocaleDateString('ja-JP')}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
-              <button
-                onClick={() => setSelectedReferral(null)}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-              >
-                閉じる
-              </button>
+            {/* 紹介料 */}
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-3">紹介料</h4>
+              <div className="bg-orange-50 p-4 rounded-lg">
+                <p className="text-2xl sm:text-3xl font-bold text-orange-600">
+                  ¥{selectedReferral.referralFee.toLocaleString()}
+                </p>
+                <p className="text-sm text-orange-600 mt-1">税込</p>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </ResponsiveModal>
     </div>
   );
 }
