@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import AdminSidebar from '../components/Admin/Common/AdminSidebar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -154,34 +153,21 @@ export default function AdminDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex">
-        <AdminSidebar />
-        <main className="flex-1 p-8 min-w-0 overflow-y-auto h-screen">
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-            <p className="mt-2 text-gray-600">読み込み中...</p>
-          </div>
-        </main>
+      <div className="text-center py-12">
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <p className="mt-2 text-gray-600">読み込み中...</p>
       </div>
     );
   }
 
   if (!dashboardData) {
     return (
-      <div className="min-h-screen bg-gray-100 flex">
-        <AdminSidebar />
-        <main className="flex-1 p-8 min-w-0 overflow-y-auto h-screen">
-          <p className="text-center text-gray-600">データの取得に失敗しました</p>
-        </main>
-      </div>
+      <p className="text-center text-gray-600">データの取得に失敗しました</p>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      <AdminSidebar />
-      <main className="flex-1 p-8 min-w-0 overflow-y-auto h-screen">
-        <div className="space-y-6">
+    <div className="space-y-6">
           {/* ヘッダー */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <h1 className="text-3xl font-bold">運営ダッシュボード</h1>
@@ -482,8 +468,6 @@ export default function AdminDashboardPage() {
               )}
             </CardContent>
           </Card>
-        </div>
-      </main>
     </div>
   );
 }
