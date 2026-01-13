@@ -415,3 +415,15 @@ model Referral {
   @@index([partner_id])
   @@map("referrals")
 }
+
+// ===== システム設定 =====
+model SystemSettings {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique @db.VarChar(100)
+  value       String   @db.Text
+  description String?  @db.Text
+  created_at  DateTime @default(now()) @map("created_at")
+  updated_at  DateTime @updatedAt @map("updated_at")
+
+  @@map("system_settings")
+}
