@@ -178,35 +178,35 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="space-y-4 sm:space-y-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">会社情報</h2>
-            <p className="text-gray-600 mt-2">お客様に表示される会社情報を管理できます。</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">会社情報</h2>
+            <p className="text-gray-600 mt-2 text-sm sm:text-base">お客様に表示される会社情報を管理できます。</p>
           </div>
           {!isEditMode ? (
             <button
               onClick={() => setIsEditMode(true)}
-              className="bg-gray-800 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
+              className="w-full sm:w-auto bg-gray-800 text-white px-4 py-3 min-h-[44px] rounded-md text-sm font-medium hover:bg-gray-700 active:bg-gray-900 transition-colors"
             >
               編集
             </button>
           ) : (
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <button
                 onClick={() => {
                   setIsEditMode(false);
                   fetchProfile();
                 }}
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-400"
+                className="w-full sm:w-auto bg-gray-300 text-gray-700 px-4 py-3 min-h-[44px] rounded-md text-sm font-medium hover:bg-gray-400 active:bg-gray-500 transition-colors"
               >
                 キャンセル
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+                className="w-full sm:w-auto bg-blue-600 text-white px-4 py-3 min-h-[44px] rounded-md text-sm font-medium hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 transition-colors"
               >
                 {saving ? '保存中...' : '保存'}
               </button>

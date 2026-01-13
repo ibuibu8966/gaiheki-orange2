@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import InquiryDetailModal from "./InquiryDetailModal";
+import { ResponsiveTable } from "../../Common/ResponsiveTable";
 
 interface Inquiry {
   id: number;
@@ -70,23 +71,23 @@ const InquiriesView = () => {
     <>
       <div className="space-y-6">
         <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900">
+          <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
               お問い合わせ管理
             </h2>
           </div>
 
           {/* ステータスフィルタータブ */}
-          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-            <div className="flex space-x-2">
+          <div className="px-4 sm:px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <div className="flex flex-wrap gap-2">
               {["すべて", "未対応", "対応中", "対応完了"].map((filter) => (
                 <button
                   key={filter}
                   onClick={() => setInquiryFilter(filter)}
-                  className={`px-4 py-2 rounded-md text-sm font-medium ${
+                  className={`px-4 py-3 min-h-[44px] rounded-md text-sm font-medium transition-colors ${
                     inquiryFilter === filter
                       ? "bg-gray-800 text-white"
-                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 active:bg-gray-100"
                   }`}
                 >
                   {filter}
@@ -96,78 +97,63 @@ const InquiriesView = () => {
           </div>
 
           {/* テーブル */}
-          <div className="overflow-x-auto">
-            {loading ? (
-              <div className="flex justify-center items-center py-12">
-                <div className="text-gray-500">読み込み中...</div>
-              </div>
-            ) : inquiries.length === 0 ? (
-              <div className="flex justify-center items-center py-12">
-                <div className="text-gray-500">
-                  お問い合わせデータがありません
+          <div className="p-4 sm:p-0">
+            <ResponsiveTable
+              data={inquiries}
+              keyField="id"
+              isLoading={loading}
+              emptyMessage="お問い合わせデータがありません"
+              columns={[
+                {
+                  key: "customerName",
+                  label: "名前",
+                  priority: 10,
+                  render: (i) => <span className="font-medium">{i.customerName}</span>,
+                },
+                {
+                  key: "customerEmail",
+                  label: "メールアドレス",
+                  hideOnMobile: true,
+                },
+                {
+                  key: "subject",
+                  label: "件名",
+                  priority: 8,
+                },
+                {
+                  key: "createdDate",
+                  label: "作成日",
+                  priority: 6,
+                },
+                {
+                  key: "statusLabel",
+                  label: "ステータス",
+                  priority: 9,
+                  render: (i) => (
+                    <span className={`px-3 py-1 text-xs font-medium rounded-md ${getStatusColor(i.statusLabel)}`}>
+                      {i.statusLabel}
+                    </span>
+                  ),
+                },
+              ]}
+              onRowClick={(i) => setSelectedInquiryId(i.id)}
+              mobileCardTitle={(i) => (
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold">{i.customerName}</span>
+                  <span className={`px-2 py-1 text-xs font-medium rounded-md ${getStatusColor(i.statusLabel)}`}>
+                    {i.statusLabel}
+                  </span>
                 </div>
-              </div>
-            ) : (
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      名前
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      メールアドレス
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      件名
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      作成日
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      ステータス
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      詳細
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {inquiries.map((inquiry) => (
-                    <tr key={inquiry.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {inquiry.customerName}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {inquiry.customerEmail}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {inquiry.subject}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {inquiry.createdDate}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-3 py-1 text-xs font-medium rounded-md ${getStatusColor(
-                            inquiry.statusLabel
-                          )}`}
-                        >
-                          {inquiry.statusLabel}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                          onClick={() => setSelectedInquiryId(inquiry.id)}
-                          className="text-blue-600 hover:text-blue-900"
-                        >
-                          詳細
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+              )}
+              mobileCardActions={(i) => (
+                <button
+                  onClick={() => setSelectedInquiryId(i.id)}
+                  className="w-full py-2 text-center text-blue-600 font-medium min-h-[44px] hover:bg-blue-50 rounded transition-colors"
+                >
+                  詳細を見る
+                </button>
+              )}
+            />
           </div>
         </div>
       </div>

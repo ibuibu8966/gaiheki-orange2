@@ -166,7 +166,7 @@ const ContactPageContent = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     placeholder="山田太郎"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21]"
+                    className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21]"
                     required
                   />
                 </div>
@@ -182,7 +182,7 @@ const ContactPageContent = () => {
                     value={formData.phone}
                     onChange={handleInputChange}
                     placeholder="090-1234-5678"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21]"
+                    className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21]"
                     required
                   />
                 </div>
@@ -199,7 +199,7 @@ const ContactPageContent = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="example@email.com"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21]"
+                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21]"
                   required
                 />
               </div>
@@ -213,7 +213,7 @@ const ContactPageContent = () => {
                   name="subject"
                   value={formData.subject}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21]"
+                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21]"
                   required
                 >
                   <option value="">選択してください</option>
@@ -236,7 +236,7 @@ const ContactPageContent = () => {
                   onChange={handleInputChange}
                   rows={6}
                   placeholder="お問い合わせ内容をご記入ください"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21] resize-vertical"
+                  className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21] resize-vertical"
                   required
                 />
               </div>
@@ -245,7 +245,7 @@ const ContactPageContent = () => {
               <div className="text-center">
                 <button
                   type="submit"
-                  className="bg-[#f16f21] hover:bg-[#e05a10] text-white font-bold py-3 px-8 rounded-lg transition-colors inline-flex items-center"
+                  className="bg-[#f16f21] hover:bg-[#e05a10] active:bg-[#d05510] text-white font-bold py-3 px-8 min-h-[44px] rounded-lg transition-colors inline-flex items-center"
                 >
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

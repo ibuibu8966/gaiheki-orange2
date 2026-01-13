@@ -109,7 +109,7 @@ const PartnerRegistrationPageContent = () => {
                   value={formData.companyName}
                   onChange={handleInputChange}
                   placeholder="株式会社○○塗装"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   required
                 />
               </div>
@@ -125,7 +125,7 @@ const PartnerRegistrationPageContent = () => {
                   value={formData.representativeName}
                   onChange={handleInputChange}
                   placeholder="山田 太郎"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   required
                 />
               </div>
@@ -146,7 +146,7 @@ const PartnerRegistrationPageContent = () => {
                 value={formData.address}
                 onChange={handleInputChange}
                 placeholder="東京都渋谷区○○1-2-3"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 required
               />
             </div>
@@ -176,7 +176,7 @@ const PartnerRegistrationPageContent = () => {
                   value={formData.phone}
                   onChange={handleInputChange}
                   placeholder="03-1234-5678"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   required
                 />
               </div>
@@ -195,7 +195,7 @@ const PartnerRegistrationPageContent = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="info@example.com"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   required
                 />
               </div>
@@ -215,7 +215,7 @@ const PartnerRegistrationPageContent = () => {
                 value={formData.website}
                 onChange={handleInputChange}
                 placeholder="https://www.example.com"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               />
             </div>
           </div>
@@ -279,10 +279,10 @@ const PartnerRegistrationPageContent = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`font-bold py-3 px-12 rounded-lg transition-colors text-lg ${
+              className={`font-bold py-3 px-12 min-h-[44px] rounded-lg transition-colors text-lg ${
                 isSubmitting
                   ? 'bg-gray-400 cursor-not-allowed text-white'
-                  : 'bg-orange-500 hover:bg-orange-600 text-white'
+                  : 'bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white'
               }`}
             >
               {isSubmitting ? '送信中...' : 'この内容で申請する'}

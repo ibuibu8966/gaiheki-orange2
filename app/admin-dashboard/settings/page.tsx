@@ -99,12 +99,12 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">システム設定</h1>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold">システム設定</h1>
         <a
           href="/admin-dashboard"
-          className="text-blue-600 hover:text-blue-800 text-sm"
+          className="text-blue-600 hover:text-blue-800 text-sm min-h-[44px] flex items-center"
         >
           ← ダッシュボードに戻る
         </a>
@@ -163,7 +163,7 @@ export default function AdminSettingsPage() {
                   setSettings({ ...settings, account_type: value })
                 }
               >
-                <SelectTrigger id="account_type">
+                <SelectTrigger id="account_type" className="min-h-[44px]">
                   <SelectValue placeholder="口座種別を選択" />
                 </SelectTrigger>
                 <SelectContent>
@@ -230,7 +230,7 @@ export default function AdminSettingsPage() {
           </div>
 
           <div className="flex justify-end">
-            <Button onClick={handleSave} disabled={saving}>
+            <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto min-h-[44px]">
               {saving ? '保存中...' : '設定を保存'}
             </Button>
           </div>

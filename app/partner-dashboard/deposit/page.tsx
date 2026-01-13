@@ -136,12 +136,12 @@ export default function PartnerDepositPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">入金申請</h1>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold">入金申請</h1>
         <a
           href="/partner-dashboard"
-          className="text-blue-600 hover:text-blue-800 text-sm"
+          className="text-blue-600 hover:text-blue-800 text-sm min-h-[44px] flex items-center"
         >
           ← ダッシュボードに戻る
         </a>
@@ -255,7 +255,7 @@ export default function PartnerDepositPage() {
                 />
               </div>
 
-              <Button type="submit" disabled={submitting} className="w-full">
+              <Button type="submit" disabled={submitting} className="w-full min-h-[44px]">
                 {submitting ? '送信中...' : '入金申請を送信'}
               </Button>
             </form>
@@ -332,17 +332,17 @@ export default function PartnerDepositPage() {
                   <button
                     onClick={() => fetchDepositData(pagination.page - 1)}
                     disabled={pagination.page === 1}
-                    className="px-3 py-1 border rounded disabled:opacity-50"
+                    className="px-4 py-3 min-h-[44px] border rounded-md disabled:opacity-50 hover:bg-gray-50 active:bg-gray-100 transition-colors"
                   >
                     前へ
                   </button>
-                  <span className="px-3 py-1">
+                  <span className="px-4 py-3 min-h-[44px] flex items-center">
                     {pagination.page} / {pagination.totalPages}
                   </span>
                   <button
                     onClick={() => fetchDepositData(pagination.page + 1)}
                     disabled={pagination.page === pagination.totalPages}
-                    className="px-3 py-1 border rounded disabled:opacity-50"
+                    className="px-4 py-3 min-h-[44px] border rounded-md disabled:opacity-50 hover:bg-gray-50 active:bg-gray-100 transition-colors"
                   >
                     次へ
                   </button>

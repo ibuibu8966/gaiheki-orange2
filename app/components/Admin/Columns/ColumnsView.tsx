@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import ArticleEditorModal from "./ArticleEditorModal";
+import { ResponsiveTable } from "../../Common/ResponsiveTable";
 
 interface Article {
   id: number;
@@ -131,23 +132,23 @@ const ColumnsView = () => {
     <>
       <div className="space-y-6">
         <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900">コラム管理</h2>
+          <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">コラム管理</h2>
           </div>
 
           {/* ツールバー */}
-          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-            <div className="flex items-center space-x-4">
+          <div className="px-4 sm:px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
               {/* ステータスフィルター */}
-              <div className="flex space-x-2">
+              <div className="flex flex-wrap gap-2">
                 {["すべて", "表示", "非表示"].map((filter) => (
                   <button
                     key={filter}
                     onClick={() => setStatusFilter(filter)}
-                    className={`px-4 py-2 rounded-md text-sm font-medium ${
+                    className={`px-4 py-3 min-h-[44px] rounded-md text-sm font-medium transition-colors ${
                       statusFilter === filter
                         ? "bg-gray-800 text-white"
-                        : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                        : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 active:bg-gray-100"
                     }`}
                   >
                     {filter}
@@ -161,19 +162,19 @@ const ColumnsView = () => {
                   setSelectedArticleId(undefined);
                   setShowEditor(true);
                 }}
-                className="bg-gray-800 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
+                className="bg-gray-800 text-white px-4 py-3 min-h-[44px] rounded-md text-sm font-medium hover:bg-gray-700 active:bg-gray-900 transition-colors w-full sm:w-auto"
               >
                 新規作成
               </button>
 
               {/* 検索バー */}
-              <div className="relative">
+              <div className="relative flex-1 sm:flex-none">
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="コラム検索..."
-                  className="pl-3 pr-10 py-2 border border-gray-300 rounded-md text-sm w-64"
+                  className="pl-3 pr-10 py-3 min-h-[44px] border border-gray-300 rounded-md text-sm w-full sm:w-64"
                 />
                 <svg
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
@@ -193,130 +194,140 @@ const ColumnsView = () => {
           </div>
 
           {/* テーブル */}
-          <div className="overflow-x-auto">
-            {loading ? (
-              <div className="flex justify-center items-center py-12">
-                <div className="text-gray-500">読み込み中...</div>
-              </div>
-            ) : filteredArticles.length === 0 ? (
-              <div className="flex justify-center items-center py-12">
-                <div className="text-gray-500">記事がありません</div>
-              </div>
-            ) : (
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      サムネイル
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      タイトル
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      カテゴリ
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      ステータス
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      作成日
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      並び替え
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      操作
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredArticles.map((article, index) => (
-                    <tr key={article.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {article.thumbnailImage ? (
-                          <img
-                            src={article.thumbnailImage}
-                            alt={article.title}
-                            className="w-16 h-10 object-cover rounded"
-                          />
-                        ) : (
-                          <div className="w-16 h-10 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
-                            No Image
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900 max-w-xs">
-                        <div className="truncate">{article.title}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {article.categoryLabel}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <select
-                          value={article.isPublished ? "表示" : "非表示"}
-                          onChange={(e) =>
-                            handleStatusChange(
-                              article.id,
-                              e.target.value === "表示"
-                            )
-                          }
-                          className={`px-3 py-1 text-xs font-medium rounded-md border-0 ${
-                            article.isPublished
-                              ? "bg-green-100 text-green-800"
-                              : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          <option value="表示">表示</option>
-                          <option value="非表示">非表示</option>
-                        </select>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {article.createdDate}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-1">
-                          <button
-                            onClick={() => handleReorder(article.id, "up")}
-                            disabled={index === 0}
-                            className="p-1 text-gray-600 hover:text-gray-900 disabled:text-gray-300 disabled:cursor-not-allowed"
-                            title="上へ"
-                          >
-                            ↑
-                          </button>
-                          <button
-                            onClick={() => handleReorder(article.id, "down")}
-                            disabled={index === filteredArticles.length - 1}
-                            className="p-1 text-gray-600 hover:text-gray-900 disabled:text-gray-300 disabled:cursor-not-allowed"
-                            title="下へ"
-                          >
-                            ↓
-                          </button>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center space-x-2">
-                          <button
-                            onClick={() => {
-                              setSelectedArticleId(article.id);
-                              setShowEditor(true);
-                            }}
-                            className="text-blue-600 hover:text-blue-900 text-sm"
-                          >
-                            編集
-                          </button>
-                          <button
-                            onClick={() => handleDelete(article.id)}
-                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm"
-                          >
-                            削除
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+          <div className="p-4 sm:p-0">
+            <ResponsiveTable
+              data={filteredArticles}
+              keyField="id"
+              isLoading={loading}
+              emptyMessage="記事がありません"
+              columns={[
+                {
+                  key: "thumbnailImage",
+                  label: "サムネイル",
+                  hideOnMobile: true,
+                  render: (a) =>
+                    a.thumbnailImage ? (
+                      <img
+                        src={a.thumbnailImage}
+                        alt={a.title}
+                        className="w-16 h-10 object-cover rounded"
+                      />
+                    ) : (
+                      <div className="w-16 h-10 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
+                        No Image
+                      </div>
+                    ),
+                },
+                {
+                  key: "title",
+                  label: "タイトル",
+                  priority: 10,
+                  render: (a) => (
+                    <div className="truncate max-w-xs font-medium">{a.title}</div>
+                  ),
+                },
+                {
+                  key: "categoryLabel",
+                  label: "カテゴリ",
+                  priority: 7,
+                },
+                {
+                  key: "isPublished",
+                  label: "ステータス",
+                  priority: 8,
+                  render: (a) => (
+                    <select
+                      value={a.isPublished ? "表示" : "非表示"}
+                      onChange={(e) =>
+                        handleStatusChange(a.id, e.target.value === "表示")
+                      }
+                      onClick={(e) => e.stopPropagation()}
+                      className={`px-3 py-2 min-h-[36px] text-xs font-medium rounded-md border-0 ${
+                        a.isPublished
+                          ? "bg-green-100 text-green-800"
+                          : "bg-gray-100 text-gray-800"
+                      }`}
+                    >
+                      <option value="表示">表示</option>
+                      <option value="非表示">非表示</option>
+                    </select>
+                  ),
+                },
+                {
+                  key: "createdDate",
+                  label: "作成日",
+                  priority: 6,
+                },
+              ]}
+              onRowClick={(a) => {
+                setSelectedArticleId(a.id);
+                setShowEditor(true);
+              }}
+              mobileCardTitle={(a) => (
+                <div className="flex items-center gap-3">
+                  {a.thumbnailImage ? (
+                    <img
+                      src={a.thumbnailImage}
+                      alt={a.title}
+                      className="w-12 h-8 object-cover rounded flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-12 h-8 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500 flex-shrink-0">
+                      No
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold truncate">{a.title}</div>
+                    <div className="text-xs text-gray-500">{a.categoryLabel}</div>
+                  </div>
+                  <span
+                    className={`px-2 py-1 text-xs font-medium rounded-md flex-shrink-0 ${
+                      a.isPublished
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    {a.isPublished ? "表示" : "非表示"}
+                  </span>
+                </div>
+              )}
+              mobileCardActions={(a) => {
+                const index = filteredArticles.findIndex((art) => art.id === a.id);
+                return (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleReorder(a.id, "up")}
+                      disabled={index === 0}
+                      className="flex-1 py-2 text-center text-gray-600 font-medium min-h-[44px] hover:bg-gray-100 rounded transition-colors disabled:opacity-50"
+                    >
+                      ↑ 上へ
+                    </button>
+                    <button
+                      onClick={() => handleReorder(a.id, "down")}
+                      disabled={index === filteredArticles.length - 1}
+                      className="flex-1 py-2 text-center text-gray-600 font-medium min-h-[44px] hover:bg-gray-100 rounded transition-colors disabled:opacity-50"
+                    >
+                      ↓ 下へ
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedArticleId(a.id);
+                        setShowEditor(true);
+                      }}
+                      className="flex-1 py-2 text-center text-blue-600 font-medium min-h-[44px] hover:bg-blue-50 rounded transition-colors"
+                    >
+                      編集
+                    </button>
+                    <button
+                      onClick={() => handleDelete(a.id)}
+                      className="flex-1 py-2 text-center text-red-600 font-medium min-h-[44px] hover:bg-red-50 rounded transition-colors"
+                    >
+                      削除
+                    </button>
+                  </div>
+                );
+              }}
+            />
           </div>
         </div>
       </div>

@@ -13,14 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { ResponsiveTable } from '../../components/Common/ResponsiveTable';
+import { ResponsiveModal } from '../../components/Common/ResponsiveModal';
 
 interface DepositRequest {
   id: string;
@@ -170,12 +164,12 @@ export default function AdminDepositsPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">入金管理</h1>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold">入金管理</h1>
         <a
           href="/admin-dashboard"
-          className="text-blue-600 hover:text-blue-800 text-sm"
+          className="text-blue-600 hover:text-blue-800 text-sm min-h-[44px] flex items-center"
         >
           ← ダッシュボードに戻る
         </a>
@@ -195,11 +189,11 @@ export default function AdminDepositsPage() {
 
       {/* フィルター */}
       <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-center gap-4">
-            <Label htmlFor="status">ステータス</Label>
+        <CardContent className="p-3 sm:pt-6">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <Label htmlFor="status" className="text-sm font-medium">ステータス</Label>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[180px]" id="status">
+              <SelectTrigger className="w-full sm:w-[180px] min-h-[44px]" id="status">
                 <SelectValue placeholder="ステータスを選択" />
               </SelectTrigger>
               <SelectContent>
@@ -215,214 +209,233 @@ export default function AdminDepositsPage() {
 
       {/* 申請一覧 */}
       <Card>
-        <CardHeader>
-          <CardTitle>入金申請一覧</CardTitle>
+        <CardHeader className="p-3 sm:p-6">
+          <CardTitle className="text-base sm:text-lg">入金申請一覧</CardTitle>
         </CardHeader>
-        <CardContent>
-          {depositRequests.length > 0 ? (
-            <>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>申請日時</TableHead>
-                      <TableHead>会社名</TableHead>
-                      <TableHead>申請金額</TableHead>
-                      <TableHead>承認金額</TableHead>
-                      <TableHead>現在残高</TableHead>
-                      <TableHead>ステータス</TableHead>
-                      <TableHead>操作</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {depositRequests.map((request) => {
-                      const status = getStatusLabel(request.status);
-                      return (
-                        <TableRow key={request.id}>
-                          <TableCell className="text-sm">
-                            {new Date(request.createdAt).toLocaleString('ja-JP')}
-                          </TableCell>
-                          <TableCell className="font-medium">
-                            {request.companyName}
-                          </TableCell>
-                          <TableCell>
-                            ¥{request.requestedAmount.toLocaleString()}
-                          </TableCell>
-                          <TableCell>
-                            {request.approvedAmount !== null
-                              ? `¥${request.approvedAmount.toLocaleString()}`
-                              : '-'}
-                          </TableCell>
-                          <TableCell>
-                            ¥{request.currentBalance.toLocaleString()}
-                          </TableCell>
-                          <TableCell>
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs font-medium ${status.className}`}
-                            >
-                              {status.label}
-                            </span>
-                          </TableCell>
-                          <TableCell>
-                            {request.status === 'PENDING' ? (
-                              <div className="flex gap-2">
-                                <button
-                                  onClick={() => openModal(request, 'approve')}
-                                  className="text-green-600 hover:text-green-800 text-sm font-medium"
-                                >
-                                  承認
-                                </button>
-                                <button
-                                  onClick={() => openModal(request, 'reject')}
-                                  className="text-red-600 hover:text-red-800 text-sm font-medium"
-                                >
-                                  却下
-                                </button>
-                              </div>
-                            ) : (
-                              <span className="text-gray-400 text-sm">処理済み</span>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
-
-              {/* ページネーション */}
-              {pagination && pagination.totalPages > 1 && (
-                <div className="flex justify-center gap-2 mt-4">
-                  <button
-                    onClick={() => fetchDepositRequests(pagination.page - 1)}
-                    disabled={pagination.page === 1}
-                    className="px-3 py-1 border rounded disabled:opacity-50"
-                  >
-                    前へ
-                  </button>
-                  <span className="px-3 py-1">
-                    {pagination.page} / {pagination.totalPages}
+        <CardContent className="p-2 sm:p-6">
+          <ResponsiveTable
+            data={depositRequests}
+            keyField="id"
+            isLoading={loading}
+            emptyMessage="入金申請がありません"
+            columns={[
+              {
+                key: 'createdAt',
+                label: '申請日時',
+                priority: 6,
+                render: (r) => (
+                  <span className="text-sm">
+                    {new Date(r.createdAt).toLocaleDateString('ja-JP')}
                   </span>
+                ),
+              },
+              {
+                key: 'companyName',
+                label: '会社名',
+                priority: 10,
+                render: (r) => <span className="font-medium">{r.companyName}</span>,
+              },
+              {
+                key: 'requestedAmount',
+                label: '申請金額',
+                priority: 9,
+                render: (r) => (
+                  <span className="font-semibold text-blue-600">
+                    ¥{r.requestedAmount.toLocaleString()}
+                  </span>
+                ),
+              },
+              {
+                key: 'approvedAmount',
+                label: '承認金額',
+                hideOnMobile: true,
+                render: (r) =>
+                  r.approvedAmount !== null
+                    ? `¥${r.approvedAmount.toLocaleString()}`
+                    : '-',
+              },
+              {
+                key: 'currentBalance',
+                label: '現在残高',
+                hideOnMobile: true,
+                render: (r) => `¥${r.currentBalance.toLocaleString()}`,
+              },
+              {
+                key: 'status',
+                label: 'ステータス',
+                priority: 8,
+                render: (r) => {
+                  const status = getStatusLabel(r.status);
+                  return (
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${status.className}`}>
+                      {status.label}
+                    </span>
+                  );
+                },
+              },
+            ]}
+            onRowClick={(r) => r.status === 'PENDING' && openModal(r, 'approve')}
+            mobileCardTitle={(r) => (
+              <div className="flex items-center justify-between">
+                <span className="font-semibold">{r.companyName}</span>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusLabel(r.status).className}`}>
+                  {getStatusLabel(r.status).label}
+                </span>
+              </div>
+            )}
+            mobileCardActions={(r) => (
+              r.status === 'PENDING' ? (
+                <div className="flex gap-2">
                   <button
-                    onClick={() => fetchDepositRequests(pagination.page + 1)}
-                    disabled={pagination.page === pagination.totalPages}
-                    className="px-3 py-1 border rounded disabled:opacity-50"
+                    onClick={() => openModal(r, 'approve')}
+                    className="flex-1 py-2 text-center text-green-600 font-medium min-h-[44px] hover:bg-green-50 rounded transition-colors"
                   >
-                    次へ
+                    承認
+                  </button>
+                  <button
+                    onClick={() => openModal(r, 'reject')}
+                    className="flex-1 py-2 text-center text-red-600 font-medium min-h-[44px] hover:bg-red-50 rounded transition-colors"
+                  >
+                    却下
                   </button>
                 </div>
-              )}
-            </>
-          ) : (
-            <div className="text-center py-12 text-gray-500">
-              入金申請がありません
+              ) : (
+                <div className="py-2 text-center text-gray-400 text-sm">処理済み</div>
+              )
+            )}
+          />
+
+          {/* ページネーション */}
+          {pagination && pagination.totalPages > 1 && (
+            <div className="flex justify-center gap-2 mt-4">
+              <button
+                onClick={() => fetchDepositRequests(pagination.page - 1)}
+                disabled={pagination.page === 1}
+                className="px-4 py-3 min-h-[44px] border rounded-md disabled:opacity-50 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+              >
+                前へ
+              </button>
+              <span className="px-4 py-3 min-h-[44px] flex items-center">
+                {pagination.page} / {pagination.totalPages}
+              </span>
+              <button
+                onClick={() => fetchDepositRequests(pagination.page + 1)}
+                disabled={pagination.page === pagination.totalPages}
+                className="px-4 py-3 min-h-[44px] border rounded-md disabled:opacity-50 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+              >
+                次へ
+              </button>
             </div>
           )}
         </CardContent>
       </Card>
 
       {/* 承認/却下モーダル */}
-      {selectedRequest && modalAction && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full m-4">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900">
-                {modalAction === 'approve' ? '入金申請の承認' : '入金申請の却下'}
-              </h3>
-            </div>
-
-            <div className="px-6 py-4 space-y-4">
-              <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-                <p className="text-sm">
-                  <span className="text-gray-500">会社名:</span>{' '}
-                  <span className="font-medium">{selectedRequest.companyName}</span>
-                </p>
-                <p className="text-sm">
-                  <span className="text-gray-500">申請金額:</span>{' '}
-                  <span className="font-medium">
-                    ¥{selectedRequest.requestedAmount.toLocaleString()}
-                  </span>
-                </p>
-                <p className="text-sm">
-                  <span className="text-gray-500">現在残高:</span>{' '}
-                  <span className="font-medium">
-                    ¥{selectedRequest.currentBalance.toLocaleString()}
-                  </span>
-                </p>
-                {selectedRequest.partnerNote && (
-                  <p className="text-sm">
-                    <span className="text-gray-500">加盟店備考:</span>{' '}
-                    <span>{selectedRequest.partnerNote}</span>
-                  </p>
-                )}
-              </div>
-
-              {modalAction === 'approve' && (
-                <div className="space-y-2">
-                  <Label htmlFor="approved_amount">承認金額</Label>
-                  <Input
-                    id="approved_amount"
-                    type="number"
-                    value={approvedAmount}
-                    onChange={(e) => setApprovedAmount(e.target.value)}
-                    placeholder="実際の振込金額を入力"
-                    min="1"
-                  />
-                  <p className="text-xs text-gray-500">
-                    実際に確認できた振込金額を入力してください（申請金額と異なる場合も対応可能）
-                  </p>
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <Label htmlFor="admin_note">管理者メモ（任意）</Label>
-                <Textarea
-                  id="admin_note"
-                  value={adminNote}
-                  onChange={(e) => setAdminNote(e.target.value)}
-                  placeholder={
-                    modalAction === 'approve'
-                      ? '確認日時や備考など'
-                      : '却下理由を入力してください'
-                  }
-                  rows={3}
-                />
-              </div>
-
-              {modalAction === 'approve' && (
-                <div className="bg-green-50 p-3 rounded-lg text-sm text-green-700">
-                  承認後の残高: ¥
-                  {(
-                    selectedRequest.currentBalance +
-                    (parseInt(approvedAmount, 10) || 0)
-                  ).toLocaleString()}
-                </div>
-              )}
-            </div>
-
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
-              <Button variant="outline" onClick={closeModal} disabled={processing}>
-                キャンセル
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                disabled={processing}
-                className={
-                  modalAction === 'approve'
-                    ? 'bg-green-600 hover:bg-green-700'
-                    : 'bg-red-600 hover:bg-red-700'
-                }
-              >
-                {processing
-                  ? '処理中...'
-                  : modalAction === 'approve'
-                  ? '承認する'
-                  : '却下する'}
-              </Button>
-            </div>
+      <ResponsiveModal
+        isOpen={!!(selectedRequest && modalAction)}
+        onClose={closeModal}
+        title={modalAction === 'approve' ? '入金申請の承認' : '入金申請の却下'}
+        size="md"
+        footer={
+          <div className="flex flex-col-reverse sm:flex-row gap-3 w-full sm:w-auto">
+            <Button
+              variant="outline"
+              onClick={closeModal}
+              disabled={processing}
+              className="w-full sm:w-auto min-h-[44px]"
+            >
+              キャンセル
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={processing}
+              className={`w-full sm:w-auto min-h-[44px] ${
+                modalAction === 'approve'
+                  ? 'bg-green-600 hover:bg-green-700'
+                  : 'bg-red-600 hover:bg-red-700'
+              }`}
+            >
+              {processing
+                ? '処理中...'
+                : modalAction === 'approve'
+                ? '承認する'
+                : '却下する'}
+            </Button>
           </div>
-        </div>
-      )}
+        }
+      >
+        {selectedRequest && (
+          <div className="space-y-4">
+            <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+              <p className="text-sm">
+                <span className="text-gray-500">会社名:</span>{' '}
+                <span className="font-medium">{selectedRequest.companyName}</span>
+              </p>
+              <p className="text-sm">
+                <span className="text-gray-500">申請金額:</span>{' '}
+                <span className="font-medium">
+                  ¥{selectedRequest.requestedAmount.toLocaleString()}
+                </span>
+              </p>
+              <p className="text-sm">
+                <span className="text-gray-500">現在残高:</span>{' '}
+                <span className="font-medium">
+                  ¥{selectedRequest.currentBalance.toLocaleString()}
+                </span>
+              </p>
+              {selectedRequest.partnerNote && (
+                <p className="text-sm">
+                  <span className="text-gray-500">加盟店備考:</span>{' '}
+                  <span>{selectedRequest.partnerNote}</span>
+                </p>
+              )}
+            </div>
+
+            {modalAction === 'approve' && (
+              <div className="space-y-2">
+                <Label htmlFor="approved_amount">承認金額</Label>
+                <Input
+                  id="approved_amount"
+                  type="number"
+                  value={approvedAmount}
+                  onChange={(e) => setApprovedAmount(e.target.value)}
+                  placeholder="実際の振込金額を入力"
+                  min="1"
+                  className="min-h-[44px]"
+                />
+                <p className="text-xs text-gray-500">
+                  実際に確認できた振込金額を入力してください（申請金額と異なる場合も対応可能）
+                </p>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="admin_note">管理者メモ（任意）</Label>
+              <Textarea
+                id="admin_note"
+                value={adminNote}
+                onChange={(e) => setAdminNote(e.target.value)}
+                placeholder={
+                  modalAction === 'approve'
+                    ? '確認日時や備考など'
+                    : '却下理由を入力してください'
+                }
+                rows={3}
+              />
+            </div>
+
+            {modalAction === 'approve' && (
+              <div className="bg-green-50 p-3 rounded-lg text-sm text-green-700">
+                承認後の残高: ¥
+                {(
+                  selectedRequest.currentBalance +
+                  (parseInt(approvedAmount, 10) || 0)
+                ).toLocaleString()}
+              </div>
+            )}
+          </div>
+        )}
+      </ResponsiveModal>
     </div>
   );
 }

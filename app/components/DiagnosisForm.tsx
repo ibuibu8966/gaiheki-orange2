@@ -207,12 +207,15 @@ const DiagnosisForm = () => {
                   <option value="UNKNOWN">分からない</option>
                   <option value="UNDER_80">80㎡未満</option>
                   <option value="FROM_80_TO_100">80〜100㎡</option>
-                  <option value="FROM_100_TO_120">100〜120㎡</option>
-                  <option value="FROM_120_TO_140">120〜140㎡</option>
-                  <option value="FROM_140_TO_160">140〜160㎡</option>
-                  <option value="FROM_160_TO_180">160〜180㎡</option>
-                  <option value="FROM_180_TO_200">180〜200㎡</option>
-                  <option value="OVER_200">200㎡以上</option>
+                  <option value="FROM_101_TO_120">101〜120㎡</option>
+                  <option value="FROM_121_TO_140">121〜140㎡</option>
+                  <option value="FROM_141_TO_160">141〜160㎡</option>
+                  <option value="FROM_161_TO_180">161〜180㎡</option>
+                  <option value="FROM_181_TO_200">181〜200㎡</option>
+                  <option value="FROM_201_TO_250">201〜250㎡</option>
+                  <option value="FROM_251_TO_300">251〜300㎡</option>
+                  <option value="FROM_301_TO_500">301〜500㎡</option>
+                  <option value="OVER_501">501㎡以上</option>
                 </select>
               </div>
 
