@@ -118,12 +118,14 @@ export async function POST(request: NextRequest) {
       partnerCompanyName: partner.partner_details?.company_name || 'パートナー',
       diagnosisNumber: diagnosis.diagnosis_number,
       customerName: diagnosis.customer_name,
+      customerPhone: diagnosis.customer_phone,
+      customerAddress: diagnosis.customer_address,
       prefecture: diagnosis.prefecture,
       constructionType: diagnosis.construction_type,
       floorArea: diagnosis.floor_area,
+      adminNote: diagnosis.admin_note,
       referralFee: fee,
-      previousBalance,
-      newBalance,
+      remainingBalance: newBalance,
     });
 
     // メール送信状態を更新

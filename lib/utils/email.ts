@@ -12,12 +12,14 @@ interface ReferralEmailData {
   partnerCompanyName: string;
   diagnosisNumber: string;
   customerName: string;
+  customerPhone: string;
+  customerAddress: string | null;
   prefecture: string;
   constructionType: string;
   floorArea: string;
+  adminNote: string | null;
   referralFee: number;
-  previousBalance: number;
-  newBalance: number;
+  remainingBalance: number;
 }
 
 const PREFECTURE_LABELS: Record<string, string> = {
@@ -68,6 +70,9 @@ export function generateReferralEmailContent(data: ReferralEmailData): { subject
   const constructionTypeLabel = CONSTRUCTION_TYPE_LABELS[data.constructionType] || data.constructionType;
   const floorAreaLabel = FLOOR_AREA_LABELS[data.floorArea] || data.floorArea;
 
+  // 住所を組み立て（customer_addressがあればそれを使用、なければ都道府県のみ）
+  const fullAddress = data.customerAddress || prefectureLabel;
+
   const text = `
 ${data.partnerCompanyName} 様
 
@@ -76,16 +81,16 @@ ${data.partnerCompanyName} 様
 ■ 案件情報
 診断番号: ${data.diagnosisNumber}
 顧客名: ${data.customerName}
-都道府県: ${prefectureLabel}
+電話番号: ${data.customerPhone}
+住所: ${fullAddress}
 工事種別: ${constructionTypeLabel}
 延床面積: ${floorAreaLabel}
-
+${data.adminNote ? `\n■ コメント\n${data.adminNote}\n` : ''}
 ■ 紹介料
 ¥${data.referralFee.toLocaleString()}
 
-■ 保証金残高
-変更前: ¥${data.previousBalance.toLocaleString()}
-変更後: ¥${data.newBalance.toLocaleString()}
+■ 残り保証金
+¥${data.remainingBalance.toLocaleString()}
 
 詳細はダッシュボードからご確認ください。
 ${APP_URL}/partner-dashboard/referrals
@@ -112,11 +117,9 @@ ${APP_URL}/partner-dashboard/referrals
     .info-value { font-weight: 500; }
     .fee-box { background-color: #fff5eb; padding: 15px; border-radius: 8px; text-align: center; }
     .fee-amount { font-size: 24px; font-weight: bold; color: #f16f21; }
-    .balance-box { background-color: #f0f9ff; padding: 15px; border-radius: 8px; }
-    .balance-row { display: flex; justify-content: space-between; margin: 5px 0; }
-    .balance-label { color: #666; }
-    .balance-value { font-weight: 500; }
-    .balance-new { color: #f16f21; font-weight: bold; }
+    .balance-box { background-color: #f0f9ff; padding: 15px; border-radius: 8px; text-align: center; }
+    .balance-amount { font-size: 20px; font-weight: bold; color: #0284c7; }
+    .comment-box { background-color: #fffbeb; padding: 15px; border-radius: 8px; white-space: pre-wrap; }
     .cta-button { display: inline-block; background-color: #f16f21; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin-top: 15px; }
     .footer { text-align: center; color: #999; font-size: 12px; margin-top: 20px; }
   </style>
@@ -141,8 +144,12 @@ ${APP_URL}/partner-dashboard/referrals
           <span class="info-value">${data.customerName}</span>
         </div>
         <div class="info-row">
-          <span class="info-label">都道府県:</span>
-          <span class="info-value">${prefectureLabel}</span>
+          <span class="info-label">電話番号:</span>
+          <span class="info-value">${data.customerPhone}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">住所:</span>
+          <span class="info-value">${fullAddress}</span>
         </div>
         <div class="info-row">
           <span class="info-label">工事種別:</span>
@@ -154,6 +161,13 @@ ${APP_URL}/partner-dashboard/referrals
         </div>
       </div>
 
+      ${data.adminNote ? `
+      <div class="section">
+        <div class="section-title">コメント</div>
+        <div class="comment-box">${data.adminNote}</div>
+      </div>
+      ` : ''}
+
       <div class="section">
         <div class="section-title">紹介料</div>
         <div class="fee-box">
@@ -162,16 +176,9 @@ ${APP_URL}/partner-dashboard/referrals
       </div>
 
       <div class="section">
-        <div class="section-title">保証金残高</div>
+        <div class="section-title">残り保証金</div>
         <div class="balance-box">
-          <div class="balance-row">
-            <span class="balance-label">変更前:</span>
-            <span class="balance-value">¥${data.previousBalance.toLocaleString()}</span>
-          </div>
-          <div class="balance-row">
-            <span class="balance-label">変更後:</span>
-            <span class="balance-value balance-new">¥${data.newBalance.toLocaleString()}</span>
-          </div>
+          <div class="balance-amount">¥${data.remainingBalance.toLocaleString()}</div>
         </div>
       </div>
 

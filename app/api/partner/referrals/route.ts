@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
               current_situation: true,
               status: true,
               referral_fee: true,
+              admin_note: true,
             },
           },
         },
@@ -69,6 +70,7 @@ export async function GET(request: NextRequest) {
       currentSituation: r.diagnosis.current_situation,
       status: r.diagnosis.status,
       referralFee: r.referral_fee,
+      adminNote: r.diagnosis.admin_note,
       createdAt: r.created_at.toISOString(),
     }));
 

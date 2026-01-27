@@ -19,6 +19,7 @@ interface Referral {
   currentSituation: string;
   status: string;
   referralFee: number;
+  adminNote: string | null;
   createdAt: string;
 }
 
@@ -333,6 +334,16 @@ export default function PartnerReferralsPage() {
                 </div>
               </div>
             </div>
+
+            {/* コメント */}
+            {selectedReferral.adminNote && (
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-3">コメント</h4>
+                <div className="bg-yellow-50 p-4 rounded-lg">
+                  <p className="whitespace-pre-wrap text-gray-700">{selectedReferral.adminNote}</p>
+                </div>
+              </div>
+            )}
 
             {/* 紹介料 */}
             <div>
