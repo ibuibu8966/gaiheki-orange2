@@ -1,9 +1,9 @@
-import { auth } from "@/auth"
 import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
+import { getToken } from "next-auth/jwt"
 
-export default auth((req) => {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
-  const session = req.auth
 
   // Public routes - allow access
   if (
@@ -26,6 +26,12 @@ export default auth((req) => {
     return NextResponse.next()
   }
 
+  // Get JWT token (lightweight, no DB access)
+  const token = await getToken({
+    req,
+    secret: process.env.AUTH_SECRET
+  })
+
   // Admin routes protection
   if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
     // Allow login/logout endpoints and public data endpoints
@@ -37,7 +43,7 @@ export default auth((req) => {
       return NextResponse.next()
     }
 
-    if (!session) {
+    if (!token) {
       if (pathname.startsWith("/api/")) {
         return NextResponse.json(
           { error: "認証が必要です" },
@@ -47,7 +53,7 @@ export default auth((req) => {
       return NextResponse.redirect(new URL("/auth/admin-login", req.url))
     }
 
-    if (session.user?.userType !== "admin") {
+    if (token.userType !== "admin") {
       if (pathname.startsWith("/api/")) {
         return NextResponse.json(
           { error: "管理者権限が必要です" },
@@ -69,7 +75,7 @@ export default auth((req) => {
       return NextResponse.next()
     }
 
-    if (!session) {
+    if (!token) {
       if (pathname.startsWith("/api/")) {
         return NextResponse.json(
           { error: "認証が必要です" },
@@ -79,7 +85,7 @@ export default auth((req) => {
       return NextResponse.redirect(new URL("/auth/partner-login", req.url))
     }
 
-    if (session.user?.userType !== "partner") {
+    if (token.userType !== "partner") {
       if (pathname.startsWith("/api/")) {
         return NextResponse.json(
           { error: "パートナー権限が必要です" },
@@ -91,7 +97,7 @@ export default auth((req) => {
   }
 
   return NextResponse.next()
-})
+}
 
 export const config = {
   matcher: [
