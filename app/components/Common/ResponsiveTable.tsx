@@ -113,7 +113,7 @@ export function ResponsiveTable<T extends Record<string, unknown>>({
           >
             {mobileCardTitle && (
               <CardHeader className="px-4 py-3 bg-muted/30 border-b">
-                <div className="font-semibold text-foreground">
+                <div className="font-semibold text-gray-900">
                   {mobileCardTitle(item)}
                 </div>
               </CardHeader>
@@ -133,7 +133,7 @@ export function ResponsiveTable<T extends Record<string, unknown>>({
                     <span className="text-sm text-gray-600 flex-shrink-0">
                       {column.label}
                     </span>
-                    <span className="text-sm text-foreground text-right font-medium">
+                    <span className="text-sm text-gray-900 text-right font-medium">
                       {value}
                     </span>
                   </div>
@@ -163,7 +163,7 @@ export function ResponsiveTable<T extends Record<string, unknown>>({
             <TableHead
               key={String(column.key)}
               className={cn(
-                "px-4 lg:px-6",
+                "px-4 lg:px-6 text-gray-700",
                 column.hideOnMobile && "hidden md:table-cell"
               )}
             >
@@ -183,7 +183,7 @@ export function ResponsiveTable<T extends Record<string, unknown>>({
               <TableCell
                 key={String(column.key)}
                 className={cn(
-                  "px-4 lg:px-6 py-4",
+                  "px-4 lg:px-6 py-4 text-gray-900",
                   column.hideOnMobile && "hidden md:table-cell"
                 )}
               >
