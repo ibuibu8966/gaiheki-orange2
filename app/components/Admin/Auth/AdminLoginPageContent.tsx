@@ -46,13 +46,8 @@ const AdminLoginPageContent = () => {
       if (result?.error) {
         setError("ユーザー名またはパスワードが正しくありません");
       } else if (result?.ok) {
-        router.push("/admin-dashboard");
-        router.refresh();
-      } else {
-        // resultがundefinedまたはokがfalseの場合
-        console.log("Unexpected result, attempting redirect anyway");
-        router.push("/admin-dashboard");
-        router.refresh();
+        // 完全なページリロードでリダイレクト（クッキーを確実に反映）
+        window.location.href = "/admin-dashboard";
       }
     } catch (err) {
       console.error("SignIn error:", err);

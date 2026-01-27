@@ -44,8 +44,8 @@ const PartnerLoginPageContent = () => {
       if (result?.error) {
         setError("メールアドレスまたはパスワードが正しくありません");
       } else if (result?.ok) {
-        router.push("/partner-dashboard");
-        router.refresh();
+        // 完全なページリロードでリダイレクト（クッキーを確実に反映）
+        window.location.href = "/partner-dashboard";
       }
     } catch {
       setError('ログイン処理中にエラーが発生しました');
