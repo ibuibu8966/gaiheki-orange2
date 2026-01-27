@@ -1,7 +1,11 @@
-// メール送信ユーティリティ
-// 実際の送信にはSendGrid, AWS SES, Resendなどを設定する必要があります
+// メール送信ユーティリティ（Resend使用）
+import { Resend } from 'resend';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://gaiheki-orange.vercel.app';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://gaiheki-orange2.vercel.app';
+const FROM_EMAIL = process.env.EMAIL_FROM || 'noreply@gaiheki-orange.com';
+
+// Resendクライアント（APIキーが設定されている場合のみ初期化）
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 interface ReferralEmailData {
   partnerEmail: string;
@@ -189,26 +193,41 @@ ${APP_URL}/partner-dashboard/referrals
   return { subject, text, html };
 }
 
-// メール送信関数（実際の送信処理はメールサービスの設定後に実装）
+// メール送信関数（Resend使用）
 export async function sendReferralNotificationEmail(data: ReferralEmailData): Promise<boolean> {
   try {
     const { subject, text, html } = generateReferralEmailContent(data);
 
-    // TODO: 実際のメール送信処理をここに実装
-    // 例: SendGrid, AWS SES, Resendなど
-
-    // 開発環境のみコンソールログに出力
-    if (process.env.NODE_ENV === 'development') {
-      console.log('=== Referral Notification Email ===');
-      console.log('To:', data.partnerEmail);
-      console.log('Subject:', subject);
-      console.log('===================================');
+    // Resend APIキーが設定されていない場合
+    if (!resend) {
+      console.log('[Email] RESEND_API_KEY not configured - skipping email send');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('=== Referral Notification Email (DEV) ===');
+        console.log('To:', data.partnerEmail);
+        console.log('Subject:', subject);
+        console.log('==========================================');
+      }
+      return true; // 設定されていない場合は成功として扱う
     }
 
-    // メールサービスが設定されていない場合は成功として扱う
+    // Resendでメール送信
+    const { error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: data.partnerEmail,
+      subject,
+      text,
+      html,
+    });
+
+    if (error) {
+      console.error('[Email] Resend error:', error);
+      return false;
+    }
+
+    console.log('[Email] Sent successfully to:', data.partnerEmail);
     return true;
   } catch (error) {
-    console.error('Email sending error:', error);
+    console.error('[Email] Error:', error);
     return false;
   }
 }
