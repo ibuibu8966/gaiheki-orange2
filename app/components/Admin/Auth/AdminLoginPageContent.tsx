@@ -143,7 +143,7 @@ const AdminLoginPageContent = () => {
             </div>
 
             {/* トップページに戻る */}
-            <Button variant="outline" asChild className="w-full h-11">
+            <Button asChild className="w-full h-11 bg-gray-800 hover:bg-gray-900 text-white">
               <Link href="/">トップページに戻る</Link>
             </Button>
           </form>
