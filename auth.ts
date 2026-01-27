@@ -15,39 +15,51 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        if (!credentials?.username || !credentials?.password) {
+        try {
+          if (!credentials?.username || !credentials?.password) {
+            console.log("[Auth] Missing credentials")
+            return null
+          }
+
+          console.log("[Auth] Attempting admin login for:", credentials.username)
+
+          const admin = await prisma.admin.findUnique({
+            where: { username: credentials.username as string },
+          })
+
+          if (!admin || !admin.isActive) {
+            console.log("[Auth] Admin not found or inactive")
+            return null
+          }
+
+          const isValidPassword = await bcrypt.compare(
+            credentials.password as string,
+            admin.passwordHash
+          )
+
+          if (!isValidPassword) {
+            console.log("[Auth] Invalid password")
+            return null
+          }
+
+          // Update last login timestamp
+          await prisma.admin.update({
+            where: { id: admin.id },
+            data: { lastLoginAt: new Date() },
+          })
+
+          console.log("[Auth] Admin login successful:", admin.username)
+
+          return {
+            id: admin.id.toString(),
+            username: admin.username,
+            email: admin.email,
+            role: admin.role,
+            userType: "admin" as const,
+          }
+        } catch (error) {
+          console.error("[Auth] Admin authorize error:", error)
           return null
-        }
-
-        const admin = await prisma.admin.findUnique({
-          where: { username: credentials.username as string },
-        })
-
-        if (!admin || !admin.isActive) {
-          return null
-        }
-
-        const isValidPassword = await bcrypt.compare(
-          credentials.password as string,
-          admin.passwordHash
-        )
-
-        if (!isValidPassword) {
-          return null
-        }
-
-        // Update last login timestamp
-        await prisma.admin.update({
-          where: { id: admin.id },
-          data: { lastLoginAt: new Date() },
-        })
-
-        return {
-          id: admin.id.toString(),
-          username: admin.username,
-          email: admin.email,
-          role: admin.role,
-          userType: "admin" as const,
         }
       },
     }),
@@ -59,38 +71,50 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        if (!credentials?.email || !credentials?.password) {
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            console.log("[Auth] Missing partner credentials")
+            return null
+          }
+
+          console.log("[Auth] Attempting partner login for:", credentials.email)
+
+          const partner = await prisma.partners.findUnique({
+            where: { login_email: credentials.email as string },
+          })
+
+          if (!partner || !partner.is_active) {
+            console.log("[Auth] Partner not found or inactive")
+            return null
+          }
+
+          const isValidPassword = await bcrypt.compare(
+            credentials.password as string,
+            partner.password_hash
+          )
+
+          if (!isValidPassword) {
+            console.log("[Auth] Invalid partner password")
+            return null
+          }
+
+          // Update last login timestamp
+          await prisma.partners.update({
+            where: { id: partner.id },
+            data: { last_login_at: new Date() },
+          })
+
+          console.log("[Auth] Partner login successful:", partner.username)
+
+          return {
+            id: partner.id.toString(),
+            username: partner.username,
+            email: partner.login_email,
+            userType: "partner" as const,
+          }
+        } catch (error) {
+          console.error("[Auth] Partner authorize error:", error)
           return null
-        }
-
-        const partner = await prisma.partners.findUnique({
-          where: { login_email: credentials.email as string },
-        })
-
-        if (!partner || !partner.is_active) {
-          return null
-        }
-
-        const isValidPassword = await bcrypt.compare(
-          credentials.password as string,
-          partner.password_hash
-        )
-
-        if (!isValidPassword) {
-          return null
-        }
-
-        // Update last login timestamp
-        await prisma.partners.update({
-          where: { id: partner.id },
-          data: { last_login_at: new Date() },
-        })
-
-        return {
-          id: partner.id.toString(),
-          username: partner.username,
-          email: partner.login_email,
-          userType: "partner" as const,
         }
       },
     }),
@@ -117,6 +141,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   pages: {
     signIn: "/auth/admin-login",
+    error: "/auth/admin-login",
   },
+  debug: process.env.NODE_ENV === "development",
   trustHost: true,
 })
