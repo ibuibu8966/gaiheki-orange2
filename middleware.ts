@@ -32,12 +32,8 @@ export async function middleware(req: NextRequest) {
   }
 
   // Get JWT token (lightweight, no DB access)
-  // 本番環境では__Secure-プレフィックス付きのクッキー名を使用
-  const cookieName = process.env.NODE_ENV === "production"
-    ? "__Secure-authjs.session-token"
-    : "authjs.session-token"
-
-  const token = await getToken({ req, cookieName })
+  // trustHost: trueにより、NextAuthが自動的に適切なクッキー名を使用
+  const token = await getToken({ req })
 
   console.log("[Middleware] Token exists:", !!token)
   if (token) {
