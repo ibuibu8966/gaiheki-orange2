@@ -7,7 +7,10 @@ import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { adminLoginSchema, AdminLoginData } from "@/lib/validations/forms";
-import { FormError } from "@/app/components/Common/FormError";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 const AdminLoginPageContent = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -51,62 +54,64 @@ const AdminLoginPageContent = () => {
     }
   };
 
-
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center space-y-4">
           {/* ロックアイコン */}
-          <div className="flex justify-center mb-6">
-            <svg className="w-16 h-16 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="flex justify-center">
+            <svg className="w-16 h-16 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
+          <div>
+            <CardTitle className="text-2xl font-bold text-gray-800">管理者ログイン</CardTitle>
+            <CardDescription className="mt-2">
+              ユーザー名とパスワードでログインしてください
+            </CardDescription>
+          </div>
+        </CardHeader>
 
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">管理者ログイン</h1>
-          <p className="text-gray-600">ユーザー名とパスワードでログインしてください</p>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-8">
+        <CardContent>
           {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-200 text-red-700 rounded-md">
+            <div className="mb-4 rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {/* ユーザー名 */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                ユーザー名
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor="username">ユーザー名</Label>
+              <Input
+                id="username"
                 type="text"
                 {...register("username")}
                 placeholder="ユーザー名を入力"
-                className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-blue-500"
+                className="h-11 focus-visible:ring-blue-500"
                 disabled={isLoading}
               />
-              <FormError message={errors.username?.message} />
+              {errors.username && (
+                <p className="text-sm text-red-600">{errors.username.message}</p>
+              )}
             </div>
 
             {/* パスワード */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                パスワード
-              </label>
+            <div className="space-y-2">
+              <Label htmlFor="password">パスワード</Label>
               <div className="relative">
-                <input
+                <Input
+                  id="password"
                   type={showPassword ? "text" : "password"}
                   {...register("password")}
                   placeholder="パスワードを入力"
-                  className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-blue-500 pr-10"
+                  className="h-11 pr-10 focus-visible:ring-blue-500"
                   disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
                   aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示"}
                 >
                   <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,34 +123,32 @@ const AdminLoginPageContent = () => {
                   </svg>
                 </button>
               </div>
-              <FormError message={errors.password?.message} />
+              {errors.password && (
+                <p className="text-sm text-red-600">{errors.password.message}</p>
+              )}
             </div>
 
-
             {/* ログインボタン */}
-            <button
+            <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-500 hover:bg-primary/90 disabled:bg-blue-300 text-white font-bold py-3 px-4 rounded-md transition-colors"
+              className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-bold"
             >
               {isLoading ? 'ログイン中...' : 'ログイン'}
-            </button>
+            </Button>
 
             {/* または */}
             <div className="text-center">
-              <p className="text-gray-500">または</p>
+              <p className="text-gray-500 text-sm">または</p>
             </div>
 
             {/* トップページに戻る */}
-            <Link
-              href="/"
-              className="w-full block text-center bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-4 rounded-md transition-colors"
-            >
-              トップページに戻る
-            </Link>
+            <Button variant="outline" asChild className="w-full h-11">
+              <Link href="/">トップページに戻る</Link>
+            </Button>
           </form>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

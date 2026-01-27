@@ -7,7 +7,10 @@ import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { partnerLoginSchema, PartnerLoginData } from "@/lib/validations/forms";
-import { FormError } from "@/app/components/Common/FormError";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 const PartnerLoginPageContent = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -53,59 +56,62 @@ const PartnerLoginPageContent = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center space-y-4">
           {/* ビルアイコン */}
-          <div className="flex justify-center mb-6">
-            <svg className="w-16 h-16 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="flex justify-center">
+            <svg className="w-16 h-16 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
           </div>
+          <div>
+            <CardTitle className="text-2xl font-bold text-gray-800">加盟店ログイン</CardTitle>
+            <CardDescription className="mt-2">
+              登録済みのメールアドレスとパスワードでログインしてください
+            </CardDescription>
+          </div>
+        </CardHeader>
 
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">加盟店ログイン</h1>
-          <p className="text-gray-600">登録済みのメールアドレスとパスワードでログインしてください</p>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-8">
+        <CardContent>
           {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-200 text-red-700 rounded-md">
+            <div className="mb-4 rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {/* メールアドレス */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                メールアドレス
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor="email">メールアドレス</Label>
+              <Input
+                id="email"
                 type="email"
                 {...register("email")}
                 placeholder="例: company@example.com"
-                className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                className="h-11"
                 disabled={isLoading}
               />
-              <FormError message={errors.email?.message} />
+              {errors.email && (
+                <p className="text-sm text-red-600">{errors.email.message}</p>
+              )}
             </div>
 
             {/* パスワード */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                パスワード
-              </label>
+            <div className="space-y-2">
+              <Label htmlFor="password">パスワード</Label>
               <div className="relative">
-                <input
+                <Input
+                  id="password"
                   type={showPassword ? "text" : "password"}
                   {...register("password")}
                   placeholder="パスワードを入力"
-                  className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary pr-10"
+                  className="h-11 pr-10"
                   disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 rounded"
                   aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示"}
                 >
                   <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,38 +123,38 @@ const PartnerLoginPageContent = () => {
                   </svg>
                 </button>
               </div>
-              <FormError message={errors.password?.message} />
+              {errors.password && (
+                <p className="text-sm text-red-600">{errors.password.message}</p>
+              )}
             </div>
 
             {/* ログインボタン */}
-            <button
+            <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-11 bg-brand hover:bg-brand/90 text-white font-bold"
             >
               {isLoading ? 'ログイン中...' : 'ログイン'}
-            </button>
+            </Button>
 
             {/* または */}
             <div className="text-center">
-              <p className="text-gray-500">または</p>
+              <p className="text-gray-500 text-sm">または</p>
             </div>
 
             {/* トップページに戻る */}
-            <Link
-              href="/"
-              className="w-full block text-center bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-4 rounded-md transition-colors"
-            >
-              トップページに戻る
-            </Link>
+            <Button variant="outline" asChild className="w-full h-11">
+              <Link href="/">トップページに戻る</Link>
+            </Button>
           </form>
+        </CardContent>
 
-          {/* ヘルプテキスト */}
-          <div className="mt-6 text-center text-sm text-gray-600">
-            <p>ログインに関するお問い合わせは、管理者までご連絡ください。</p>
-          </div>
-        </div>
-      </div>
+        <CardFooter className="justify-center">
+          <p className="text-sm text-muted-foreground text-center">
+            ログインに関するお問い合わせは、管理者までご連絡ください。
+          </p>
+        </CardFooter>
+      </Card>
     </div>
   );
 };
