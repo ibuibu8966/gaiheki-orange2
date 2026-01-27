@@ -80,7 +80,6 @@ model diagnosis_requests {
   floor_area            FloorArea
   current_situation     CurrentSituation
   construction_type     ConstructionType
-  status                DiagnosisStatus  @default(RECRUITING)
   created_at            DateTime         @default(now())
   updated_at            DateTime
 
@@ -101,7 +100,6 @@ model diagnosis_requests {
   referrals          Referral[]
   deposit_histories  DepositHistory[]
 
-  @@index([status])
   @@index([prefecture])
   @@index([created_at])
   @@index([designated_partner_id])
@@ -272,13 +270,7 @@ enum CurrentSituation {
 
 // CustomerConstructionType, CustomerStatus enumは削除（customersテーブル削除に伴い不要）
 
-enum DiagnosisStatus {
-  DESIGNATED
-  RECRUITING
-  COMPARING
-  DECIDED
-  CANCELLED
-}
+// DiagnosisStatus enum は削除されました
 
 enum FloorArea {
   UNKNOWN

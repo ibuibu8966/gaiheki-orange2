@@ -105,12 +105,8 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* ダークモード自動検出を無効化（ライトモード専用アプリ） */
+/* @media (prefers-color-scheme: dark) は使用しない */
 
 body {
   background: var(--background);

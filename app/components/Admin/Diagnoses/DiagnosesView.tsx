@@ -23,8 +23,6 @@ interface Diagnosis {
   floorArea: string;
   currentSituation: string;
   constructionType: string;
-  status: string;
-  statusLabel: string;
   referralCount: number;
   referrals: Referral[];
   createdAt: string;
@@ -61,7 +59,6 @@ interface EditFormData {
   floorArea: string;
   currentSituation: string;
   constructionType: string;
-  status: string;
 }
 
 // ラベル変換用マッピング
@@ -147,7 +144,6 @@ const StarRating = ({
 };
 
 const DiagnosesView = () => {
-  const [diagnosisFilter, setDiagnosisFilter] = useState("all");
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState<Diagnosis | null>(null);
@@ -171,24 +167,18 @@ const DiagnosesView = () => {
     prefecture: '',
     floorArea: '',
     currentSituation: '',
-    constructionType: '',
-    status: ''
+    constructionType: ''
   });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetchDiagnoses();
-  }, [diagnosisFilter]);
+  }, []);
 
   const fetchDiagnoses = async () => {
     try {
       setLoading(true);
-      const params = new URLSearchParams();
-      if (diagnosisFilter !== 'all') {
-        params.append('status', diagnosisFilter);
-      }
-
-      const response = await fetch(`/api/admin/diagnoses?${params}`);
+      const response = await fetch('/api/admin/diagnoses');
       const result = await response.json();
 
       if (result.success) {
@@ -236,7 +226,6 @@ const DiagnosesView = () => {
       floorArea: diagnosis.floorArea,
       currentSituation: diagnosis.currentSituation,
       constructionType: diagnosis.constructionType,
-      status: diagnosis.status,
     });
     setShowDetailModal(true);
   };
@@ -273,8 +262,7 @@ const DiagnosesView = () => {
           prefecture: editFormData.prefecture,
           floorArea: editFormData.floorArea,
           currentSituation: editFormData.currentSituation,
-          constructionType: editFormData.constructionType,
-          status: editFormData.status
+          constructionType: editFormData.constructionType
         }),
       });
 
@@ -343,31 +331,6 @@ const DiagnosesView = () => {
           <h2 className="text-2xl font-bold text-gray-900">診断管理</h2>
         </div>
 
-        {/* ステータスフィルタータブ */}
-        <div className="px-4 sm:px-6 py-4 bg-gray-50 border-b border-gray-200">
-          <div className="flex flex-wrap gap-2">
-            {[
-              { value: "all", label: "すべて" },
-              { value: "DESIGNATED", label: "業者指定" },
-              { value: "RECRUITING", label: "紹介募集中" },
-              { value: "COMPARING", label: "紹介中" },
-              { value: "DECIDED", label: "業者決定" },
-            ].map((filter) => (
-              <button
-                key={filter.value}
-                onClick={() => setDiagnosisFilter(filter.value)}
-                className={`px-4 py-2 min-h-[44px] rounded-md text-sm font-medium transition-colors ${
-                  diagnosisFilter === filter.value
-                    ? "bg-gray-800 text-white"
-                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 active:bg-gray-100"
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* テーブル */}
         <div className="p-4 sm:p-0">
           <ResponsiveTable
@@ -416,36 +379,12 @@ const DiagnosesView = () => {
                   </span>
                 ),
               },
-              {
-                key: "status",
-                label: "ステータス",
-                priority: 8,
-                render: (d) => (
-                  <span className={`px-3 py-1 text-xs font-medium rounded-md ${
-                    d.status === "DESIGNATED" ? "bg-blue-100 text-blue-800" :
-                    d.status === "RECRUITING" ? "bg-yellow-100 text-yellow-800" :
-                    d.status === "COMPARING" ? "bg-purple-100 text-purple-800" :
-                    d.status === "DECIDED" ? "bg-green-100 text-green-800" :
-                    "bg-gray-100 text-gray-800"
-                  }`}>
-                    {d.statusLabel}
-                  </span>
-                ),
-              },
             ]}
             onRowClick={openDetailModal}
             mobileCardTitle={(d) => (
               <div className="flex items-center justify-between">
                 <span>{d.diagnosisNumber}</span>
-                <span className={`px-2 py-1 text-xs font-medium rounded ${
-                  d.status === "DESIGNATED" ? "bg-blue-100 text-blue-800" :
-                  d.status === "RECRUITING" ? "bg-yellow-100 text-yellow-800" :
-                  d.status === "COMPARING" ? "bg-purple-100 text-purple-800" :
-                  d.status === "DECIDED" ? "bg-green-100 text-green-800" :
-                  "bg-gray-100 text-gray-800"
-                }`}>
-                  {d.statusLabel}
-                </span>
+                <span className="text-sm text-gray-600">{d.customerName}</span>
               </div>
             )}
             mobileCardActions={(d) => (
@@ -589,24 +528,6 @@ const DiagnosesView = () => {
                       </select>
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">ステータス</label>
-                    <select
-                      value={editFormData.status}
-                      onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
-                      className="w-full px-3 py-2 min-h-[40px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
-                    >
-                      {[
-                        { value: 'DESIGNATED', label: '業者指定' },
-                        { value: 'RECRUITING', label: '紹介募集中' },
-                        { value: 'COMPARING', label: '紹介中' },
-                        { value: 'DECIDED', label: '業者決定' },
-                        { value: 'CANCELLED', label: 'キャンセル' },
-                      ].map((s) => (
-                        <option key={s.value} value={s.value}>{s.label}</option>
-                      ))}
-                    </select>
-                  </div>
                 </div>
               </div>
             </div>
@@ -669,14 +590,12 @@ const DiagnosesView = () => {
                   <h4 className="font-bold text-gray-800">
                     紹介済み加盟店 ({selectedDiagnosis.referralCount}件)
                   </h4>
-                  {editFormData.status !== 'DECIDED' && editFormData.status !== 'CANCELLED' && (
-                    <button
-                      onClick={() => openReferralModal(selectedDiagnosis)}
-                      className="px-3 py-1.5 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90 active:bg-primary/80 transition-colors"
-                    >
-                      新規紹介
-                    </button>
-                  )}
+                  <button
+                    onClick={() => openReferralModal(selectedDiagnosis)}
+                    className="px-3 py-1.5 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90 active:bg-primary/80 transition-colors"
+                  >
+                    新規紹介
+                  </button>
                 </div>
                 <div className="bg-white border border-gray-200 p-4 rounded-md max-h-48 overflow-y-auto">
                   {selectedDiagnosis.referralCount === 0 ? (

@@ -35,7 +35,6 @@ export async function POST(request: Request) {
         floor_area: floorArea || 'UNKNOWN',
         current_situation: currentSituation || 'CONSIDERING_CONSTRUCTION',
         construction_type: constructionType || 'EXTERIOR_PAINTING',
-        status: designatedPartnerId ? 'DESIGNATED' : 'RECRUITING',
         designated_partner_id: designatedPartnerId || null,
         updated_at: new Date()
       }
@@ -65,15 +64,9 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status');
     const search = searchParams.get('search');
 
     const where: DiagnosisWhereInput = {};
-
-    // ステータスフィルター
-    if (status && status !== 'all') {
-      where.status = status;
-    }
 
     // 検索条件（顧客情報はdiagnosis_requestsに直接保存）
     if (search) {
@@ -127,8 +120,6 @@ export async function GET(request: Request) {
         floorArea: diag.floor_area,
         currentSituation: diag.current_situation,
         constructionType: diag.construction_type,
-        status: diag.status,
-        statusLabel: getStatusLabel(diag.status),
         designatedPartnerId: diag.designated_partner_id || null,
         designatedPartnerName: diag.designated_partner?.partner_details?.company_name || null,
         referralCount: diag.referrals.length,
@@ -183,12 +174,11 @@ export async function PATCH(request: Request) {
       desiredPartnerCount,
       referralFee,
       adminNote,
-      // 診断情報（追加）
+      // 診断情報
       prefecture,
       floorArea,
       currentSituation,
-      constructionType,
-      status
+      constructionType
     } = body;
 
     if (!id) {
@@ -213,12 +203,11 @@ export async function PATCH(request: Request) {
     if (desiredPartnerCount !== undefined) updateData.desired_partner_count = desiredPartnerCount;
     if (referralFee !== undefined) updateData.referral_fee = referralFee;
     if (adminNote !== undefined) updateData.admin_note = adminNote || null;
-    // 診断情報（追加）
+    // 診断情報
     if (prefecture !== undefined) updateData.prefecture = prefecture;
     if (floorArea !== undefined) updateData.floor_area = floorArea;
     if (currentSituation !== undefined) updateData.current_situation = currentSituation;
     if (constructionType !== undefined) updateData.construction_type = constructionType;
-    if (status !== undefined) updateData.status = status;
 
     const updatedDiagnosis = await prisma.diagnosis_requests.update({
       where: { id },
@@ -247,13 +236,3 @@ export async function PATCH(request: Request) {
   }
 }
 
-function getStatusLabel(status: string): string {
-  const labels: Record<string, string> = {
-    DESIGNATED: '指定',
-    RECRUITING: '募集中',
-    COMPARING: '比較中',
-    DECIDED: '決定',
-    CANCELLED: 'キャンセル'
-  };
-  return labels[status] || status;
-}

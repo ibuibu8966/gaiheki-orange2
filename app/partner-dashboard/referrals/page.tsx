@@ -17,7 +17,6 @@ interface Referral {
   floorArea: string;
   constructionType: string;
   currentSituation: string;
-  status: string;
   referralFee: number;
   adminNote: string | null;
   createdAt: string;

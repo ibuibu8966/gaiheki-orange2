@@ -65,8 +65,6 @@ export interface DiagnosisData {
   floorArea: string;
   currentSituation: string;
   constructionType: string;
-  status: string;
-  statusLabel: string;
   designatedPartnerId: number | null;
   designatedPartnerName: string | null;
   referralCount: number;
