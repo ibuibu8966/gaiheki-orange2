@@ -38,6 +38,7 @@ export function ResponsiveModal({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
+        aria-describedby={undefined}
         className={cn(
           // モバイル: 画面下部に固定、フルワイド
           "max-w-full rounded-t-lg rounded-b-none fixed bottom-0 left-0 right-0 top-auto translate-x-0 translate-y-0",

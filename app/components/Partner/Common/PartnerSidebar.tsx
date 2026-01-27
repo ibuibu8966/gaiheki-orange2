@@ -1,21 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { ResponsiveSidebar } from "../../Common/ResponsiveSidebar";
 
 const PartnerSidebar = () => {
-  const router = useRouter();
-
   const handleLogout = async () => {
-    try {
-      await fetch('/api/partner/logout', {
-        method: 'POST',
-      });
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      router.push("/auth/partner-login");
-    }
+    await signOut({ callbackUrl: "/auth/partner-login" });
   };
 
   const menuItems = [
