@@ -32,8 +32,12 @@ export async function middleware(req: NextRequest) {
   }
 
   // Get JWT token (lightweight, no DB access)
-  // NextAuth v5では自動的にAUTH_SECRETを取得するため、secretパラメータは不要
-  const token = await getToken({ req })
+  // 本番環境では__Secure-プレフィックス付きのクッキー名を使用
+  const cookieName = process.env.NODE_ENV === "production"
+    ? "__Secure-authjs.session-token"
+    : "authjs.session-token"
+
+  const token = await getToken({ req, cookieName })
 
   console.log("[Middleware] Token exists:", !!token)
   if (token) {
