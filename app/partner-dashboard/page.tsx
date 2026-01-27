@@ -280,19 +280,7 @@ export default function PartnerDashboardPage() {
             >
               <div>
                 <p className="font-medium text-gray-900">会社情報</p>
-                <p className="text-sm text-gray-600">プロフィールを編集</p>
-              </div>
-              <svg className="w-5 h-5 text-gray-600 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </a>
-            <a
-              href="/partner-dashboard/settings"
-              className="flex items-center justify-between p-4 min-h-[72px] bg-gray-50 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors"
-            >
-              <div>
-                <p className="font-medium text-gray-900">設定</p>
-                <p className="text-sm text-gray-600">希望リード数を変更</p>
+                <p className="text-sm text-gray-600">プロフィール・紹介設定を編集</p>
               </div>
               <svg className="w-5 h-5 text-gray-600 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />

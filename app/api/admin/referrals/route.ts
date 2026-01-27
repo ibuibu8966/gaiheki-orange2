@@ -57,6 +57,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 月間希望件数チェック
+    if (partner.monthly_desired_leads !== null &&
+        partner.monthly_leads_count >= partner.monthly_desired_leads) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'この加盟店は今月の希望件数に達しています',
+          monthlyLeadsCount: partner.monthly_leads_count,
+          monthlyDesiredLeads: partner.monthly_desired_leads
+        },
+        { status: 400 }
+      );
+    }
+
     // 既に紹介が存在するかチェック
     const existingReferral = await prisma.referral.findUnique({
       where: {

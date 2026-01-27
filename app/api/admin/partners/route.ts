@@ -65,7 +65,9 @@ export async function GET(request: Request) {
       registrationDate: partner.created_at.toISOString().split('T')[0],
       lastLoginAt: partner.last_login_at?.toISOString() || null,
       depositBalance: partner.deposit_balance,
-      referralCount: partner._count.referrals
+      referralCount: partner._count.referrals,
+      monthlyDesiredLeads: partner.monthly_desired_leads,
+      monthlyLeadsCount: partner.monthly_leads_count
     }));
 
     return NextResponse.json({

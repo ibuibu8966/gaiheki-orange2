@@ -41,6 +41,8 @@ interface Partner {
   prefectures: string[];
   depositBalance: number;
   isActive: boolean;
+  monthlyDesiredLeads?: number | null;
+  monthlyLeadsCount: number;
 }
 
 interface EditFormData {
@@ -752,12 +754,15 @@ const DiagnosesView = () => {
                     r => r.partnerId === partner.id
                   );
                   const hasEnoughBalance = partner.depositBalance >= newReferralFee;
+                  const hasReachedMonthlyLimit = partner.monthlyDesiredLeads !== null &&
+                    partner.monthlyDesiredLeads !== undefined &&
+                    partner.monthlyLeadsCount >= partner.monthlyDesiredLeads;
 
                   return (
                     <div
                       key={partner.id}
                       className={`border rounded-lg p-4 ${
-                        isAlreadyReferred ? 'bg-gray-100 border-gray-300' : 'bg-white'
+                        isAlreadyReferred || hasReachedMonthlyLimit ? 'bg-gray-100 border-gray-300' : 'bg-white'
                       }`}
                     >
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
@@ -766,11 +771,20 @@ const DiagnosesView = () => {
                           <p className={`text-sm ${hasEnoughBalance ? 'text-green-600' : 'text-red-600'}`}>
                             保証金残高: ¥{partner.depositBalance.toLocaleString()}
                           </p>
+                          {partner.monthlyDesiredLeads !== null && partner.monthlyDesiredLeads !== undefined && (
+                            <p className={`text-sm ${hasReachedMonthlyLimit ? 'text-orange-600' : 'text-gray-600'}`}>
+                              今月: {partner.monthlyLeadsCount} / {partner.monthlyDesiredLeads} 件
+                            </p>
+                          )}
                         </div>
                         <div className="flex-shrink-0">
                           {isAlreadyReferred ? (
                             <span className="inline-block px-3 py-2 bg-gray-200 text-gray-600 text-sm font-medium rounded-md">
                               紹介済み
+                            </span>
+                          ) : hasReachedMonthlyLimit ? (
+                            <span className="inline-block px-3 py-2 bg-orange-100 text-orange-600 text-sm font-medium rounded-md">
+                              月間上限
                             </span>
                           ) : !hasEnoughBalance ? (
                             <span className="inline-block px-3 py-2 bg-red-100 text-red-600 text-sm font-medium rounded-md">

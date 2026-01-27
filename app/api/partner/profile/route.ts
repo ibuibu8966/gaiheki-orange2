@@ -59,7 +59,8 @@ export async function GET() {
       bankAccountType: partner.partner_details?.bank_account_type || '',
       bankAccountNumber: partner.partner_details?.bank_account_number || '',
       bankAccountHolder: partner.partner_details?.bank_account_holder || '',
-      depositBalance: partner.deposit_balance
+      depositBalance: partner.deposit_balance,
+      monthlyDesiredLeads: partner.monthly_desired_leads ?? 0
     };
 
     return NextResponse.json({
@@ -109,7 +110,8 @@ export async function PATCH(request: NextRequest) {
       bankBranchName,
       bankAccountType,
       bankAccountNumber,
-      bankAccountHolder
+      bankAccountHolder,
+      monthlyDesiredLeads
     } = body;
 
     // パートナーの存在確認
@@ -125,12 +127,16 @@ export async function PATCH(request: NextRequest) {
       }, { status: 404 });
     }
 
-    // partnersテーブルの更新（パスワードとログインメールアドレス）
-    const partnersUpdateData: Record<string, string> = {};
+    // partnersテーブルの更新（パスワード、ログインメールアドレス、月間希望件数）
+    const partnersUpdateData: Record<string, string | number | null> = {};
 
     if (newPassword && newPassword.trim() !== '') {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       partnersUpdateData.password_hash = hashedPassword;
+    }
+
+    if (monthlyDesiredLeads !== undefined) {
+      partnersUpdateData.monthly_desired_leads = monthlyDesiredLeads === 0 ? null : monthlyDesiredLeads;
     }
 
     if (loginEmail && loginEmail !== partner.login_email) {

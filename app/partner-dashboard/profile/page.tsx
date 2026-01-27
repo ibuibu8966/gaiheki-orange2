@@ -43,7 +43,8 @@ export default function ProfilePage() {
     bankBranchName: "",
     bankAccountType: "",
     bankAccountNumber: "",
-    bankAccountHolder: ""
+    bankAccountHolder: "",
+    monthlyDesiredLeads: 0
   });
 
   const [stats, setStats] = useState({
@@ -84,7 +85,8 @@ export default function ProfilePage() {
           bankBranchName: profile.bankBranchName || "",
           bankAccountType: profile.bankAccountType || "",
           bankAccountNumber: profile.bankAccountNumber || "",
-          bankAccountHolder: profile.bankAccountHolder || ""
+          bankAccountHolder: profile.bankAccountHolder || "",
+          monthlyDesiredLeads: profile.monthlyDesiredLeads || 0
         });
 
         setStats({
@@ -134,7 +136,8 @@ export default function ProfilePage() {
           bankBranchName: formData.bankBranchName,
           bankAccountType: formData.bankAccountType,
           bankAccountNumber: formData.bankAccountNumber,
-          bankAccountHolder: formData.bankAccountHolder
+          bankAccountHolder: formData.bankAccountHolder,
+          monthlyDesiredLeads: formData.monthlyDesiredLeads
         })
       });
 
@@ -577,6 +580,37 @@ export default function ProfilePage() {
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* 紹介設定 */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <h3 className="font-medium text-gray-900 mb-4">紹介設定</h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm text-gray-700 font-medium mb-1">
+                    希望紹介件数（月間）
+                  </label>
+                  {isEditMode ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min="0"
+                        value={formData.monthlyDesiredLeads}
+                        onChange={(e) => setFormData({...formData, monthlyDesiredLeads: parseInt(e.target.value) || 0})}
+                        className="w-24 px-3 py-2 border border-gray-300 rounded-md text-gray-900 text-center"
+                      />
+                      <span className="text-gray-600">件/月</span>
+                    </div>
+                  ) : (
+                    <div className="text-gray-900">
+                      {formData.monthlyDesiredLeads > 0 ? `${formData.monthlyDesiredLeads} 件/月` : '未設定'}
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500">
+                  毎月受け取りたいリード件数を設定できます。0の場合は制限なしになります。
+                </p>
+              </div>
             </div>
           </div>
         </div>
