@@ -32,8 +32,15 @@ export async function middleware(req: NextRequest) {
   }
 
   // Get JWT token (lightweight, no DB access)
-  // trustHost: trueにより、NextAuthが自動的に適切なクッキー名を使用
-  const token = await getToken({ req })
+  // HTTPS環境では__Secure-プレフィックスが付くため、明示的に指定
+  const isSecure = req.headers.get("x-forwarded-proto") === "https" || req.nextUrl.protocol === "https:"
+  const cookieName = isSecure
+    ? "__Secure-authjs.session-token"
+    : "authjs.session-token"
+
+  console.log("[Middleware] isSecure:", isSecure, "cookieName:", cookieName)
+
+  const token = await getToken({ req, cookieName })
 
   console.log("[Middleware] Token exists:", !!token)
   if (token) {
