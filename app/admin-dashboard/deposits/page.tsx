@@ -1,18 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { ResponsiveTable } from '../../components/Common/ResponsiveTable';
 import { ResponsiveModal } from '../../components/Common/ResponsiveModal';
 
@@ -164,17 +156,7 @@ export default function AdminDepositsPage() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">入金管理</h1>
-        <a
-          href="/admin-dashboard"
-          className="text-blue-600 hover:text-blue-800 text-sm min-h-[44px] flex items-center"
-        >
-          ← ダッシュボードに戻る
-        </a>
-      </div>
-
+    <div className="space-y-6">
       {message && (
         <div
           className={`p-4 rounded-lg ${
@@ -187,32 +169,37 @@ export default function AdminDepositsPage() {
         </div>
       )}
 
-      {/* フィルター */}
-      <Card>
-        <CardContent className="p-3 sm:pt-6">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-            <Label htmlFor="status" className="text-sm font-medium">ステータス</Label>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-[180px] min-h-[44px]" id="status">
-                <SelectValue placeholder="ステータスを選択" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">すべて</SelectItem>
-                <SelectItem value="PENDING">申請中</SelectItem>
-                <SelectItem value="APPROVED">承認済み</SelectItem>
-                <SelectItem value="REJECTED">却下</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="bg-white rounded-lg shadow">
+        <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">入金管理</h2>
+        </div>
 
-      {/* 申請一覧 */}
-      <Card>
-        <CardHeader className="p-3 sm:p-6">
-          <CardTitle className="text-base sm:text-lg">入金申請一覧</CardTitle>
-        </CardHeader>
-        <CardContent className="p-2 sm:p-6">
+        {/* ステータスフィルタータブ */}
+        <div className="px-4 sm:px-6 py-4 bg-gray-50 border-b border-gray-200">
+          <div className="flex flex-wrap gap-2">
+            {[
+              { value: 'all', label: 'すべて' },
+              { value: 'PENDING', label: '申請中' },
+              { value: 'APPROVED', label: '承認済み' },
+              { value: 'REJECTED', label: '却下' },
+            ].map((filter) => (
+              <button
+                key={filter.value}
+                onClick={() => setStatusFilter(filter.value)}
+                className={`px-4 py-2 min-h-[44px] rounded-md text-sm font-medium transition-colors ${
+                  statusFilter === filter.value
+                    ? 'bg-gray-800 text-white'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 active:bg-gray-100'
+                }`}
+              >
+                {filter.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* テーブル */}
+        <div className="p-4 sm:p-0">
           <ResponsiveTable
             data={depositRequests}
             keyField="id"
@@ -307,7 +294,7 @@ export default function AdminDepositsPage() {
 
           {/* ページネーション */}
           {pagination && pagination.totalPages > 1 && (
-            <div className="flex justify-center gap-2 mt-4">
+            <div className="flex justify-center gap-2 mt-4 p-4 sm:p-6">
               <button
                 onClick={() => fetchDepositRequests(pagination.page - 1)}
                 disabled={pagination.page === 1}
@@ -327,8 +314,8 @@ export default function AdminDepositsPage() {
               </button>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* 承認/却下モーダル */}
       <ResponsiveModal

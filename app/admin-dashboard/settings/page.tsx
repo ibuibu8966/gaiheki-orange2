@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -99,17 +98,7 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">システム設定</h1>
-        <a
-          href="/admin-dashboard"
-          className="text-blue-600 hover:text-blue-800 text-sm min-h-[44px] flex items-center"
-        >
-          ← ダッシュボードに戻る
-        </a>
-      </div>
-
+    <div className="space-y-6">
       {message && (
         <div
           className={`p-4 rounded-lg ${
@@ -122,14 +111,15 @@ export default function AdminSettingsPage() {
         </div>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>振込先銀行口座</CardTitle>
-          <p className="text-sm text-gray-500">
+      <div className="bg-white rounded-lg shadow">
+        <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">システム設定</h2>
+          <p className="text-sm text-gray-500 mt-1">
             加盟店が保証金を振り込む際に表示される銀行口座情報を設定します
           </p>
-        </CardHeader>
-        <CardContent className="space-y-6">
+        </div>
+
+        <div className="px-4 sm:px-6 py-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="bank_name">銀行名</Label>
@@ -234,8 +224,8 @@ export default function AdminSettingsPage() {
               {saving ? '保存中...' : '設定を保存'}
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
