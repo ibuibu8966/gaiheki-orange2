@@ -46,7 +46,8 @@ const AdminLoginPageContent = () => {
       if (result?.error) {
         setError("ユーザー名またはパスワードが正しくありません");
       } else if (result?.ok) {
-        // 完全なページリロードでリダイレクト（クッキーを確実に反映）
+        // クッキーがブラウザに確実に保存されるまで少し待ってからリダイレクト
+        await new Promise(resolve => setTimeout(resolve, 100));
         window.location.href = "/admin-dashboard";
       }
     } catch (err) {
