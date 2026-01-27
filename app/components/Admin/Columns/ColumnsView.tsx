@@ -213,7 +213,7 @@ const ColumnsView = () => {
                         className="w-16 h-10 object-cover rounded"
                       />
                     ) : (
-                      <div className="w-16 h-10 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
+                      <div className="w-16 h-10 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-700">
                         No Image
                       </div>
                     ),
@@ -278,7 +278,7 @@ const ColumnsView = () => {
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold truncate">{a.title}</div>
-                    <div className="text-xs text-gray-500">{a.categoryLabel}</div>
+                    <div className="text-xs text-gray-700">{a.categoryLabel}</div>
                   </div>
                   <span
                     className={`px-2 py-1 text-xs font-medium rounded-md flex-shrink-0 ${

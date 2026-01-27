@@ -62,7 +62,7 @@ function EmptyState({ message }: { message: string }) {
           d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
         />
       </svg>
-      <p className="mt-2 text-muted-foreground">{message}</p>
+      <p className="mt-2 text-gray-600">{message}</p>
     </div>
   );
 }
@@ -130,7 +130,7 @@ export function ResponsiveTable<T extends Record<string, unknown>>({
                     key={String(column.key)}
                     className="flex justify-between items-start gap-2"
                   >
-                    <span className="text-sm text-muted-foreground flex-shrink-0">
+                    <span className="text-sm text-gray-600 flex-shrink-0">
                       {column.label}
                     </span>
                     <span className="text-sm text-foreground text-right font-medium">

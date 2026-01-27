@@ -393,7 +393,7 @@ const DiagnosesView = () => {
                 label: "紹介数",
                 priority: 6,
                 render: (d) => (
-                  <span className={`font-semibold ${d.referralCount > 0 ? 'text-blue-600' : 'text-gray-400'}`}>
+                  <span className={`font-semibold ${d.referralCount > 0 ? 'text-blue-600' : 'text-gray-600'}`}>
                     {d.referralCount}件
                   </span>
                 ),
