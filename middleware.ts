@@ -40,7 +40,11 @@ export async function middleware(req: NextRequest) {
 
   console.log("[Middleware] isSecure:", isSecure, "cookieName:", cookieName)
 
-  const token = await getToken({ req, cookieName })
+  const token = await getToken({
+    req,
+    cookieName,
+    secret: process.env.AUTH_SECRET,
+  })
 
   console.log("[Middleware] Token exists:", !!token)
   if (token) {
