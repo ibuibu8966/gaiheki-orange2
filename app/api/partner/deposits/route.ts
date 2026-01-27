@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/src/infrastructure/database/prisma.client';
-import { requirePartnerAuth } from '@/lib/utils/partnerAuth';
+import { auth } from '@/auth';
 
 // 銀行口座設定のキー一覧
 const BANK_SETTING_KEYS = [
@@ -14,9 +14,12 @@ const BANK_SETTING_KEYS = [
 // GET: 入金申請履歴と振込先情報を取得
 export async function GET(request: NextRequest) {
   try {
-    // 認証チェック
-    const { error, partnerId } = await requirePartnerAuth();
-    if (error) return error;
+    // 認証チェック（middlewareで行われるが、partnerIdの取得のため）
+    const session = await auth();
+    if (!session || session.user.userType !== 'partner') {
+      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
+    }
+    const partnerId = parseInt(session.user.id);
 
     // 振込先銀行口座情報を取得
     const bankSettings = await prisma.systemSettings.findMany({
@@ -95,9 +98,12 @@ export async function GET(request: NextRequest) {
 // POST: 新規入金申請を作成
 export async function POST(request: NextRequest) {
   try {
-    // 認証チェック
-    const { error, partnerId } = await requirePartnerAuth();
-    if (error) return error;
+    // 認証チェック（middlewareで行われるが、partnerIdの取得のため）
+    const session = await auth();
+    if (!session || session.user.userType !== 'partner') {
+      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
+    }
+    const partnerId = parseInt(session.user.id);
 
     const body = await request.json();
     const { requested_amount, partner_note } = body;

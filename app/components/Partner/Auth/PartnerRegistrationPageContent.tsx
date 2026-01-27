@@ -2,32 +2,34 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { partnerRegistrationSchema, PartnerRegistrationData } from "@/lib/validations/forms";
+import { FormError } from "@/app/components/Common/FormError";
 
 const PartnerRegistrationPageContent = () => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    companyName: "",
-    representativeName: "",
-    address: "",
-    phone: "",
-    email: "",
-    website: "",
-    businessContent: "",
-    appealPoints: ""
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<PartnerRegistrationData>({
+    resolver: zodResolver(partnerRegistrationSchema),
+    defaultValues: {
+      companyName: "",
+      representativeName: "",
+      address: "",
+      phone: "",
+      email: "",
+      website: "",
+      businessContent: "",
+      appealPoints: ""
+    }
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const onSubmit = async (data: PartnerRegistrationData) => {
     if (isSubmitting) return;
 
     setIsSubmitting(true);
@@ -38,15 +40,15 @@ const PartnerRegistrationPageContent = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(data),
       });
 
-      const data = await response.json();
+      const result = await response.json();
 
-      if (data.success) {
+      if (result.success) {
         router.push('/partner-registration/complete');
       } else {
-        alert(data.error || '申請の送信に失敗しました');
+        alert(result.error || '申請の送信に失敗しました');
         setIsSubmitting(false);
       }
     } catch (error) {
@@ -84,7 +86,7 @@ const PartnerRegistrationPageContent = () => {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-8 space-y-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg shadow-md p-8 space-y-8">
           {/* 会社情報セクション */}
           <div>
             <div className="flex items-center mb-6">
@@ -105,13 +107,11 @@ const PartnerRegistrationPageContent = () => {
                 </label>
                 <input
                   type="text"
-                  name="companyName"
-                  value={formData.companyName}
-                  onChange={handleInputChange}
+                  {...register("companyName")}
                   placeholder="株式会社○○塗装"
-                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  required
+                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 />
+                <FormError message={errors.companyName?.message} />
               </div>
 
               {/* 代表者名 */}
@@ -121,13 +121,11 @@ const PartnerRegistrationPageContent = () => {
                 </label>
                 <input
                   type="text"
-                  name="representativeName"
-                  value={formData.representativeName}
-                  onChange={handleInputChange}
+                  {...register("representativeName")}
                   placeholder="山田 太郎"
-                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  required
+                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 />
+                <FormError message={errors.representativeName?.message} />
               </div>
             </div>
 
@@ -142,13 +140,11 @@ const PartnerRegistrationPageContent = () => {
               </label>
               <input
                 type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleInputChange}
+                {...register("address")}
                 placeholder="東京都渋谷区○○1-2-3"
-                className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                required
+                className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
               />
+              <FormError message={errors.address?.message} />
             </div>
           </div>
 
@@ -172,13 +168,11 @@ const PartnerRegistrationPageContent = () => {
                 </label>
                 <input
                   type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
+                  {...register("phone")}
                   placeholder="03-1234-5678"
-                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  required
+                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 />
+                <FormError message={errors.phone?.message} />
               </div>
 
               {/* メールアドレス */}
@@ -191,13 +185,11 @@ const PartnerRegistrationPageContent = () => {
                 </label>
                 <input
                   type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
+                  {...register("email")}
                   placeholder="info@example.com"
-                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  required
+                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 />
+                <FormError message={errors.email?.message} />
               </div>
             </div>
 
@@ -211,12 +203,11 @@ const PartnerRegistrationPageContent = () => {
               </label>
               <input
                 type="url"
-                name="website"
-                value={formData.website}
-                onChange={handleInputChange}
+                {...register("website")}
                 placeholder="https://www.example.com"
-                className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
               />
+              <FormError message={errors.website?.message} />
             </div>
           </div>
 
@@ -238,13 +229,12 @@ const PartnerRegistrationPageContent = () => {
                 事業内容
               </label>
               <textarea
-                name="businessContent"
-                value={formData.businessContent}
-                onChange={handleInputChange}
+                {...register("businessContent")}
                 rows={4}
                 placeholder="外壁塗装、屋根塗装、防水工事など、具体的な事業内容をご記入ください。"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-vertical"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-vertical"
               />
+              <FormError message={errors.businessContent?.message} />
             </div>
 
             {/* 自己PR・アピールポイント */}
@@ -256,13 +246,12 @@ const PartnerRegistrationPageContent = () => {
                 自己PR・アピールポイント
               </label>
               <textarea
-                name="appealPoints"
-                value={formData.appealPoints}
-                onChange={handleInputChange}
+                {...register("appealPoints")}
                 rows={5}
                 placeholder="御社の強みや特徴、お客様へのアピールポイントをご記入ください。こちらの内容は業者紹介ページでも活用させていただきます。"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-vertical"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-vertical"
               />
+              <FormError message={errors.appealPoints?.message} />
             </div>
           </div>
 

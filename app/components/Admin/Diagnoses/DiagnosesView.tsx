@@ -87,10 +87,6 @@ const CONSTRUCTION_TYPE_LABELS: Record<string, string> = {
   INTERIOR_WORK: '内装工事',
   EXTERIOR_WORK: '外構工事',
   OTHER: 'その他',
-  EXTERIOR_AND_ROOF: '外壁・屋根塗装',
-  SIDING_REPLACEMENT: 'サイディング張替',
-  PARTIAL_REPAIR: '部分補修',
-  FULL_REPLACEMENT: '全面張替'
 };
 
 const PREFECTURE_LABELS: Record<string, string> = {
@@ -468,7 +464,7 @@ const DiagnosesView = () => {
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="w-full sm:w-auto px-4 py-3 min-h-[44px] bg-blue-600 text-white rounded-md hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 transition-colors"
+                  className="w-full sm:w-auto px-4 py-3 min-h-[44px] bg-primary text-primary-foreground rounded-md hover:bg-primary/90 active:bg-primary/80 disabled:opacity-50 transition-colors"
                 >
                   {saving ? '保存中...' : '保存'}
                 </button>
@@ -478,7 +474,7 @@ const DiagnosesView = () => {
                 {!isEditMode && (
                   <button
                     onClick={enterEditMode}
-                    className="w-full sm:w-auto px-4 py-3 min-h-[44px] bg-blue-600 text-white rounded-md hover:bg-blue-700 active:bg-blue-800 transition-colors"
+                    className="w-full sm:w-auto px-4 py-3 min-h-[44px] bg-primary text-primary-foreground rounded-md hover:bg-primary/90 active:bg-primary/80 transition-colors"
                   >
                     編集
                   </button>
@@ -507,7 +503,7 @@ const DiagnosesView = () => {
                         type="text"
                         value={editFormData.customerName}
                         onChange={(e) => setEditFormData({ ...editFormData, customerName: e.target.value })}
-                        className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
                     <div>
@@ -516,7 +512,7 @@ const DiagnosesView = () => {
                         type="text"
                         value={editFormData.customerPhone}
                         onChange={(e) => setEditFormData({ ...editFormData, customerPhone: e.target.value })}
-                        className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
                   </div>
@@ -526,7 +522,7 @@ const DiagnosesView = () => {
                       type="email"
                       value={editFormData.customerEmail}
                       onChange={(e) => setEditFormData({ ...editFormData, customerEmail: e.target.value })}
-                      className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                   <div>
@@ -535,7 +531,7 @@ const DiagnosesView = () => {
                       type="text"
                       value={editFormData.customerAddress}
                       onChange={(e) => setEditFormData({ ...editFormData, customerAddress: e.target.value })}
-                      className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                 </div>
@@ -558,7 +554,7 @@ const DiagnosesView = () => {
                       <select
                         value={editFormData.desiredPartnerCount}
                         onChange={(e) => setEditFormData({ ...editFormData, desiredPartnerCount: Number(e.target.value) })}
-                        className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                       >
                         {[1, 2, 3, 4].map((n) => (
                           <option key={n} value={n}>{n}社</option>
@@ -572,7 +568,7 @@ const DiagnosesView = () => {
                           type="number"
                           value={editFormData.referralFee}
                           onChange={(e) => setEditFormData({ ...editFormData, referralFee: Number(e.target.value) })}
-                          className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                         />
                         <span className="ml-2 text-gray-600">円</span>
                       </div>
@@ -584,7 +580,7 @@ const DiagnosesView = () => {
                       value={editFormData.adminNote}
                       onChange={(e) => setEditFormData({ ...editFormData, adminNote: e.target.value })}
                       rows={3}
-                      className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                       placeholder="顧客が求めている業者の条件など..."
                     />
                   </div>
@@ -656,7 +652,7 @@ const DiagnosesView = () => {
                   {selectedDiagnosis.status !== 'DECIDED' && selectedDiagnosis.status !== 'CANCELLED' && (
                     <button
                       onClick={() => openReferralModal(selectedDiagnosis)}
-                      className="w-full sm:w-auto px-4 py-3 min-h-[44px] bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 active:bg-blue-800 transition-colors"
+                      className="w-full sm:w-auto px-4 py-3 min-h-[44px] bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90 active:bg-primary/80 transition-colors"
                     >
                       新規紹介
                     </button>
@@ -728,7 +724,7 @@ const DiagnosesView = () => {
               type="number"
               value={newReferralFee}
               onChange={(e) => setNewReferralFee(Number(e.target.value))}
-              className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <p className="mt-1 text-sm text-gray-500">
               紹介時に加盟店の保証金から引き落とされます
@@ -784,7 +780,7 @@ const DiagnosesView = () => {
                             <button
                               onClick={() => handleCreateReferral(partner.id)}
                               disabled={submittingReferral}
-                              className="w-full sm:w-auto px-4 py-3 min-h-[44px] bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 transition-colors"
+                              className="w-full sm:w-auto px-4 py-3 min-h-[44px] bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90 active:bg-primary/80 disabled:opacity-50 transition-colors"
                             >
                               {submittingReferral ? '処理中...' : '紹介する'}
                             </button>

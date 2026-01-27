@@ -37,7 +37,7 @@ const FAQSection = () => {
       <div className="max-w-4xl mx-auto">
         {/* タイトル */}
         <div className="flex items-center gap-4 mb-10 md:mb-12">
-          <div className="w-1.5 h-10 bg-[#f16f21]"></div>
+          <div className="w-1.5 h-10 bg-brand"></div>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
             よくある質問
           </h2>
@@ -51,14 +51,14 @@ const FAQSection = () => {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="bg-white rounded-lg overflow-hidden border-l-4 border-[#f16f21]"
+              className="bg-white rounded-lg overflow-hidden border-l-4 border-brand"
             >
               <button
                 onClick={() => toggleFAQ(index)}
                 className="w-full px-6 py-5 text-left flex items-center justify-between gap-4"
               >
                 <div className="flex items-center gap-5">
-                  <span className="bg-[#f16f21] text-white text-sm font-bold w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0">
+                  <span className="bg-brand text-white text-sm font-bold w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0">
                     Q
                   </span>
                   <span className="font-medium text-gray-800">{faq.question}</span>

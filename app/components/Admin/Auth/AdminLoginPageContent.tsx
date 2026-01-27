@@ -3,48 +3,46 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { adminLoginSchema, AdminLoginData } from "@/lib/validations/forms";
+import { FormError } from "@/app/components/Common/FormError";
 
 const AdminLoginPageContent = () => {
-  const [loginData, setLoginData] = useState({
-    username: "",
-    password: ""
-  });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setLoginData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<AdminLoginData>({
+    resolver: zodResolver(adminLoginSchema),
+    defaultValues: {
+      username: "",
+      password: ""
+    }
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: AdminLoginData) => {
     setIsLoading(true);
     setError("");
 
     try {
-      const response = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: loginData.username,
-          password: loginData.password,
-        }),
+      const result = await signIn("admin-credentials", {
+        username: data.username,
+        password: data.password,
+        redirect: false,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (result?.error) {
+        setError("ユーザー名またはパスワードが正しくありません");
+      } else if (result?.ok) {
         router.push("/admin-dashboard");
-      } else {
-        setError(data.error || 'ログインに失敗しました');
+        router.refresh();
       }
     } catch {
       setError('ネットワークエラーが発生しました');
@@ -76,7 +74,7 @@ const AdminLoginPageContent = () => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* ユーザー名 */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -84,14 +82,12 @@ const AdminLoginPageContent = () => {
               </label>
               <input
                 type="text"
-                name="username"
-                value={loginData.username}
-                onChange={handleInputChange}
+                {...register("username")}
                 placeholder="ユーザー名を入力"
-                className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
+                className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-blue-500"
                 disabled={isLoading}
               />
+              <FormError message={errors.username?.message} />
             </div>
 
             {/* パスワード */}
@@ -102,18 +98,16 @@ const AdminLoginPageContent = () => {
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={loginData.password}
-                  onChange={handleInputChange}
+                  {...register("password")}
                   placeholder="パスワードを入力"
-                  className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
-                  required
+                  className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-blue-500 pr-10"
                   disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+                  aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示"}
                 >
                   <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     {showPassword ? (
@@ -124,6 +118,7 @@ const AdminLoginPageContent = () => {
                   </svg>
                 </button>
               </div>
+              <FormError message={errors.password?.message} />
             </div>
 
 
@@ -131,7 +126,7 @@ const AdminLoginPageContent = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white font-bold py-3 px-4 rounded-md transition-colors"
+              className="w-full bg-blue-500 hover:bg-primary/90 disabled:bg-blue-300 text-white font-bold py-3 px-4 rounded-md transition-colors"
             >
               {isLoading ? 'ログイン中...' : 'ログイン'}
             </button>

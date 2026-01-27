@@ -85,7 +85,7 @@ const PartnerDetailModal = ({ isOpen, onClose, partnerId, onEdit }: PartnerDetai
               <p className="text-red-500">{error}</p>
               <button
                 onClick={fetchPartnerDetail}
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
               >
                 再読み込み
               </button>

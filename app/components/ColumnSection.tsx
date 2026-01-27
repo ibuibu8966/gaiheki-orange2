@@ -52,7 +52,7 @@ const ColumnCard = memo(({ article }: { article: Article }) => (
         <p className="text-xs mt-2 bg-black/40 px-2 py-1 rounded">{article.categoryLabel}</p>
       </div>
     </div>
-    <h3 className="text-sm text-gray-800 leading-relaxed group-hover:text-[#f16f21] transition-colors line-clamp-2">
+    <h3 className="text-sm text-gray-800 leading-relaxed group-hover:text-brand transition-colors line-clamp-2">
       {article.title}
     </h3>
   </Link>
@@ -201,7 +201,7 @@ const ColumnSection = () => {
       <div className="max-w-6xl mx-auto">
         {/* メインタイトル */}
         <div className="flex items-center gap-4 mb-12">
-          <div className="w-1.5 h-10 bg-[#f16f21]"></div>
+          <div className="w-1.5 h-10 bg-brand"></div>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
             外壁・屋根塗装の関連コラム
           </h2>
@@ -225,7 +225,7 @@ const ColumnSection = () => {
         <div className="text-center mt-12">
           <Link
             href="/columns"
-            className="inline-flex items-center justify-center bg-white border-2 border-[#f16f21] text-[#f16f21] font-bold py-3 px-8 rounded-lg hover:bg-[#f16f21] hover:text-white transition-all duration-300"
+            className="inline-flex items-center justify-center bg-white border-2 border-brand text-brand font-bold py-3 px-8 rounded-lg hover:bg-brand hover:text-white transition-all duration-300"
           >
             コラム一覧を見る
             <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

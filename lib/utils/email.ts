@@ -1,6 +1,8 @@
 // メール送信ユーティリティ
 // 実際の送信にはSendGrid, AWS SES, Resendなどを設定する必要があります
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://gaiheki-orange.vercel.app';
+
 interface ReferralEmailData {
   partnerEmail: string;
   partnerCompanyName: string;
@@ -82,7 +84,7 @@ ${data.partnerCompanyName} 様
 変更後: ¥${data.newBalance.toLocaleString()}
 
 詳細はダッシュボードからご確認ください。
-https://gaiheki-orange.vercel.app/partner-dashboard/referrals
+${APP_URL}/partner-dashboard/referrals
 
 ---
 外壁オレンジ
@@ -170,7 +172,7 @@ https://gaiheki-orange.vercel.app/partner-dashboard/referrals
       </div>
 
       <div style="text-align: center;">
-        <a href="https://gaiheki-orange.vercel.app/partner-dashboard/referrals" class="cta-button">
+        <a href="${APP_URL}/partner-dashboard/referrals" class="cta-button">
           ダッシュボードで確認する
         </a>
       </div>
@@ -195,13 +197,13 @@ export async function sendReferralNotificationEmail(data: ReferralEmailData): Pr
     // TODO: 実際のメール送信処理をここに実装
     // 例: SendGrid, AWS SES, Resendなど
 
-    // 現時点ではコンソールログに出力
-    console.log('=== Referral Notification Email ===');
-    console.log('To:', data.partnerEmail);
-    console.log('Subject:', subject);
-    console.log('---');
-    console.log(text);
-    console.log('===================================');
+    // 開発環境のみコンソールログに出力
+    if (process.env.NODE_ENV === 'development') {
+      console.log('=== Referral Notification Email ===');
+      console.log('To:', data.partnerEmail);
+      console.log('Subject:', subject);
+      console.log('===================================');
+    }
 
     // メールサービスが設定されていない場合は成功として扱う
     return true;

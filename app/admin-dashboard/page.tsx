@@ -182,7 +182,7 @@ export default function AdminDashboardPage() {
                   onClick={() => setKpiPeriod('12_months')}
                   className={`px-4 py-3 min-h-[44px] rounded-lg text-sm font-medium transition-all ${
                     kpiPeriod === '12_months'
-                      ? 'bg-blue-600 text-white shadow-md'
+                      ? 'bg-primary text-primary-foreground shadow-md'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
                   }`}
                 >
@@ -192,7 +192,7 @@ export default function AdminDashboardPage() {
                   onClick={() => setKpiPeriod('6_months')}
                   className={`px-4 py-3 min-h-[44px] rounded-lg text-sm font-medium transition-all ${
                     kpiPeriod === '6_months'
-                      ? 'bg-blue-600 text-white shadow-md'
+                      ? 'bg-primary text-primary-foreground shadow-md'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
                   }`}
                 >
@@ -202,7 +202,7 @@ export default function AdminDashboardPage() {
                   onClick={() => setKpiPeriod('all')}
                   className={`px-4 py-3 min-h-[44px] rounded-lg text-sm font-medium transition-all ${
                     kpiPeriod === 'all'
-                      ? 'bg-blue-600 text-white shadow-md'
+                      ? 'bg-primary text-primary-foreground shadow-md'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
                   }`}
                 >

@@ -105,7 +105,7 @@ export async function PATCH(
       postName,
     } = body;
 
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       updated_at: new Date(),
     };
 

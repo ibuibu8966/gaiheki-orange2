@@ -36,8 +36,8 @@ const Header = () => {
 
   const getLinkClass = (path: string) => {
     const baseClass = "px-3 py-2 text-sm font-medium transition-all duration-300";
-    const activeClass = "text-[#f16f21] border-b-2 border-[#f16f21]";
-    const inactiveClass = "text-gray-700 hover:text-[#f16f21]";
+    const activeClass = "text-brand border-b-2 border-brand";
+    const inactiveClass = "text-gray-700 hover:text-brand";
 
     return `${baseClass} ${isActive(path) ? activeClass : inactiveClass}`;
   };
@@ -52,7 +52,7 @@ const Header = () => {
               {/* 画像ロゴがある場合はこちらを使用 */}
               {/* <Image src="/logo.png" alt="外壁塗装パートナーズ" width={180} height={50} /> */}
               {/* テキストロゴ（画像がない場合のフォールバック） */}
-              <h1 className="font-serif text-xl font-black text-[#f16f21] cursor-pointer tracking-wide hover:opacity-80 transition-opacity duration-300">外壁塗装パートナーズ</h1>
+              <h1 className="font-serif text-xl font-black text-brand cursor-pointer tracking-wide hover:opacity-80 transition-opacity duration-300">外壁塗装パートナーズ</h1>
             </Link>
           </div>
 
@@ -68,11 +68,11 @@ const Header = () => {
               お問い合わせ
             </Link>
             <div className="flex items-center space-x-2 text-xs text-gray-500">
-              <Link href="/auth/admin-login" className="hover:text-[#f16f21] transition-colors duration-300">
+              <Link href="/auth/admin-login" className="hover:text-brand transition-colors duration-300">
                 管理者
               </Link>
               <span>/</span>
-              <Link href="/auth/partner-login" className="hover:text-[#f16f21] transition-colors duration-300">
+              <Link href="/auth/partner-login" className="hover:text-brand transition-colors duration-300">
                 加盟店様
               </Link>
             </div>
@@ -83,17 +83,17 @@ const Header = () => {
             <div className="text-right">
               <p className="text-xs text-gray-500">お電話でのご相談はこちら</p>
               <div className="flex items-center">
-                <svg className="w-4 h-4 text-[#f16f21] mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 text-brand mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                 </svg>
-                <a href="tel:0120-945-990" className="text-lg font-bold text-[#f16f21] hover:text-[#e05a10] transition-colors duration-300">
+                <a href="tel:0120-945-990" className="text-lg font-bold text-brand hover:text-brand-hover transition-colors duration-300">
                   0120-945-990
                 </a>
               </div>
             </div>
             <button
               onClick={scrollToDiagnosisForm}
-              className="bg-[#f16f21] hover:bg-[#e05a10] text-white px-6 py-2 rounded-lg text-sm font-bold transition-all duration-300 shadow-md hover:shadow-lg"
+              className="bg-brand hover:bg-brand-hover text-white px-6 py-2 rounded-lg text-sm font-bold transition-all duration-300 shadow-md hover:shadow-lg"
             >
               無料診断
             </button>
@@ -103,7 +103,7 @@ const Header = () => {
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 hover:text-[#f16f21] transition-colors duration-300 p-2"
+              className="text-gray-700 hover:text-brand transition-colors duration-300 p-2"
               aria-label="メニュー"
             >
               {isMenuOpen ? (
@@ -125,21 +125,21 @@ const Header = () => {
             <nav className="flex flex-col space-y-3 px-4">
               <Link
                 href="/columns"
-                className="text-gray-700 hover:text-[#f16f21] py-2 text-sm font-medium transition-colors duration-300"
+                className="text-gray-700 hover:text-brand py-2 text-sm font-medium transition-colors duration-300"
                 onClick={() => setIsMenuOpen(false)}
               >
                 外壁塗装コラム
               </Link>
               <Link
                 href="/partner-registration"
-                className="text-gray-700 hover:text-[#f16f21] py-2 text-sm font-medium transition-colors duration-300"
+                className="text-gray-700 hover:text-brand py-2 text-sm font-medium transition-colors duration-300"
                 onClick={() => setIsMenuOpen(false)}
               >
                 加盟店募集
               </Link>
               <Link
                 href="/contact"
-                className="text-gray-700 hover:text-[#f16f21] py-2 text-sm font-medium transition-colors duration-300"
+                className="text-gray-700 hover:text-brand py-2 text-sm font-medium transition-colors duration-300"
                 onClick={() => setIsMenuOpen(false)}
               >
                 お問い合わせ
@@ -150,14 +150,14 @@ const Header = () => {
                 <div className="flex flex-col space-y-2">
                   <Link
                     href="/auth/admin-login"
-                    className="text-gray-500 hover:text-[#f16f21] text-sm transition-colors duration-300"
+                    className="text-gray-500 hover:text-brand text-sm transition-colors duration-300"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     管理者ログイン
                   </Link>
                   <Link
                     href="/auth/partner-login"
-                    className="text-gray-500 hover:text-[#f16f21] text-sm transition-colors duration-300"
+                    className="text-gray-500 hover:text-brand text-sm transition-colors duration-300"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     加盟店様ログイン
@@ -167,7 +167,7 @@ const Header = () => {
 
               <div className="border-t border-gray-200 pt-3 mt-3">
                 <p className="text-xs text-gray-500 mb-2">お電話でのご相談</p>
-                <a href="tel:0120-945-990" className="flex items-center text-[#f16f21] hover:text-[#e05a10] transition-colors duration-300 py-2">
+                <a href="tel:0120-945-990" className="flex items-center text-brand hover:text-brand-hover transition-colors duration-300 py-2">
                   <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                   </svg>
@@ -178,7 +178,7 @@ const Header = () => {
                     scrollToDiagnosisForm();
                     setIsMenuOpen(false);
                   }}
-                  className="w-full bg-[#f16f21] hover:bg-[#e05a10] text-white px-6 py-3 rounded-lg text-sm font-bold transition-all duration-300 shadow-md hover:shadow-lg mt-2"
+                  className="w-full bg-brand hover:bg-brand-hover text-white px-6 py-3 rounded-lg text-sm font-bold transition-all duration-300 shadow-md hover:shadow-lg mt-2"
                 >
                   無料診断
                 </button>

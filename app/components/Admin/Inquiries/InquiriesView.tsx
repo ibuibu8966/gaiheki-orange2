@@ -148,7 +148,7 @@ const InquiriesView = () => {
               mobileCardActions={(i) => (
                 <button
                   onClick={() => setSelectedInquiryId(i.id)}
-                  className="w-full py-2 text-center text-blue-600 font-medium min-h-[44px] hover:bg-blue-50 rounded transition-colors"
+                  className="w-full py-2 text-center text-primary font-medium min-h-[44px] hover:bg-primary/10 rounded transition-colors"
                 >
                   詳細を見る
                 </button>

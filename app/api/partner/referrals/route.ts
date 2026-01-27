@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/src/infrastructure/database/prisma.client';
-import { requirePartnerAuth } from '@/lib/utils/partnerAuth';
+import { auth } from '@/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    // 認証チェック
-    const { error, partnerId } = await requirePartnerAuth();
-    if (error) return error;
+    // 認証チェック（middlewareで行われるが、partnerIdの取得のため）
+    const session = await auth();
+    if (!session || session.user.userType !== 'partner') {
+      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
+    }
+    const partnerId = parseInt(session.user.id);
 
     // クエリパラメータ取得
     const searchParams = request.nextUrl.searchParams;

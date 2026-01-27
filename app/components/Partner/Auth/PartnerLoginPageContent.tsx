@@ -3,53 +3,49 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { partnerLoginSchema, PartnerLoginData } from "@/lib/validations/forms";
+import { FormError } from "@/app/components/Common/FormError";
 
 const PartnerLoginPageContent = () => {
-  const [loginData, setLoginData] = useState({
-    email: "",
-    password: ""
-  });
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setLoginData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<PartnerLoginData>({
+    resolver: zodResolver(partnerLoginSchema),
+    defaultValues: {
+      email: "",
+      password: ""
+    }
+  });
 
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: PartnerLoginData) => {
     setIsLoading(true);
+    setError("");
 
     try {
-      const response = await fetch('/api/partner/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: loginData.email,
-          password: loginData.password
-        })
+      const result = await signIn("partner-credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
       });
 
-      const data = await response.json();
-
-      if (data.success) {
-        // ログイン成功
-        // TODO: セッション情報を保存
+      if (result?.error) {
+        setError("メールアドレスまたはパスワードが正しくありません");
+      } else if (result?.ok) {
         router.push("/partner-dashboard");
-      } else {
-        alert(data.error || 'ログインに失敗しました');
+        router.refresh();
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      alert('ログイン処理中にエラーが発生しました');
+    } catch {
+      setError('ログイン処理中にエラーが発生しました');
     } finally {
       setIsLoading(false);
     }
@@ -65,13 +61,19 @@ const PartnerLoginPageContent = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
           </div>
-          
+
           <h1 className="text-3xl font-bold text-gray-800 mb-2">加盟店ログイン</h1>
           <p className="text-gray-600">登録済みのメールアドレスとパスワードでログインしてください</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-200 text-red-700 rounded-md">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* メールアドレス */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -79,13 +81,12 @@ const PartnerLoginPageContent = () => {
               </label>
               <input
                 type="email"
-                name="email"
-                value={loginData.email}
-                onChange={handleInputChange}
+                {...register("email")}
                 placeholder="例: company@example.com"
-                className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                required
+                className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                disabled={isLoading}
               />
+              <FormError message={errors.email?.message} />
             </div>
 
             {/* パスワード */}
@@ -96,17 +97,16 @@ const PartnerLoginPageContent = () => {
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={loginData.password}
-                  onChange={handleInputChange}
+                  {...register("password")}
                   placeholder="パスワードを入力"
-                  className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 pr-10"
-                  required
+                  className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary pr-10"
+                  disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+                  aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示"}
                 >
                   <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     {showPassword ? (
@@ -117,6 +117,7 @@ const PartnerLoginPageContent = () => {
                   </svg>
                 </button>
               </div>
+              <FormError message={errors.password?.message} />
             </div>
 
             {/* ログインボタン */}

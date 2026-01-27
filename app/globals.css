@@ -29,8 +29,9 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  /* オレンジブランドカラー #f16f21 */
+  --primary: oklch(0.67 0.165 50);
+  --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
@@ -59,6 +60,13 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* ブランドカラー（オレンジ）*/
+  --color-brand: #f16f21;
+  --color-brand-hover: #e05a10;
+  --color-brand-light: #ff8a3d;
+  --color-brand-bg: rgba(241, 111, 33, 0.1);
+
   --color-orange-600: var(--color-orange-600);
   --font-serif: var(--font-noto-serif-jp);
   --font-sans: var(--font-noto-sans-jp);
@@ -276,8 +284,9 @@ textarea::placeholder {
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  /* オレンジブランドカラー #ff8a3d (ダークモード用の明るいオレンジ) */
+  --primary: oklch(0.75 0.165 50);
+  --primary-foreground: oklch(0.15 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);

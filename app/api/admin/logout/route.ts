@@ -1,7 +1,13 @@
-import { NextRequest } from 'next/server';
-import AdminFactory from '../../../../src/infrastructure/factories/admin.factory';
+import { NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
-  const adminController = AdminFactory.getAdminController();
-  return await adminController.logout(request);
+// このルートは廃止予定です。
+// 認証はAuth.js (/api/auth/[...nextauth]) で処理されます。
+// フロントエンドは signOut() を使用してください。
+
+export async function POST() {
+  return NextResponse.json({
+    success: false,
+    error: 'このエンドポイントは廃止されました。Auth.js経由でログアウトしてください。',
+    migration: 'Use signOut() from next-auth/react instead.'
+  }, { status: 410 });
 }

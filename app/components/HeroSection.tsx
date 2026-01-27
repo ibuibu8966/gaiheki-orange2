@@ -18,7 +18,7 @@ const HeroSection = () => {
             {/* メインキャッチコピー */}
             <div className="mb-6 md:mb-8">
               <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight mb-4">
-                <span className="text-[#f16f21]">信頼</span><span className="text-[#4a4a4a]">と</span><span className="text-[#f16f21]">安心</span><span className="text-[#4a4a4a]">の</span><br/><span className="text-[#4a4a4a]">全国ネットワーク</span>
+                <span className="text-brand">信頼</span><span className="text-[#4a4a4a]">と</span><span className="text-brand">安心</span><span className="text-[#4a4a4a]">の</span><br/><span className="text-[#4a4a4a]">全国ネットワーク</span>
               </h1>
             </div>
 
@@ -74,7 +74,7 @@ const HeroSection = () => {
               </a>
               <button
                 onClick={scrollToDiagnosisForm}
-                className="inline-flex items-center justify-center bg-[#f16f21] hover:bg-[#e05a10] text-white font-bold py-3 px-6 rounded-lg text-base transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="inline-flex items-center justify-center bg-brand hover:bg-brand-hover text-white font-bold py-3 px-6 rounded-lg text-base transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import type { InquiryWhereInput } from '@/lib/types';
+import { contactFormSchema } from '@/lib/validations/forms';
 
 // GET: 問い合わせ一覧取得
 export async function GET(request: Request) {
@@ -8,7 +10,7 @@ export async function GET(request: Request) {
     const status = searchParams.get('status');
     const search = searchParams.get('search');
 
-    const where: any = {};
+    const where: InquiryWhereInput = {};
 
     // ステータスフィルター
     if (status && status !== 'all') {
@@ -70,14 +72,17 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, phone, email, subject, message } = body;
 
-    if (!name || !email || !subject || !message) {
+    // Zodバリデーション
+    const result = contactFormSchema.safeParse(body);
+    if (!result.success) {
       return NextResponse.json(
-        { success: false, error: 'All fields are required' },
+        { success: false, error: result.error.errors[0].message },
         { status: 400 }
       );
     }
+
+    const { name, phone, email, subject, message } = result.data;
 
     // 問い合わせを作成（顧客情報は直接保存）
     const inquiry = await prisma.inquiries.create({
@@ -125,7 +130,7 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
     if (status) updateData.inquiry_status = status;
     if (adminMemo !== undefined) updateData.admin_memo = adminMemo;
 

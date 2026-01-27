@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import type { ArticleWhereInput } from '@/lib/types';
 
 // GET: コラム記事一覧取得
 export async function GET(request: Request) {
@@ -9,7 +10,7 @@ export async function GET(request: Request) {
     const published = searchParams.get('published');
     const search = searchParams.get('search');
 
-    const where: any = {};
+    const where: ArticleWhereInput = {};
 
     // カテゴリフィルター
     if (category && category !== 'all') {

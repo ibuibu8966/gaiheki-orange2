@@ -21,7 +21,7 @@ export default function PrivacyPage() {
         <div className="bg-white rounded-lg shadow-sm p-8 space-y-10">
           {/* 基本方針 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               1. 基本方針
             </h2>
             <div className="text-gray-700 space-y-4 leading-relaxed">
@@ -50,7 +50,7 @@ export default function PrivacyPage() {
 
           {/* 個人情報の収集 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               2. 個人情報の収集
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -74,7 +74,7 @@ export default function PrivacyPage() {
 
           {/* 個人情報の利用目的 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               3. 個人情報の利用目的
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -94,7 +94,7 @@ export default function PrivacyPage() {
 
           {/* 個人情報の第三者提供 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               4. 個人情報の第三者提供
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -110,7 +110,7 @@ export default function PrivacyPage() {
 
           {/* 業務委託 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               5. 業務委託
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -120,7 +120,7 @@ export default function PrivacyPage() {
 
           {/* セキュリティ */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               6. セキュリティについて
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -130,7 +130,7 @@ export default function PrivacyPage() {
 
           {/* クッキーについて */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               7. クッキー（Cookie）について
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -141,7 +141,7 @@ export default function PrivacyPage() {
 
           {/* 開示等の請求 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               8. 開示等の請求
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -152,7 +152,7 @@ export default function PrivacyPage() {
 
           {/* お問い合わせ窓口 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               9. お問い合わせ窓口
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -167,7 +167,7 @@ export default function PrivacyPage() {
 
           {/* 改定について */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               10. プライバシーポリシーの改定
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">

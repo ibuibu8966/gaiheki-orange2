@@ -58,10 +58,6 @@ const CONSTRUCTION_TYPE_LABELS: Record<string, string> = {
   INTERIOR_WORK: '内装工事',
   EXTERIOR_WORK: '外構工事',
   OTHER: 'その他',
-  EXTERIOR_AND_ROOF: '外壁・屋根塗装',
-  SIDING_REPLACEMENT: 'サイディング張替',
-  PARTIAL_REPAIR: '部分補修',
-  FULL_REPLACEMENT: '全面張替'
 };
 
 const FLOOR_AREA_LABELS: Record<string, string> = {

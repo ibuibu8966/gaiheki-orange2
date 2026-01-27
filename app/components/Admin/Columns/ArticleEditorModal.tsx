@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import SimpleRichEditor from "./SimpleRichEditor";
 
 interface ArticleEditorModalProps {
@@ -25,6 +26,7 @@ const ArticleEditorModal = ({
   onClose,
   onSave,
 }: ArticleEditorModalProps) => {
+  const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [title, setTitle] = useState("");
@@ -33,6 +35,8 @@ const ArticleEditorModal = ({
   const [thumbnailImage, setThumbnailImage] = useState("");
   const [isPublished, setIsPublished] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const adminId = session?.user?.id ? parseInt(session.user.id) : null;
 
   useEffect(() => {
     if (articleId) {
@@ -85,7 +89,7 @@ const ArticleEditorModal = ({
 
       if (!articleId) {
         // 新規作成時はadminIdとpostNameが必要
-        payload.adminId = 1; // TODO: セッションから取得
+        payload.adminId = adminId;
         payload.postName = generateSlug(title);
       }
 
@@ -224,7 +228,7 @@ const ArticleEditorModal = ({
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-3 text-2xl font-bold border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 text-2xl font-bold border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="記事のタイトルを入力"
               />
             </div>
@@ -238,7 +242,7 @@ const ArticleEditorModal = ({
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   {CATEGORIES.map((cat) => (
                     <option key={cat.value} value={cat.value}>
@@ -256,7 +260,7 @@ const ArticleEditorModal = ({
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 />
                 {thumbnailImage && (
                   <img

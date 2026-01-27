@@ -40,14 +40,14 @@ const CTASection = () => {
               href="tel:0120-945-990"
               className="flex items-center justify-center lg:justify-end gap-3 text-white hover:opacity-80 transition-opacity"
             >
-              <span className="w-10 h-10 bg-[#f16f21] rounded-full flex items-center justify-center">
+              <span className="w-10 h-10 bg-brand rounded-full flex items-center justify-center">
                 <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                 </svg>
               </span>
               <span className="text-3xl md:text-4xl font-bold tracking-wide">0120-945-990</span>
             </a>
-            <p className="text-[#f16f21] text-sm mt-2">24時間受付中（年中無休）</p>
+            <p className="text-brand text-sm mt-2">24時間受付中（年中無休）</p>
           </div>
         </div>
       </div>

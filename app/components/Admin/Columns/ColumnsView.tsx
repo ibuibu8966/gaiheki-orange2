@@ -314,7 +314,7 @@ const ColumnsView = () => {
                         setSelectedArticleId(a.id);
                         setShowEditor(true);
                       }}
-                      className="flex-1 py-2 text-center text-blue-600 font-medium min-h-[44px] hover:bg-blue-50 rounded transition-colors"
+                      className="flex-1 py-2 text-center text-primary font-medium min-h-[44px] hover:bg-primary/10 rounded transition-colors"
                     >
                       編集
                     </button>

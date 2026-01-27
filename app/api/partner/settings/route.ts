@@ -1,14 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
+import { auth } from '@/auth';
 
 // GET: Partner設定情報を取得
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    // TODO: 実際の認証実装後、セッションからpartner_idを取得
-    // 現在は仮のpartner_idを使用
-    const partnerId = 1; // 仮のID
+    const session = await auth();
+    if (!session || session.user.userType !== 'partner') {
+      return NextResponse.json(
+        { success: false, error: 'ログインが必要です' },
+        { status: 401 }
+      );
+    }
+    const partnerId = parseInt(session.user.id);
 
     const partnerDetails = await prisma.partner_details.findUnique({
       where: { partner_id: partnerId },
@@ -16,16 +20,16 @@ export async function GET(request: NextRequest) {
 
     if (!partnerDetails) {
       return NextResponse.json(
-        { error: 'Partner details not found' },
+        { success: false, error: 'Partner details not found' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(partnerDetails);
+    return NextResponse.json({ success: true, data: partnerDetails });
   } catch (error) {
     console.error('Error fetching partner settings:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch partner settings' },
+      { success: false, error: 'Failed to fetch partner settings' },
       { status: 500 }
     );
   }
@@ -34,14 +38,20 @@ export async function GET(request: NextRequest) {
 // PUT: Partner設定情報を更新
 export async function PUT(request: NextRequest) {
   try {
-    // TODO: 実際の認証実装後、セッションからpartner_idを取得
-    const partnerId = 1; // 仮のID
+    const session = await auth();
+    if (!session || session.user.userType !== 'partner') {
+      return NextResponse.json(
+        { success: false, error: 'ログインが必要です' },
+        { status: 401 }
+      );
+    }
+    const partnerId = parseInt(session.user.id);
 
     const data = await request.json();
 
     // 更新するフィールドを抽出
-    const updateData: any = {};
-    
+    const updateData: Record<string, unknown> = {};
+
     if (data.company_name !== undefined) updateData.company_name = data.company_name;
     if (data.phone_number !== undefined) updateData.phone_number = data.phone_number;
     if (data.address !== undefined) updateData.address = data.address;
@@ -63,13 +73,12 @@ export async function PUT(request: NextRequest) {
       data: updateData,
     });
 
-    return NextResponse.json(updatedPartnerDetails);
+    return NextResponse.json({ success: true, data: updatedPartnerDetails });
   } catch (error) {
     console.error('Error updating partner settings:', error);
     return NextResponse.json(
-      { error: 'Failed to update partner settings' },
+      { success: false, error: 'Failed to update partner settings' },
       { status: 500 }
     );
   }
 }
-

@@ -1,25 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../src/infrastructure/database/prisma.client';
+import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
-import { getIronSession } from 'iron-session';
-import { sessionOptions, SessionData } from '../../../../src/lib/session';
-import { cookies } from 'next/headers';
+import { auth } from '@/auth';
 
 // GET: 加盟店の会社情報を取得
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    // セッションからpartnerIdを取得
-    const session = await getIronSession<SessionData>(await cookies(), sessionOptions);
-
-    if (!session.isLoggedIn || !session.partnerId) {
+    // 認証チェック（middlewareで行われるが、partnerIdの取得のため）
+    const session = await auth();
+    if (!session || session.user.userType !== 'partner') {
       return NextResponse.json({
         success: false,
         error: 'ログインが必要です'
       }, { status: 401 });
     }
+    const partnerId = parseInt(session.user.id);
 
     const partner = await prisma.partners.findUnique({
-      where: { id: session.partnerId },
+      where: { id: partnerId },
       include: {
         partner_details: true,
         partner_prefectures: true,
@@ -81,23 +79,20 @@ export async function GET(request: NextRequest) {
 // PATCH: 加盟店の会社情報を更新
 export async function PATCH(request: NextRequest) {
   try {
-    // セッションからpartnerIdを取得
-    const session = await getIronSession<SessionData>(await cookies(), sessionOptions);
-
-    if (!session.isLoggedIn || !session.partnerId) {
+    // 認証チェック（middlewareで行われるが、partnerIdの取得のため）
+    const session = await auth();
+    if (!session || session.user.userType !== 'partner') {
       return NextResponse.json({
         success: false,
         error: 'ログインが必要です'
       }, { status: 401 });
     }
-
-    const currentPartnerId = session.partnerId;
+    const currentPartnerId = parseInt(session.user.id);
 
     const body = await request.json();
     const {
       companyName,
       representativeName,
-      email,
       phone,
       fax,
       website,
@@ -131,17 +126,12 @@ export async function PATCH(request: NextRequest) {
     }
 
     // partnersテーブルの更新（パスワードとログインメールアドレス）
-    const partnersUpdateData: any = {};
+    const partnersUpdateData: Record<string, string> = {};
 
     if (newPassword && newPassword.trim() !== '') {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       partnersUpdateData.password_hash = hashedPassword;
     }
-
-    // ログインメールアドレスの変更チェック
-    console.log('Current login_email:', partner.login_email);
-    console.log('New loginEmail:', loginEmail);
-    console.log('Are they different?', loginEmail !== partner.login_email);
 
     if (loginEmail && loginEmail !== partner.login_email) {
       // 既に使用されていないか確認
@@ -163,7 +153,6 @@ export async function PATCH(request: NextRequest) {
     }
 
     if (Object.keys(partnersUpdateData).length > 0) {
-      console.log('Updating partners with:', partnersUpdateData);
       await prisma.partners.update({
         where: { id: currentPartnerId },
         data: partnersUpdateData
@@ -205,7 +194,7 @@ export async function PATCH(request: NextRequest) {
       // 新しい対応エリアを追加
       if (serviceAreas.length > 0) {
         await prisma.partner_prefectures.createMany({
-          data: serviceAreas.map(area => ({
+          data: serviceAreas.map((area: string) => ({
             partner_id: currentPartnerId,
             supported_prefecture: area,
             updated_at: new Date()
@@ -225,11 +214,11 @@ export async function PATCH(request: NextRequest) {
       data: updatedPartner
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Profile update error:', error);
 
     // Prisma unique constraint error
-    if (error.code === 'P2002') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return NextResponse.json({
         success: false,
         error: 'このログインメールアドレスは既に使用されています'

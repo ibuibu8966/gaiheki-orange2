@@ -21,7 +21,7 @@ export default function TermsPage() {
         <div className="bg-white rounded-lg shadow-sm p-8 space-y-10">
           {/* 第1条 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               第1条（本規約の適用、変更等）
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -34,7 +34,7 @@ export default function TermsPage() {
 
           {/* 第2条 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               第2条（情報の登録）
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -51,7 +51,7 @@ export default function TermsPage() {
 
           {/* 第3条 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               第3条（利用者IDおよびパスワードの管理）
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -63,7 +63,7 @@ export default function TermsPage() {
 
           {/* 第4条 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               第4条（利用者情報の削除）
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -74,7 +74,7 @@ export default function TermsPage() {
 
           {/* 第5条 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               第5条（免責）
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -86,7 +86,7 @@ export default function TermsPage() {
 
           {/* 第6条 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               第6条（禁止事項）
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -107,7 +107,7 @@ export default function TermsPage() {
 
           {/* 第7条 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               第7条（クッキー等の行動履歴）
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -119,7 +119,7 @@ export default function TermsPage() {
 
           {/* 第8条 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               第8条（個人情報等の取扱い）
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -130,7 +130,7 @@ export default function TermsPage() {
 
           {/* 第9条 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               第9条（サービスの中断・停止等）
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -146,7 +146,7 @@ export default function TermsPage() {
 
           {/* 第10条 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               第10条（サービスの変更・廃止）
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -156,7 +156,7 @@ export default function TermsPage() {
 
           {/* 第11条 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               第11条（第三者のサービス）
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -166,7 +166,7 @@ export default function TermsPage() {
 
           {/* 第12条 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               第12条（地位譲渡）
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">
@@ -176,7 +176,7 @@ export default function TermsPage() {
 
           {/* 第13条 */}
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-[#f16f21]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-brand">
               第13条（準拠法、合意管轄）
             </h2>
             <div className="text-gray-700 space-y-3 leading-relaxed">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Noto_Serif_JP, Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
 import ConditionalLayout from "./components/ConditionalLayout";
+import { Providers } from "./providers";
 
 const notoSerifJP = Noto_Serif_JP({
   variable: "--font-noto-serif-jp",
@@ -34,9 +35,11 @@ export default function RootLayout({
       <body
         className={`${notoSerifJP.variable} ${notoSansJP.variable} antialiased`}
       >
-        <ConditionalLayout>
-          {children}
-        </ConditionalLayout>
+        <Providers>
+          <ConditionalLayout>
+            {children}
+          </ConditionalLayout>
+        </Providers>
       </body>
     </html>
   );

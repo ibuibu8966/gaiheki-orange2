@@ -104,29 +104,29 @@ const AboutServiceSection = () => {
             {/* 中央: 外壁塗装パートナーズ */}
             <div className="bg-white rounded-3xl p-6 shadow-2xl w-full max-w-[340px] border-4 border-white relative">
               <div className="text-center mb-4">
-                <p className="text-[#dc2626] text-xs mb-1 font-medium">業界最大級の<span className="text-[#f16f21] font-bold">外壁塗装専門サイト</span></p>
-                <h3 className="text-xl md:text-2xl font-bold text-gray-800 border-b-2 border-[#f16f21] inline-block pb-1">外壁塗装パートナーズ</h3>
+                <p className="text-[#dc2626] text-xs mb-1 font-medium">業界最大級の<span className="text-brand font-bold">外壁塗装専門サイト</span></p>
+                <h3 className="text-xl md:text-2xl font-bold text-gray-800 border-b-2 border-brand inline-block pb-1">外壁塗装パートナーズ</h3>
               </div>
               <div className="space-y-2.5">
-                <div className="flex items-center gap-2 bg-gradient-to-r from-[#f16f21] to-[#f59e0b] px-3 py-2 rounded-lg shadow">
+                <div className="flex items-center gap-2 bg-gradient-to-r from-brand to-[#f59e0b] px-3 py-2 rounded-lg shadow">
                   <span className="w-5 h-5 bg-white rounded-full flex items-center justify-center shrink-0">
-                    <svg className="w-3 h-3 text-[#f16f21]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
                     </svg>
                   </span>
                   <span className="text-white font-bold text-sm">お客様への無料相談サポート</span>
                 </div>
-                <div className="flex items-center gap-2 bg-gradient-to-r from-[#f16f21] to-[#f59e0b] px-3 py-2 rounded-lg shadow">
+                <div className="flex items-center gap-2 bg-gradient-to-r from-brand to-[#f59e0b] px-3 py-2 rounded-lg shadow">
                   <span className="w-5 h-5 bg-white rounded-full flex items-center justify-center shrink-0">
-                    <svg className="w-3 h-3 text-[#f16f21]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
                     </svg>
                   </span>
                   <span className="text-white font-bold text-sm">優良施工店の紹介・相見積もりの手配</span>
                 </div>
-                <div className="flex items-center gap-2 bg-gradient-to-r from-[#f16f21] to-[#f59e0b] px-3 py-2 rounded-lg shadow">
+                <div className="flex items-center gap-2 bg-gradient-to-r from-brand to-[#f59e0b] px-3 py-2 rounded-lg shadow">
                   <span className="w-5 h-5 bg-white rounded-full flex items-center justify-center shrink-0">
-                    <svg className="w-3 h-3 text-[#f16f21]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
                     </svg>
                   </span>
@@ -175,8 +175,8 @@ const AboutServiceSection = () => {
               </div>
 
               {/* 直営店舗 */}
-              <div className="bg-white rounded-3xl p-4 shadow-xl border-3 border-[#f16f21] relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-[#f16f21] text-white text-xs px-2 py-0.5 rounded-bl">
+              <div className="bg-white rounded-3xl p-4 shadow-xl border-3 border-brand relative overflow-hidden">
+                <div className="absolute top-0 right-0 bg-brand text-white text-xs px-2 py-0.5 rounded-bl">
                   DIRECT
                 </div>
                 <p className="text-gray-800 font-bold text-center text-lg py-2">直営店舗</p>
@@ -200,11 +200,11 @@ const AboutServiceSection = () => {
         <div className="max-w-6xl mx-auto">
           {/* タイトル */}
           <div className="text-center mb-12 md:mb-16">
-            <p className="text-[#f16f21] text-sm font-medium tracking-wider mb-2">Service Features</p>
+            <p className="text-brand text-sm font-medium tracking-wider mb-2">Service Features</p>
             <div className="flex justify-center gap-1.5 mb-4">
-              <span className="w-2 h-2 bg-[#f16f21] rounded-full"></span>
-              <span className="w-2 h-2 bg-[#f16f21] rounded-full"></span>
-              <span className="w-2 h-2 bg-[#f16f21] rounded-full"></span>
+              <span className="w-2 h-2 bg-brand rounded-full"></span>
+              <span className="w-2 h-2 bg-brand rounded-full"></span>
+              <span className="w-2 h-2 bg-brand rounded-full"></span>
             </div>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800">
               業界の"常識"を変える、透明なプラットフォーム
@@ -218,7 +218,7 @@ const AboutServiceSection = () => {
               <div className="relative mb-6">
                 {/* Feature番号バッジ */}
                 <div className="absolute -top-3 -right-3 z-10">
-                  <div className="bg-gradient-to-br from-[#f16f21] to-[#e05a10] text-white px-3 py-2 rounded-lg shadow-lg">
+                  <div className="bg-gradient-to-br from-brand to-brand-hover text-white px-3 py-2 rounded-lg shadow-lg">
                     <span className="text-[10px] block leading-none font-medium">Feature</span>
                     <span className="text-2xl font-bold leading-none">01</span>
                   </div>
@@ -244,8 +244,8 @@ const AboutServiceSection = () => {
                 一般的な見積サイトでは、受注が決まる前の"紹介"だけで手数料が発生。私たちはこの前提を見直しています。
               </p>
               <div className="mt-3 text-xs text-left px-2">
-                <p className="text-gray-700"><span className="font-bold text-[#f16f21]">だから安心：</span>納得いくまで比較できる</p>
-                <p className="text-gray-700"><span className="font-bold text-[#f16f21]">だから安い：</span>見積りが適正価格に</p>
+                <p className="text-gray-700"><span className="font-bold text-brand">だから安心：</span>納得いくまで比較できる</p>
+                <p className="text-gray-700"><span className="font-bold text-brand">だから安い：</span>見積りが適正価格に</p>
               </div>
             </div>
 
@@ -254,7 +254,7 @@ const AboutServiceSection = () => {
               <div className="relative mb-6">
                 {/* Feature番号バッジ */}
                 <div className="absolute -top-3 -right-3 z-10">
-                  <div className="bg-gradient-to-br from-[#f16f21] to-[#e05a10] text-white px-3 py-2 rounded-lg shadow-lg">
+                  <div className="bg-gradient-to-br from-brand to-brand-hover text-white px-3 py-2 rounded-lg shadow-lg">
                     <span className="text-[10px] block leading-none font-medium">Feature</span>
                     <span className="text-2xl font-bold leading-none">02</span>
                   </div>
@@ -269,7 +269,7 @@ const AboutServiceSection = () => {
                     className="absolute inset-0 w-full h-full object-cover scale-110"
                   />
                   <div className="relative z-10 mt-auto mb-4 text-center bg-white/80 px-3 py-1 rounded">
-                    <p className="text-[#f16f21] text-xl font-bold">直接</p>
+                    <p className="text-brand text-xl font-bold">直接</p>
                     <p className="text-gray-700 text-xs font-medium">施工店とつながる</p>
                   </div>
                 </div>
@@ -282,8 +282,8 @@ const AboutServiceSection = () => {
                 私たちは一次施工店と直接つながる前提で、価格と責任の見通しを良くします。
               </p>
               <div className="mt-3 text-xs text-left px-2">
-                <p className="text-gray-700"><span className="font-bold text-[#f16f21]">だから安心：</span>責任の所在と品質が明確</p>
-                <p className="text-gray-700"><span className="font-bold text-[#f16f21]">だから安い：</span>中間マージンを最小化</p>
+                <p className="text-gray-700"><span className="font-bold text-brand">だから安心：</span>責任の所在と品質が明確</p>
+                <p className="text-gray-700"><span className="font-bold text-brand">だから安い：</span>中間マージンを最小化</p>
               </div>
             </div>
 
@@ -292,7 +292,7 @@ const AboutServiceSection = () => {
               <div className="relative mb-6">
                 {/* Feature番号バッジ */}
                 <div className="absolute -top-3 -right-3 z-10">
-                  <div className="bg-gradient-to-br from-[#f16f21] to-[#e05a10] text-white px-3 py-2 rounded-lg shadow-lg">
+                  <div className="bg-gradient-to-br from-brand to-brand-hover text-white px-3 py-2 rounded-lg shadow-lg">
                     <span className="text-[10px] block leading-none font-medium">Feature</span>
                     <span className="text-2xl font-bold leading-none">03</span>
                   </div>
@@ -318,8 +318,8 @@ const AboutServiceSection = () => {
                 条件入力は1回。下地補修、塗料グレード、足場、保証などを同一フォーマットで見比べられます。
               </p>
               <div className="mt-3 text-xs text-left px-2">
-                <p className="text-gray-700"><span className="font-bold text-[#f16f21]">だから安心：</span>"なぜ安い／高い"が分かる</p>
-                <p className="text-gray-700"><span className="font-bold text-[#f16f21]">だから安い：</span>健全な競争で高値を回避</p>
+                <p className="text-gray-700"><span className="font-bold text-brand">だから安心：</span>"なぜ安い／高い"が分かる</p>
+                <p className="text-gray-700"><span className="font-bold text-brand">だから安い：</span>健全な競争で高値を回避</p>
               </div>
             </div>
           </div>

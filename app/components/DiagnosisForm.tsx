@@ -2,28 +2,34 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { diagnosisFormSchema, DiagnosisFormData } from "@/lib/validations/forms";
+import { FormError } from "./Common/FormError";
 
 const DiagnosisForm = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    prefecture: "",
-    floorArea: "",
-    currentSituation: "",
-    constructionType: "",
-    phone: "",
-    email: ""
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<DiagnosisFormData>({
+    resolver: zodResolver(diagnosisFormSchema),
+    defaultValues: {
+      name: "",
+      prefecture: "",
+      floorArea: "",
+      currentSituation: "",
+      constructionType: "",
+      phone: "",
+      email: ""
+    }
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: DiagnosisFormData) => {
+    setIsSubmitting(true);
 
     try {
       const response = await fetch("/api/admin/diagnoses", {
@@ -31,30 +37,22 @@ const DiagnosisForm = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(data),
       });
 
       const result = await response.json();
 
       if (result.success) {
         alert(`診断依頼を受け付けました。\n診断番号: ${result.data.diagnosisNumber}\n\n業者からの見積もりをお待ちください。`);
-
-        // フォームをリセット
-        setFormData({
-          name: "",
-          prefecture: "",
-          floorArea: "",
-          currentSituation: "",
-          constructionType: "",
-          phone: "",
-          email: ""
-        });
+        reset();
       } else {
         alert("送信に失敗しました。もう一度お試しください。");
       }
     } catch (error) {
       console.error("Error submitting diagnosis:", error);
       alert("送信に失敗しました。もう一度お試しください。");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -67,9 +65,9 @@ const DiagnosisForm = () => {
             {/* How much? アイコン */}
             <div className="mb-4">
               <div className="inline-block">
-                <p className="text-[#f16f21] text-sm font-medium mb-2">How much?</p>
-                <div className="w-20 h-20 mx-auto lg:mx-0 bg-[#f16f21]/10 rounded-full flex items-center justify-center">
-                  <svg className="w-10 h-10 text-[#f16f21]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <p className="text-brand text-sm font-medium mb-2">How much?</p>
+                <div className="w-20 h-20 mx-auto lg:mx-0 bg-brand/10 rounded-full flex items-center justify-center">
+                  <svg className="w-10 h-10 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
@@ -78,11 +76,11 @@ const DiagnosisForm = () => {
 
             {/* タイトル */}
             <p className="text-gray-600 text-sm mb-2">
-              ＼ 簡単<span className="text-[#f16f21] text-2xl font-bold mx-1">10</span>秒相場CHECK ／
+              ＼ 簡単<span className="text-brand text-2xl font-bold mx-1">10</span>秒相場CHECK ／
             </p>
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
               <span className="text-gray-800">外壁塗装の</span><br />
-              <span className="text-[#f16f21]">相場を診断</span>
+              <span className="text-brand">相場を診断</span>
             </h2>
 
             {/* キャンペーンバナー */}
@@ -100,7 +98,7 @@ const DiagnosisForm = () => {
                 <div className="text-left">
                   <p className="text-xs text-gray-600">相場診断でAmazonギフト券</p>
                   <p className="text-2xl font-bold text-gray-800">1000<span className="text-sm font-normal">円分</span></p>
-                  <p className="text-[#f16f21] text-sm font-bold">プレゼント中！</p>
+                  <p className="text-brand text-sm font-bold">プレゼント中！</p>
                 </div>
               </div>
             </div>
@@ -108,161 +106,161 @@ const DiagnosisForm = () => {
 
           {/* 右側: フォーム */}
           <div className="lg:w-3/5">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {/* お名前 */}
-              <div className="flex items-center">
-                <label className="w-24 sm:w-32 text-sm text-gray-700 shrink-0">
+              <div className="flex items-start">
+                <label className="w-24 sm:w-32 text-sm text-gray-700 shrink-0 pt-3">
                   お名前
                 </label>
-                <span className="text-[#f16f21] text-xs mr-2 sm:mr-4 shrink-0">必須</span>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="山田 太郎"
-                  className="flex-1 min-w-0 px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21] text-gray-900 placeholder-gray-400"
-                  required
-                />
+                <span className="text-brand text-xs mr-2 sm:mr-4 pt-3 shrink-0">必須</span>
+                <div className="flex-1 min-w-0">
+                  <input
+                    type="text"
+                    {...register("name")}
+                    placeholder="山田 太郎"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400"
+                  />
+                  <FormError message={errors.name?.message} />
+                </div>
               </div>
 
               {/* 都道府県 */}
-              <div className="flex items-center">
-                <label className="w-24 sm:w-32 text-sm text-gray-700 shrink-0">
+              <div className="flex items-start">
+                <label className="w-24 sm:w-32 text-sm text-gray-700 shrink-0 pt-3">
                   都道府県
                 </label>
-                <span className="text-[#f16f21] text-xs mr-2 sm:mr-4 shrink-0">必須</span>
-                <select
-                  name="prefecture"
-                  value={formData.prefecture}
-                  onChange={handleInputChange}
-                  className="flex-1 min-w-0 px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21] text-gray-900"
-                  required
-                >
-                  <option value="">選択してください</option>
-                  <option value="Hokkaido">北海道</option>
-                  <option value="Aomori">青森県</option>
-                  <option value="Iwate">岩手県</option>
-                  <option value="Miyagi">宮城県</option>
-                  <option value="Akita">秋田県</option>
-                  <option value="Yamagata">山形県</option>
-                  <option value="Fukushima">福島県</option>
-                  <option value="Ibaraki">茨城県</option>
-                  <option value="Tochigi">栃木県</option>
-                  <option value="Gunma">群馬県</option>
-                  <option value="Saitama">埼玉県</option>
-                  <option value="Chiba">千葉県</option>
-                  <option value="Tokyo">東京都</option>
-                  <option value="Kanagawa">神奈川県</option>
-                  <option value="Niigata">新潟県</option>
-                  <option value="Toyama">富山県</option>
-                  <option value="Ishikawa">石川県</option>
-                  <option value="Fukui">福井県</option>
-                  <option value="Yamanashi">山梨県</option>
-                  <option value="Nagano">長野県</option>
-                  <option value="Gifu">岐阜県</option>
-                  <option value="Shizuoka">静岡県</option>
-                  <option value="Aichi">愛知県</option>
-                  <option value="Mie">三重県</option>
-                  <option value="Shiga">滋賀県</option>
-                  <option value="Kyoto">京都府</option>
-                  <option value="Osaka">大阪府</option>
-                  <option value="Hyogo">兵庫県</option>
-                  <option value="Nara">奈良県</option>
-                  <option value="Wakayama">和歌山県</option>
-                  <option value="Tottori">鳥取県</option>
-                  <option value="Shimane">島根県</option>
-                  <option value="Okayama">岡山県</option>
-                  <option value="Hiroshima">広島県</option>
-                  <option value="Yamaguchi">山口県</option>
-                  <option value="Tokushima">徳島県</option>
-                  <option value="Kagawa">香川県</option>
-                  <option value="Ehime">愛媛県</option>
-                  <option value="Kochi">高知県</option>
-                  <option value="Fukuoka">福岡県</option>
-                  <option value="Saga">佐賀県</option>
-                  <option value="Nagasaki">長崎県</option>
-                  <option value="Kumamoto">熊本県</option>
-                  <option value="Oita">大分県</option>
-                  <option value="Miyazaki">宮崎県</option>
-                  <option value="Kagoshima">鹿児島県</option>
-                  <option value="Okinawa">沖縄県</option>
-                </select>
+                <span className="text-brand text-xs mr-2 sm:mr-4 pt-3 shrink-0">必須</span>
+                <div className="flex-1 min-w-0">
+                  <select
+                    {...register("prefecture")}
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-gray-900"
+                  >
+                    <option value="">選択してください</option>
+                    <option value="Hokkaido">北海道</option>
+                    <option value="Aomori">青森県</option>
+                    <option value="Iwate">岩手県</option>
+                    <option value="Miyagi">宮城県</option>
+                    <option value="Akita">秋田県</option>
+                    <option value="Yamagata">山形県</option>
+                    <option value="Fukushima">福島県</option>
+                    <option value="Ibaraki">茨城県</option>
+                    <option value="Tochigi">栃木県</option>
+                    <option value="Gunma">群馬県</option>
+                    <option value="Saitama">埼玉県</option>
+                    <option value="Chiba">千葉県</option>
+                    <option value="Tokyo">東京都</option>
+                    <option value="Kanagawa">神奈川県</option>
+                    <option value="Niigata">新潟県</option>
+                    <option value="Toyama">富山県</option>
+                    <option value="Ishikawa">石川県</option>
+                    <option value="Fukui">福井県</option>
+                    <option value="Yamanashi">山梨県</option>
+                    <option value="Nagano">長野県</option>
+                    <option value="Gifu">岐阜県</option>
+                    <option value="Shizuoka">静岡県</option>
+                    <option value="Aichi">愛知県</option>
+                    <option value="Mie">三重県</option>
+                    <option value="Shiga">滋賀県</option>
+                    <option value="Kyoto">京都府</option>
+                    <option value="Osaka">大阪府</option>
+                    <option value="Hyogo">兵庫県</option>
+                    <option value="Nara">奈良県</option>
+                    <option value="Wakayama">和歌山県</option>
+                    <option value="Tottori">鳥取県</option>
+                    <option value="Shimane">島根県</option>
+                    <option value="Okayama">岡山県</option>
+                    <option value="Hiroshima">広島県</option>
+                    <option value="Yamaguchi">山口県</option>
+                    <option value="Tokushima">徳島県</option>
+                    <option value="Kagawa">香川県</option>
+                    <option value="Ehime">愛媛県</option>
+                    <option value="Kochi">高知県</option>
+                    <option value="Fukuoka">福岡県</option>
+                    <option value="Saga">佐賀県</option>
+                    <option value="Nagasaki">長崎県</option>
+                    <option value="Kumamoto">熊本県</option>
+                    <option value="Oita">大分県</option>
+                    <option value="Miyazaki">宮崎県</option>
+                    <option value="Kagoshima">鹿児島県</option>
+                    <option value="Okinawa">沖縄県</option>
+                  </select>
+                  <FormError message={errors.prefecture?.message} />
+                </div>
               </div>
 
               {/* 延面積 */}
-              <div className="flex items-center">
-                <label className="w-24 sm:w-32 text-sm text-gray-700 shrink-0">
+              <div className="flex items-start">
+                <label className="w-24 sm:w-32 text-sm text-gray-700 shrink-0 pt-3">
                   延面積
                 </label>
-                <span className="text-[#f16f21] text-xs mr-2 sm:mr-4 shrink-0">必須</span>
-                <select
-                  name="floorArea"
-                  value={formData.floorArea}
-                  onChange={handleInputChange}
-                  className="flex-1 min-w-0 px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21] text-gray-900"
-                  required
-                >
-                  <option value="">選択してください</option>
-                  <option value="UNKNOWN">分からない</option>
-                  <option value="UNDER_80">80㎡未満</option>
-                  <option value="FROM_80_TO_100">80〜100㎡</option>
-                  <option value="FROM_101_TO_120">101〜120㎡</option>
-                  <option value="FROM_121_TO_140">121〜140㎡</option>
-                  <option value="FROM_141_TO_160">141〜160㎡</option>
-                  <option value="FROM_161_TO_180">161〜180㎡</option>
-                  <option value="FROM_181_TO_200">181〜200㎡</option>
-                  <option value="FROM_201_TO_250">201〜250㎡</option>
-                  <option value="FROM_251_TO_300">251〜300㎡</option>
-                  <option value="FROM_301_TO_500">301〜500㎡</option>
-                  <option value="OVER_501">501㎡以上</option>
-                </select>
+                <span className="text-brand text-xs mr-2 sm:mr-4 pt-3 shrink-0">必須</span>
+                <div className="flex-1 min-w-0">
+                  <select
+                    {...register("floorArea")}
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-gray-900"
+                  >
+                    <option value="">選択してください</option>
+                    <option value="UNKNOWN">分からない</option>
+                    <option value="UNDER_80">80㎡未満</option>
+                    <option value="FROM_80_TO_100">80〜100㎡</option>
+                    <option value="FROM_101_TO_120">101〜120㎡</option>
+                    <option value="FROM_121_TO_140">121〜140㎡</option>
+                    <option value="FROM_141_TO_160">141〜160㎡</option>
+                    <option value="FROM_161_TO_180">161〜180㎡</option>
+                    <option value="FROM_181_TO_200">181〜200㎡</option>
+                    <option value="FROM_201_TO_250">201〜250㎡</option>
+                    <option value="FROM_251_TO_300">251〜300㎡</option>
+                    <option value="FROM_301_TO_500">301〜500㎡</option>
+                    <option value="OVER_501">501㎡以上</option>
+                  </select>
+                  <FormError message={errors.floorArea?.message} />
+                </div>
               </div>
 
               {/* 現在の状況 */}
-              <div className="flex items-center">
-                <label className="w-24 sm:w-32 text-sm text-gray-700 shrink-0">
+              <div className="flex items-start">
+                <label className="w-24 sm:w-32 text-sm text-gray-700 shrink-0 pt-3">
                   現在の状況
                 </label>
-                <span className="text-[#f16f21] text-xs mr-2 sm:mr-4 shrink-0">必須</span>
-                <select
-                  name="currentSituation"
-                  value={formData.currentSituation}
-                  onChange={handleInputChange}
-                  className="flex-1 min-w-0 px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21] text-gray-900"
-                  required
-                >
-                  <option value="">選択してください</option>
-                  <option value="MARKET_RESEARCH">情報収集中</option>
-                  <option value="CONSIDERING_CONSTRUCTION">工事を検討中</option>
-                  <option value="COMPARING_CONTRACTORS">業者を比較中</option>
-                  <option value="READY_TO_ORDER">すぐに発注したい</option>
-                </select>
+                <span className="text-brand text-xs mr-2 sm:mr-4 pt-3 shrink-0">必須</span>
+                <div className="flex-1 min-w-0">
+                  <select
+                    {...register("currentSituation")}
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-gray-900"
+                  >
+                    <option value="">選択してください</option>
+                    <option value="MARKET_RESEARCH">情報収集中</option>
+                    <option value="CONSIDERING_CONSTRUCTION">工事を検討中</option>
+                    <option value="COMPARING_CONTRACTORS">業者を比較中</option>
+                    <option value="READY_TO_ORDER">すぐに発注したい</option>
+                  </select>
+                  <FormError message={errors.currentSituation?.message} />
+                </div>
               </div>
 
               {/* 工事箇所 */}
-              <div className="flex items-center">
-                <label className="w-24 sm:w-32 text-sm text-gray-700 shrink-0">
+              <div className="flex items-start">
+                <label className="w-24 sm:w-32 text-sm text-gray-700 shrink-0 pt-3">
                   工事箇所
                 </label>
-                <span className="text-[#f16f21] text-xs mr-2 sm:mr-4 shrink-0">必須</span>
-                <select
-                  name="constructionType"
-                  value={formData.constructionType}
-                  onChange={handleInputChange}
-                  className="flex-1 min-w-0 px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21] text-gray-900"
-                  required
-                >
-                  <option value="">選択してください</option>
-                  <option value="EXTERIOR_PAINTING">外壁塗装</option>
-                  <option value="ROOF_PAINTING">屋根塗装</option>
-                  <option value="SCAFFOLDING_WORK">足場工事</option>
-                  <option value="WATERPROOFING">防水工事</option>
-                  <option value="LARGE_SCALE_WORK">大規模工事</option>
-                  <option value="INTERIOR_WORK">内装工事</option>
-                  <option value="EXTERIOR_WORK">外構工事</option>
-                  <option value="OTHER">その他</option>
-                </select>
+                <span className="text-brand text-xs mr-2 sm:mr-4 pt-3 shrink-0">必須</span>
+                <div className="flex-1 min-w-0">
+                  <select
+                    {...register("constructionType")}
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-gray-900"
+                  >
+                    <option value="">選択してください</option>
+                    <option value="EXTERIOR_PAINTING">外壁塗装</option>
+                    <option value="ROOF_PAINTING">屋根塗装</option>
+                    <option value="SCAFFOLDING_WORK">足場工事</option>
+                    <option value="WATERPROOFING">防水工事</option>
+                    <option value="LARGE_SCALE_WORK">大規模工事</option>
+                    <option value="INTERIOR_WORK">内装工事</option>
+                    <option value="EXTERIOR_WORK">外構工事</option>
+                    <option value="OTHER">その他</option>
+                  </select>
+                  <FormError message={errors.constructionType?.message} />
+                </div>
               </div>
 
               {/* 携帯電話番号 */}
@@ -270,18 +268,16 @@ const DiagnosisForm = () => {
                 <label className="w-24 sm:w-32 text-sm text-gray-700 shrink-0 pt-3">
                   携帯電話番号
                 </label>
-                <span className="text-[#f16f21] text-xs mr-2 sm:mr-4 pt-3 shrink-0">必須</span>
+                <span className="text-brand text-xs mr-2 sm:mr-4 pt-3 shrink-0">必須</span>
                 <div className="flex-1 min-w-0">
                   <input
                     type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
+                    {...register("phone")}
                     placeholder="例: 08012345678"
-                    className="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21] text-gray-900 placeholder-gray-400"
-                    required
+                    className="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400"
                   />
-                  <p className="text-xs text-[#f16f21] mt-1">
+                  <FormError message={errors.phone?.message} />
+                  <p className="text-xs text-gray-600 mt-1">
                     ※こちらの携帯電話番号にSMSメール概算相場価格と<br />
                     小冊子のダウンロードリンクをお送りしますのでお間違えのないようにご入力ください。
                   </p>
@@ -289,27 +285,28 @@ const DiagnosisForm = () => {
               </div>
 
               {/* メールアドレス */}
-              <div className="flex items-center">
-                <label className="w-24 sm:w-32 text-sm text-gray-700 shrink-0">
+              <div className="flex items-start">
+                <label className="w-24 sm:w-32 text-sm text-gray-700 shrink-0 pt-3">
                   メールアドレス
                 </label>
-                <span className="text-gray-400 text-xs mr-2 sm:mr-4 shrink-0">任意</span>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="例: example@example.com"
-                  className="flex-1 min-w-0 px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21] text-gray-900 placeholder-gray-400"
-                />
+                <span className="text-gray-500 text-xs mr-2 sm:mr-4 pt-3 shrink-0">任意</span>
+                <div className="flex-1 min-w-0">
+                  <input
+                    type="email"
+                    {...register("email")}
+                    placeholder="例: example@example.com"
+                    className="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400"
+                  />
+                  <FormError message={errors.email?.message} />
+                </div>
               </div>
 
               {/* 利用規約 */}
               <div className="text-center pt-2">
                 <p className="text-sm text-gray-600">
-                  <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-[#f16f21] underline hover:no-underline">利用規約</a>
+                  <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-brand underline hover:no-underline">利用規約</a>
                   と
-                  <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-[#f16f21] underline hover:no-underline">プライバシーポリシー</a>
+                  <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-brand underline hover:no-underline">プライバシーポリシー</a>
                   に同意して、
                 </p>
               </div>
@@ -318,10 +315,11 @@ const DiagnosisForm = () => {
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full bg-[#f16f21] hover:bg-[#e05a10] text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                  disabled={isSubmitting}
+                  className="w-full bg-brand hover:bg-brand-hover text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <span className="bg-white text-[#f16f21] text-sm font-bold px-2 py-0.5 rounded">無料</span>
-                  今すぐ相場を診断する
+                  <span className="bg-white text-brand text-sm font-bold px-2 py-0.5 rounded">無料</span>
+                  {isSubmitting ? "送信中..." : "今すぐ相場を診断する"}
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                   </svg>

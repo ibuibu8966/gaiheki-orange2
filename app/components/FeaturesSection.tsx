@@ -15,11 +15,11 @@ const FeaturesSection = () => {
       <div className="max-w-6xl mx-auto">
         {/* タイトル */}
         <div className="text-center mb-12 md:mb-16">
-          <p className="text-[#f16f21] text-sm font-medium tracking-wider mb-2">Service Features</p>
+          <p className="text-brand text-sm font-medium tracking-wider mb-2">Service Features</p>
           <div className="flex justify-center gap-1.5 mb-4">
-            <span className="w-2 h-2 bg-[#f16f21] rounded-full"></span>
-            <span className="w-2 h-2 bg-[#f16f21] rounded-full"></span>
-            <span className="w-2 h-2 bg-[#f16f21] rounded-full"></span>
+            <span className="w-2 h-2 bg-brand rounded-full"></span>
+            <span className="w-2 h-2 bg-brand rounded-full"></span>
+            <span className="w-2 h-2 bg-brand rounded-full"></span>
           </div>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800">
             外壁塗装パートナーズの特徴
@@ -33,7 +33,7 @@ const FeaturesSection = () => {
             <div className="relative mb-6">
               {/* Feature番号バッジ */}
               <div className="absolute -top-3 -right-3 z-10">
-                <div className="bg-gradient-to-br from-[#f16f21] to-[#e05a10] text-white px-3 py-2 rounded-lg shadow-lg">
+                <div className="bg-gradient-to-br from-brand to-brand-hover text-white px-3 py-2 rounded-lg shadow-lg">
                   <span className="text-[10px] block leading-none font-medium">Feature</span>
                   <span className="text-2xl font-bold leading-none">01</span>
                 </div>
@@ -53,7 +53,7 @@ const FeaturesSection = () => {
             </div>
             <h3 className="text-base md:text-lg font-bold text-gray-800 text-center mb-3 leading-relaxed">
               紹介手数料がかからないから<br/>
-              <span className="text-[#f16f21]">適正価格</span>で施工できる
+              <span className="text-brand">適正価格</span>で施工できる
             </h3>
             <p className="text-sm text-gray-600 text-center leading-relaxed max-w-xs">
               他社サービスでは紹介手数料が工事費に<br/>
@@ -67,7 +67,7 @@ const FeaturesSection = () => {
             <div className="relative mb-6">
               {/* Feature番号バッジ */}
               <div className="absolute -top-3 -right-3 z-10">
-                <div className="bg-gradient-to-br from-[#f16f21] to-[#e05a10] text-white px-3 py-2 rounded-lg shadow-lg">
+                <div className="bg-gradient-to-br from-brand to-brand-hover text-white px-3 py-2 rounded-lg shadow-lg">
                   <span className="text-[10px] block leading-none font-medium">Feature</span>
                   <span className="text-2xl font-bold leading-none">02</span>
                 </div>
@@ -82,13 +82,13 @@ const FeaturesSection = () => {
                   className="absolute inset-0 w-full h-full object-cover scale-110"
                 />
                 <div className="relative z-10 mt-auto mb-4 text-center bg-white/80 px-3 py-1 rounded">
-                  <p className="text-[#f16f21] text-xl font-bold">直接</p>
+                  <p className="text-brand text-xl font-bold">直接</p>
                   <p className="text-gray-700 text-xs font-medium">施工店とつながる</p>
                 </div>
               </div>
             </div>
             <h3 className="text-base md:text-lg font-bold text-gray-800 text-center mb-3 leading-relaxed">
-              仲介なしで<span className="text-[#f16f21]">施工店と直接</span><br/>
+              仲介なしで<span className="text-brand">施工店と直接</span><br/>
               やり取りできる
             </h3>
             <p className="text-sm text-gray-600 text-center leading-relaxed max-w-xs">
@@ -103,7 +103,7 @@ const FeaturesSection = () => {
             <div className="relative mb-6">
               {/* Feature番号バッジ */}
               <div className="absolute -top-3 -right-3 z-10">
-                <div className="bg-gradient-to-br from-[#f16f21] to-[#e05a10] text-white px-3 py-2 rounded-lg shadow-lg">
+                <div className="bg-gradient-to-br from-brand to-brand-hover text-white px-3 py-2 rounded-lg shadow-lg">
                   <span className="text-[10px] block leading-none font-medium">Feature</span>
                   <span className="text-2xl font-bold leading-none">03</span>
                 </div>
@@ -122,7 +122,7 @@ const FeaturesSection = () => {
               </div>
             </div>
             <h3 className="text-base md:text-lg font-bold text-gray-800 text-center mb-3 leading-relaxed">
-              <span className="text-[#f16f21]">最大3社</span>の見積りを<br/>
+              <span className="text-brand">最大3社</span>の見積りを<br/>
               比較検討できる
             </h3>
             <p className="text-sm text-gray-600 text-center leading-relaxed max-w-xs">
@@ -137,7 +137,7 @@ const FeaturesSection = () => {
         <div className="text-center">
           <button
             onClick={scrollToDiagnosisForm}
-            className="group inline-flex items-center justify-center bg-gradient-to-r from-[#f16f21] to-[#e05a10] hover:from-[#e05a10] hover:to-[#d04a00] text-white font-bold py-4 px-12 rounded-full text-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+            className="group inline-flex items-center justify-center bg-gradient-to-r from-brand to-brand-hover hover:from-brand-hover hover:to-[#d04a00] text-white font-bold py-4 px-12 rounded-full text-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
           >
             施工店を探す
             <svg className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

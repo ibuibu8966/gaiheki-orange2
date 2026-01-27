@@ -323,7 +323,7 @@ export default function PartnerSettingsPage() {
           <button
             type="submit"
             disabled={saving}
-            className="w-full sm:w-auto px-6 py-3 min-h-[44px] bg-blue-600 text-white rounded-md hover:bg-blue-700 active:bg-blue-800 disabled:bg-gray-400 transition-colors"
+            className="w-full sm:w-auto px-6 py-3 min-h-[44px] bg-primary text-primary-foreground rounded-md hover:bg-primary/90 active:bg-primary/80 disabled:bg-gray-400 transition-colors"
           >
             {saving ? '保存中...' : '保存する'}
           </button>

@@ -260,7 +260,7 @@ const PartnerFormModal = ({ isOpen, onClose, onSubmit, partner }: PartnerFormMod
                     type="checkbox"
                     checked={formData.prefectures.includes(pref)}
                     onChange={() => togglePrefecture(pref)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-gray-300 text-blue-600 focus:ring-primary"
                   />
                   <span className="text-sm text-gray-900">{PREFECTURE_NAMES[pref]}</span>
                 </label>
@@ -309,7 +309,7 @@ const PartnerFormModal = ({ isOpen, onClose, onSubmit, partner }: PartnerFormMod
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
+              className="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:bg-gray-400"
               disabled={loading}
             >
               {loading ? '処理中...' : partner ? '更新' : '登録'}

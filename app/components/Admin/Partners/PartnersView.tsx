@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import PartnerFormModal from "./PartnerFormModal";
 import PartnerDetailModal from "./PartnerDetailModal";
 import { ResponsiveTable } from "../../Common/ResponsiveTable";
@@ -35,11 +36,14 @@ const PREFECTURE_NAMES: Record<string, string> = {
 };
 
 const PartnersView = () => {
+  const { data: session } = useSession();
   const [partnerFilter, setPartnerFilter] = useState("すべて");
   const [partnerSearch, setPartnerSearch] = useState("");
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const adminId = session?.user?.id ? parseInt(session.user.id) : null;
 
   // モーダル状態
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -160,7 +164,7 @@ const PartnersView = () => {
               body: JSON.stringify({
                 applicationId: editingPartner.applicationId,
                 status: 'APPROVED',
-                reviewedBy: 1 // TODO: 実際のログインユーザーIDを使用
+                reviewedBy: adminId
               })
             });
           } catch (err) {
@@ -298,7 +302,7 @@ const PartnersView = () => {
               <p className="text-red-500">{error}</p>
               <button
                 onClick={fetchPartners}
-                className="mt-4 px-4 py-3 min-h-[44px] bg-blue-500 text-white rounded-md hover:bg-blue-600 active:bg-blue-700 transition-colors"
+                className="mt-4 px-4 py-3 min-h-[44px] bg-primary text-primary-foreground rounded-md hover:bg-primary/90 active:bg-primary/80 transition-colors"
               >
                 再読み込み
               </button>
@@ -386,7 +390,7 @@ const PartnersView = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => openDetailModal(p.id)}
-                    className="flex-1 py-2 text-center text-blue-600 font-medium min-h-[44px] hover:bg-blue-50 rounded transition-colors"
+                    className="flex-1 py-2 text-center text-primary font-medium min-h-[44px] hover:bg-primary/10 rounded transition-colors"
                   >
                     詳細
                   </button>

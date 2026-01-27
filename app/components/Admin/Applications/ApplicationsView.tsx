@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { ResponsiveTable } from "../../Common/ResponsiveTable";
 import { ResponsiveModal } from "../../Common/ResponsiveModal";
 
@@ -25,11 +26,14 @@ interface Application {
 }
 
 const ApplicationsView = () => {
+  const { data: session } = useSession();
   const [applicationFilter, setApplicationFilter] = useState("すべて");
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
+
+  const adminId = session?.user?.id ? parseInt(session.user.id) : null;
 
   useEffect(() => {
     fetchApplications();
@@ -107,7 +111,7 @@ const ApplicationsView = () => {
         body: JSON.stringify({
           applicationId,
           status: newStatus,
-          reviewedBy: 1 // TODO: 実際のログインユーザーIDを使用
+          reviewedBy: adminId
         })
       });
 
@@ -172,7 +176,7 @@ const ApplicationsView = () => {
               <p className="text-red-500">{error}</p>
               <button
                 onClick={fetchApplications}
-                className="mt-4 px-4 py-3 min-h-[44px] bg-blue-500 text-white rounded-md hover:bg-blue-600 active:bg-blue-700 transition-colors"
+                className="mt-4 px-4 py-3 min-h-[44px] bg-primary text-primary-foreground rounded-md hover:bg-primary/90 active:bg-primary/80 transition-colors"
               >
                 再読み込み
               </button>
@@ -233,7 +237,7 @@ const ApplicationsView = () => {
               mobileCardActions={(a) => (
                 <button
                   onClick={() => setSelectedApplication(a)}
-                  className="w-full py-2 text-center text-blue-600 font-medium min-h-[44px] hover:bg-blue-50 rounded transition-colors"
+                  className="w-full py-2 text-center text-primary font-medium min-h-[44px] hover:bg-primary/10 rounded transition-colors"
                 >
                   詳細を見る
                 </button>

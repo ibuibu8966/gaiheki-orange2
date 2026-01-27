@@ -2,26 +2,32 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { contactFormSchema, ContactFormData } from "@/lib/validations/forms";
+import { FormError } from "./Common/FormError";
 
 const ContactPageContent = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    subject: "",
-    message: ""
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: {
+      name: "",
+      phone: "",
+      email: "",
+      subject: "",
+      message: ""
+    }
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: ContactFormData) => {
+    setIsSubmitting(true);
 
     try {
       const response = await fetch("/api/admin/inquiries", {
@@ -29,28 +35,22 @@ const ContactPageContent = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(data),
       });
 
       const result = await response.json();
 
       if (result.success) {
         alert("お問い合わせいただきありがとうございます。\n3営業日以内にご返信させていただきます。");
-
-        // フォームをリセット
-        setFormData({
-          name: "",
-          phone: "",
-          email: "",
-          subject: "",
-          message: ""
-        });
+        reset();
       } else {
         alert("送信に失敗しました。もう一度お試しください。");
       }
     } catch (error) {
       console.error("Error submitting inquiry:", error);
       alert("送信に失敗しました。もう一度お試しください。");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -68,7 +68,7 @@ const ContactPageContent = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* パンくずナビ */}
         <div className="mb-8">
-          <Link href="/" className="inline-flex items-center text-gray-600 hover:text-[#f16f21] transition-colors">
+          <Link href="/" className="inline-flex items-center text-gray-600 hover:text-brand transition-colors">
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
             </svg>
@@ -92,22 +92,22 @@ const ContactPageContent = () => {
             <div className="space-y-6">
               {/* 電話でのお問い合わせ */}
               <div className="flex items-start">
-                <div className="bg-[#f16f21]/10 p-3 rounded-lg mr-4">
-                  <svg className="w-6 h-6 text-[#f16f21]" fill="currentColor" viewBox="0 0 20 20">
+                <div className="bg-brand/10 p-3 rounded-lg mr-4">
+                  <svg className="w-6 h-6 text-brand" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                   </svg>
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-800 mb-2">お電話でのお問い合わせ</h3>
-                  <a href="tel:0120-945-990" className="text-2xl font-bold text-[#f16f21] hover:text-[#e05a10] mb-2 block">0120-945-990</a>
+                  <a href="tel:0120-945-990" className="text-2xl font-bold text-brand hover:text-brand-hover mb-2 block">0120-945-990</a>
                   <p className="text-sm text-gray-600">受付時間: 9:00-18:00（土日祝除く）</p>
                 </div>
               </div>
 
               {/* メールでのお問い合わせ */}
               <div className="flex items-start">
-                <div className="bg-[#f16f21]/10 p-3 rounded-lg mr-4">
-                  <svg className="w-6 h-6 text-[#f16f21]" fill="currentColor" viewBox="0 0 20 20">
+                <div className="bg-brand/10 p-3 rounded-lg mr-4">
+                  <svg className="w-6 h-6 text-brand" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                   </svg>
@@ -120,8 +120,8 @@ const ContactPageContent = () => {
 
               {/* 所在地 */}
               <div className="flex items-start">
-                <div className="bg-[#f16f21]/10 p-3 rounded-lg mr-4">
-                  <svg className="w-6 h-6 text-[#f16f21]" fill="currentColor" viewBox="0 0 20 20">
+                <div className="bg-brand/10 p-3 rounded-lg mr-4">
+                  <svg className="w-6 h-6 text-brand" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                   </svg>
                 </div>
@@ -135,8 +135,8 @@ const ContactPageContent = () => {
 
               {/* 営業時間 */}
               <div className="flex items-start">
-                <div className="bg-[#f16f21]/10 p-3 rounded-lg mr-4">
-                  <svg className="w-6 h-6 text-[#f16f21]" fill="currentColor" viewBox="0 0 20 20">
+                <div className="bg-brand/10 p-3 rounded-lg mr-4">
+                  <svg className="w-6 h-6 text-brand" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                   </svg>
                 </div>
@@ -153,7 +153,7 @@ const ContactPageContent = () => {
           <div className="bg-white rounded-lg shadow-md p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">お問い合わせフォーム</h2>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 {/* お名前 */}
                 <div>
@@ -162,13 +162,11 @@ const ContactPageContent = () => {
                   </label>
                   <input
                     type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
+                    {...register("name")}
                     placeholder="山田太郎"
-                    className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21]"
-                    required
+                    className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                   />
+                  <FormError message={errors.name?.message} />
                 </div>
 
                 {/* 電話番号 */}
@@ -178,13 +176,11 @@ const ContactPageContent = () => {
                   </label>
                   <input
                     type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
+                    {...register("phone")}
                     placeholder="090-1234-5678"
-                    className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21]"
-                    required
+                    className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                   />
+                  <FormError message={errors.phone?.message} />
                 </div>
               </div>
 
@@ -195,13 +191,11 @@ const ContactPageContent = () => {
                 </label>
                 <input
                   type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
+                  {...register("email")}
                   placeholder="example@email.com"
-                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21]"
-                  required
+                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 />
+                <FormError message={errors.email?.message} />
               </div>
 
               {/* 件名 */}
@@ -210,11 +204,8 @@ const ContactPageContent = () => {
                   件名 <span className="text-red-500">*</span>
                 </label>
                 <select
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21]"
-                  required
+                  {...register("subject")}
+                  className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 >
                   <option value="">選択してください</option>
                   <option value="見積もり依頼">見積もり依頼</option>
@@ -223,6 +214,7 @@ const ContactPageContent = () => {
                   <option value="アフターサービス">アフターサービス</option>
                   <option value="その他">その他</option>
                 </select>
+                <FormError message={errors.subject?.message} />
               </div>
 
               {/* お問い合わせ内容 */}
@@ -231,26 +223,25 @@ const ContactPageContent = () => {
                   お問い合わせ内容 <span className="text-red-500">*</span>
                 </label>
                 <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleInputChange}
+                  {...register("message")}
                   rows={6}
                   placeholder="お問い合わせ内容をご記入ください"
-                  className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21] resize-vertical"
-                  required
+                  className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-vertical"
                 />
+                <FormError message={errors.message?.message} />
               </div>
 
               {/* 送信ボタン */}
               <div className="text-center">
                 <button
                   type="submit"
-                  className="bg-[#f16f21] hover:bg-[#e05a10] active:bg-[#d05510] text-white font-bold py-3 px-8 min-h-[44px] rounded-lg transition-colors inline-flex items-center"
+                  disabled={isSubmitting}
+                  className="bg-brand hover:bg-brand-hover active:bg-[#d05510] text-white font-bold py-3 px-8 min-h-[44px] rounded-lg transition-colors inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                   </svg>
-                  送信する
+                  {isSubmitting ? "送信中..." : "送信する"}
                 </button>
               </div>
             </form>

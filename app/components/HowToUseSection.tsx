@@ -14,11 +14,11 @@ const HowToUseSection = () => {
           <path d="M28 42 L28 48 L36 48 L36 42" stroke="#d4a574" strokeWidth="2" fill="none" />
           <rect x="24" y="48" width="16" height="3" fill="#d4a574" />
           {/* 画面内のライン */}
-          <rect x="16" y="20" width="16" height="2" fill="#f16f21" opacity="0.6" />
+          <rect x="16" y="20" width="16" height="2" fill="brand" opacity="0.6" />
           <rect x="16" y="26" width="24" height="2" fill="#d4a574" opacity="0.5" />
           <rect x="16" y="32" width="20" height="2" fill="#d4a574" opacity="0.5" />
           {/* カーソル矢印 */}
-          <path d="M40 22 L48 30 L44 30 L44 36 L40 36 L40 30 L36 30 Z" fill="#f16f21" />
+          <path d="M40 22 L48 30 L44 30 L44 36 L40 36 L40 30 L36 30 Z" fill="brand" />
         </svg>
       )
     },
@@ -33,9 +33,9 @@ const HowToUseSection = () => {
           {/* ヘッドセットバンド */}
           <path d="M16 32 C16 22 23 14 32 14 C41 14 48 22 48 32" stroke="#d4a574" strokeWidth="3" fill="none" />
           {/* 左イヤーパッド */}
-          <rect x="12" y="28" width="8" height="14" rx="2" fill="#f16f21" />
+          <rect x="12" y="28" width="8" height="14" rx="2" fill="brand" />
           {/* 右イヤーパッド */}
-          <rect x="44" y="28" width="8" height="14" rx="2" fill="#f16f21" />
+          <rect x="44" y="28" width="8" height="14" rx="2" fill="brand" />
           {/* マイクアーム */}
           <path d="M20 42 L20 46 C20 50 26 54 32 54" stroke="#d4a574" strokeWidth="2" fill="none" />
           {/* マイク */}
@@ -54,12 +54,12 @@ const HowToUseSection = () => {
           {/* ドキュメント */}
           <rect x="18" y="12" width="28" height="36" rx="2" fill="white" stroke="#d4a574" strokeWidth="2" />
           {/* ドキュメントライン */}
-          <rect x="22" y="18" width="16" height="2" fill="#f16f21" />
+          <rect x="22" y="18" width="16" height="2" fill="brand" />
           <rect x="22" y="24" width="20" height="2" fill="#d4a574" opacity="0.5" />
           <rect x="22" y="30" width="18" height="2" fill="#d4a574" opacity="0.5" />
           <rect x="22" y="36" width="20" height="2" fill="#d4a574" opacity="0.5" />
           {/* チェックマーク */}
-          <circle cx="44" cy="42" r="10" fill="#f16f21" />
+          <circle cx="44" cy="42" r="10" fill="brand" />
           <path d="M39 42 L42 45 L49 38" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       )
@@ -71,10 +71,10 @@ const HowToUseSection = () => {
       <div className="max-w-6xl mx-auto">
         {/* タイトル */}
         <div className="flex items-center gap-4 mb-12 md:mb-16">
-          <div className="w-1 h-12 bg-[#f16f21]"></div>
+          <div className="w-1 h-12 bg-brand"></div>
           <div className="flex items-center gap-6">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800">
-              ご相談の<span className="text-[#f16f21]">流れ</span>
+              ご相談の<span className="text-brand">流れ</span>
             </h2>
             <p className="hidden md:block text-gray-500 text-sm border-l border-gray-300 pl-6">
               外壁塗装パートナーズのご相談の流れをご説明します
@@ -89,8 +89,8 @@ const HowToUseSection = () => {
             {steps.map((step, index) => (
               <div key={index} className="flex items-center">
                 {/* 番号 */}
-                <div className="w-14 h-14 border-[3px] border-[#f16f21] rounded-full flex items-center justify-center bg-white relative z-10">
-                  <span className="text-2xl font-bold text-[#f16f21]">{step.number}</span>
+                <div className="w-14 h-14 border-[3px] border-brand rounded-full flex items-center justify-center bg-white relative z-10">
+                  <span className="text-2xl font-bold text-brand">{step.number}</span>
                 </div>
 
                 {/* 矢印（最後のステップ以外） */}
@@ -102,11 +102,11 @@ const HowToUseSection = () => {
                         y1="8"
                         x2="180"
                         y2="8"
-                        stroke="#f16f21"
+                        stroke="brand"
                         strokeWidth="2"
                         strokeDasharray="8,6"
                       />
-                      <polygon points="180,3 195,8 180,13" fill="#f16f21" />
+                      <polygon points="180,3 195,8 180,13" fill="brand" />
                     </svg>
                   </div>
                 )}
@@ -120,8 +120,8 @@ const HowToUseSection = () => {
               <div key={index} className="flex flex-col">
                 {/* モバイル用番号 */}
                 <div className="md:hidden flex items-center mb-4">
-                  <div className="w-12 h-12 border-[3px] border-[#f16f21] rounded-full flex items-center justify-center bg-white mr-4">
-                    <span className="text-xl font-bold text-[#f16f21]">{step.number}</span>
+                  <div className="w-12 h-12 border-[3px] border-brand rounded-full flex items-center justify-center bg-white mr-4">
+                    <span className="text-xl font-bold text-brand">{step.number}</span>
                   </div>
                   <h3 className="text-base font-bold text-gray-800 whitespace-pre-line">
                     {step.title}

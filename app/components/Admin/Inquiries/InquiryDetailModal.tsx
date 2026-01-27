@@ -189,7 +189,7 @@ const InquiryDetailModal = ({
                 <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   <option value="PENDING">未対応</option>
                   <option value="IN_PROGRESS">対応中</option>
@@ -220,7 +220,7 @@ const InquiryDetailModal = ({
               value={adminMemo}
               onChange={(e) => setAdminMemo(e.target.value)}
               rows={6}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="対応履歴や管理者用のメモを入力してください"
             />
           </div>
@@ -236,7 +236,7 @@ const InquiryDetailModal = ({
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300"
+              className="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:bg-gray-300"
             >
               {saving ? "保存中..." : "保存"}
             </button>

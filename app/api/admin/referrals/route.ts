@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendReferralNotificationEmail } from '@/lib/utils/email';
+import type { ReferralWhereInput } from '@/lib/types';
 
 // POST: 紹介を作成（保証金から引き落とし、メール送信）
 export async function POST(request: NextRequest) {
@@ -163,7 +164,7 @@ export async function GET(request: NextRequest) {
     const diagnosisId = searchParams.get('diagnosis_id');
     const partnerId = searchParams.get('partner_id');
 
-    const where: any = {};
+    const where: ReferralWhereInput = {};
     if (diagnosisId) where.diagnosis_id = parseInt(diagnosisId);
     if (partnerId) where.partner_id = parseInt(partnerId);
 

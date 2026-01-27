@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
+import type { ApplicationWhereInput } from '@/lib/types';
+import { auth } from '@/auth';
 
 // GET: 加盟店申込一覧取得
 export async function GET(request: Request) {
@@ -9,7 +11,7 @@ export async function GET(request: Request) {
     const status = searchParams.get('status'); // 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED' | null
     const search = searchParams.get('search');
 
-    const where: any = {};
+    const where: ApplicationWhereInput = {};
 
     // ステータスフィルター
     if (status && status !== 'all') {
@@ -84,8 +86,18 @@ export async function GET(request: Request) {
 // PATCH: 申込ステータス更新
 export async function PATCH(request: Request) {
   try {
+    // 認証チェック
+    const session = await auth();
+    if (!session || session.user.userType !== 'admin') {
+      return NextResponse.json(
+        { success: false, error: '管理者ログインが必要です' },
+        { status: 401 }
+      );
+    }
+    const currentAdminId = parseInt(session.user.id);
+
     const body = await request.json();
-    const { applicationId, status, adminMemo, reviewNotes, reviewedBy } = body;
+    const { applicationId, status, adminMemo, reviewNotes } = body;
 
     if (!applicationId || !status) {
       return NextResponse.json(
@@ -118,7 +130,7 @@ export async function PATCH(request: Request) {
           application_status: status,
           admin_memo: adminMemo,
           review_notes: reviewNotes,
-          reviewed_by: reviewedBy,
+          reviewed_by: currentAdminId,
           reviewed_at: new Date()
         }
       });
@@ -184,7 +196,7 @@ export async function PATCH(request: Request) {
           application_id: applicationId,
           previous_status: application.application_status,
           new_status: status,
-          changed_by: reviewedBy || 1,
+          changed_by: currentAdminId,
           change_reason: reviewNotes || null,
           created_at: new Date()
         }

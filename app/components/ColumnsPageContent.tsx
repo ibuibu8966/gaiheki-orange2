@@ -104,7 +104,7 @@ const ColumnsPageContent = () => {
           <nav className="flex items-center space-x-2 text-sm text-gray-500">
             <Link
               href="/"
-              className="hover:text-[#f16f21] transition-colors"
+              className="hover:text-brand transition-colors"
             >
               トップ
             </Link>
@@ -147,7 +147,7 @@ const ColumnsPageContent = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="コラムを検索..."
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21]"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               </div>
             </div>
@@ -171,7 +171,7 @@ const ColumnsPageContent = () => {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f16f21] focus:border-[#f16f21] appearance-none bg-white"
+                  className="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary appearance-none bg-white"
                 >
                   {categories.map((category) => (
                     <option key={category} value={category}>
@@ -246,7 +246,7 @@ const ColumnsPageContent = () => {
                 <div className="p-6">
                   {/* カテゴリとタグ */}
                   <div className="flex items-center justify-between mb-3">
-                    <span className="bg-[#f16f21]/10 text-[#f16f21] px-3 py-1 rounded-full text-sm font-medium">
+                    <span className="bg-brand/10 text-brand px-3 py-1 rounded-full text-sm font-medium">
                       {article.categoryLabel}
                     </span>
                     <span className="text-xs text-gray-500">
@@ -267,7 +267,7 @@ const ColumnsPageContent = () => {
                   {/* 詳しく読むリンク */}
                   <Link
                     href={`/columns/${article.postName}`}
-                    className="inline-flex items-center text-[#f16f21] hover:text-[#f16f21] font-medium text-sm transition-colors"
+                    className="inline-flex items-center text-brand hover:text-brand font-medium text-sm transition-colors"
                   >
                     詳しく読む
                     <svg

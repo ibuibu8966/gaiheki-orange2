@@ -1,19 +1,25 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateDiagnosisNumber } from '@/lib/utils/diagnosisNumber';
+import type { DiagnosisWhereInput } from '@/lib/types';
+import { diagnosisFormSchema } from '@/lib/validations/forms';
 
 // POST: 診断依頼新規作成
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, phone, email, prefecture, floorArea, currentSituation, constructionType, designatedPartnerId } = body;
 
-    if (!name || !phone || !prefecture) {
+    // Zodバリデーション
+    const result = diagnosisFormSchema.safeParse(body);
+    if (!result.success) {
       return NextResponse.json(
-        { success: false, error: 'Required fields are missing' },
+        { success: false, error: result.error.errors[0].message },
         { status: 400 }
       );
     }
+
+    const { name, phone, email, prefecture, floorArea, currentSituation, constructionType } = result.data;
+    const { designatedPartnerId } = body;
 
     // 診断番号を生成
     const diagnosisNumber = await generateDiagnosisNumber();
@@ -45,17 +51,10 @@ export async function POST(request: Request) {
 
   } catch (error) {
     console.error('Diagnosis creation error:', error);
-    console.error('Error details:', {
-      name: error instanceof Error ? error.name : 'Unknown',
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : 'No stack trace'
-    });
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to create diagnosis',
-        message: error instanceof Error ? error.message : 'Unknown error',
-        details: error instanceof Error ? error.stack : 'No details available'
+        error: '診断依頼の作成に失敗しました'
       },
       { status: 500 }
     );
@@ -69,12 +68,11 @@ export async function GET(request: Request) {
     const status = searchParams.get('status');
     const search = searchParams.get('search');
 
-    const where: any = {};
+    const where: DiagnosisWhereInput = {};
 
     // ステータスフィルター
     if (status && status !== 'all') {
       where.status = status;
-      console.log('Filtering by status:', status);
     }
 
     // 検索条件（顧客情報はdiagnosis_requestsに直接保存）
@@ -86,7 +84,6 @@ export async function GET(request: Request) {
       ];
     }
 
-    console.log('Query where condition:', JSON.stringify(where));
     const diagnoses = await prisma.diagnosis_requests.findMany({
       where,
       include: {
@@ -118,7 +115,6 @@ export async function GET(request: Request) {
       }
     });
 
-    console.log(`Found ${diagnoses.length} diagnoses`);
     const formattedDiagnoses = diagnoses.map(diag => {
       return {
         id: diag.id,

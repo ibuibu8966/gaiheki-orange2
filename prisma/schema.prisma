@@ -64,6 +64,10 @@ model articles {
   created_at      DateTime        @default(now())
   updated_at      DateTime
   admins          Admin           @relation(fields: [admin_id], references: [id])
+
+  @@index([is_published])
+  @@index([category])
+  @@index([sort_order])
 }
 
 // customersテーブルは削除（顧客管理機能は不要）
@@ -96,6 +100,11 @@ model diagnosis_requests {
   designated_partner partners?        @relation("DesignatedDiagnoses", fields: [designated_partner_id], references: [id])
   referrals          Referral[]
   deposit_histories  DepositHistory[]
+
+  @@index([status])
+  @@index([prefecture])
+  @@index([created_at])
+  @@index([designated_partner_id])
 }
 
 model inquiries {
@@ -110,6 +119,8 @@ model inquiries {
   created_at      DateTime      @default(now())
   updated_at      DateTime
 
+  @@index([inquiry_status])
+  @@index([created_at])
   @@map("inquiries")
 }
 
@@ -145,6 +156,9 @@ model partner_applications {
   application_status_histories    application_status_histories[]
   partner_application_prefectures partner_application_prefectures[]
   admins                          Admin?                            @relation(fields: [reviewed_by], references: [id])
+
+  @@index([application_status])
+  @@index([created_at])
 }
 
 model partner_details {
@@ -171,6 +185,8 @@ model partner_details {
   created_at                  DateTime       @default(now())
   updated_at                  DateTime
   partners                    partners       @relation(fields: [partner_id], references: [id], onDelete: Cascade)
+
+  @@index([partners_status])
 }
 
 model partner_prefectures {
@@ -206,6 +222,8 @@ model partners {
   deposit_histories    DepositHistory[]
   deposit_requests     DepositRequest[]
   referrals            Referral[]
+
+  @@index([is_active])
 }
 
 // quotationsテーブルは削除（見積もり提出機能は不要）
@@ -242,12 +260,6 @@ enum ConstructionType {
   INTERIOR_WORK
   EXTERIOR_WORK
   OTHER
-
-  // 非推奨（既存データ用に残す）
-  EXTERIOR_AND_ROOF
-  PARTIAL_REPAIR
-  SIDING_REPLACEMENT
-  FULL_REPLACEMENT
 }
 
 enum CurrentSituation {

@@ -264,7 +264,7 @@ export default function PartnerDashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <a
               href="/partner-dashboard/referrals"
-              className="flex items-center justify-between p-4 min-h-[72px] bg-blue-50 rounded-lg hover:bg-blue-100 active:bg-blue-200 transition-colors"
+              className="flex items-center justify-between p-4 min-h-[72px] bg-primary/10 rounded-lg hover:bg-primary/20 active:bg-primary/30 transition-colors"
             >
               <div>
                 <p className="font-medium text-blue-900">購入案件一覧</p>

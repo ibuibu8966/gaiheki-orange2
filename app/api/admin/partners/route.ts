@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import type { PartnerWhereInput } from '@/lib/types';
 
 // GET: 加盟店一覧取得
 export async function GET(request: Request) {
@@ -10,7 +11,7 @@ export async function GET(request: Request) {
     const search = searchParams.get('search');
 
     // クエリ条件を構築
-    const where: any = {};
+    const where: PartnerWhereInput = {};
 
     // ステータスフィルター
     if (status === 'active') {
@@ -246,7 +247,7 @@ export async function PATCH(request: Request) {
     await prisma.$transaction(async (tx) => {
       // ログイン情報の更新
       if (updateData.loginEmail || updateData.password) {
-        const partnerUpdate: any = { updated_at: new Date() };
+        const partnerUpdate: Record<string, unknown> = { updated_at: new Date() };
         if (updateData.loginEmail) partnerUpdate.login_email = updateData.loginEmail;
         if (updateData.password) {
           partnerUpdate.password_hash = await bcrypt.hash(updateData.password, 12);
@@ -259,7 +260,7 @@ export async function PATCH(request: Request) {
 
       // 詳細情報の更新
       if (updateData.companyName || updateData.phone || updateData.address) {
-        const detailsUpdate: any = { updated_at: new Date() };
+        const detailsUpdate: Record<string, unknown> = { updated_at: new Date() };
         if (updateData.companyName) detailsUpdate.company_name = updateData.companyName;
         if (updateData.phone) detailsUpdate.phone_number = updateData.phone;
         if (updateData.address) detailsUpdate.address = updateData.address;

@@ -1,13 +1,24 @@
 "use client";
 
 import { useState, useEffect, ReactNode } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 interface Column<T> {
   key: keyof T | string;
   label: string;
   render?: (item: T) => ReactNode;
   hideOnMobile?: boolean;
-  priority?: number; // モバイルカード表示時の優先度（高いほど上に表示）
+  priority?: number;
 }
 
 interface ResponsiveTableProps<T> {
@@ -19,6 +30,41 @@ interface ResponsiveTableProps<T> {
   emptyMessage?: string;
   mobileCardTitle?: (item: T) => ReactNode;
   mobileCardActions?: (item: T) => ReactNode;
+}
+
+function LoadingSkeleton({ columns }: { columns: number }) {
+  return (
+    <div className="space-y-3">
+      {[...Array(5)].map((_, i) => (
+        <div key={i} className="flex gap-4 p-4">
+          {[...Array(columns)].map((_, j) => (
+            <Skeleton key={j} className="h-6 flex-1" />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function EmptyState({ message }: { message: string }) {
+  return (
+    <div className="text-center py-12">
+      <svg
+        className="mx-auto h-12 w-12 text-muted-foreground"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        />
+      </svg>
+      <p className="mt-2 text-muted-foreground">{message}</p>
+    </div>
+  );
 }
 
 export function ResponsiveTable<T extends Record<string, unknown>>({
@@ -41,81 +87,68 @@ export function ResponsiveTable<T extends Record<string, unknown>>({
   }, []);
 
   if (isLoading) {
-    return (
-      <div className="text-center py-12">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-        <p className="mt-2 text-sm text-gray-500">読み込み中...</p>
-      </div>
-    );
+    return <LoadingSkeleton columns={Math.min(columns.length, 4)} />;
   }
 
   if (data.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-        <p className="mt-2 text-gray-500">{emptyMessage}</p>
-      </div>
-    );
+    return <EmptyState message={emptyMessage} />;
   }
 
   // モバイル: カード形式
   if (isMobile) {
     const sortedColumns = [...columns]
-      .filter(col => !col.hideOnMobile || col.priority)
+      .filter((col) => !col.hideOnMobile || col.priority)
       .sort((a, b) => (b.priority || 0) - (a.priority || 0));
 
     return (
       <div className="space-y-3 px-2 sm:px-0">
         {data.map((item) => (
-          <div
+          <Card
             key={String(item[keyField])}
-            className={`
-              bg-white rounded-lg border border-gray-200 shadow-sm
-              overflow-hidden
-              ${onRowClick ? "cursor-pointer active:bg-gray-50 transition-colors" : ""}
-            `}
+            className={cn(
+              "p-0 gap-0 overflow-hidden",
+              onRowClick && "cursor-pointer active:bg-muted/50 transition-colors"
+            )}
             onClick={() => onRowClick?.(item)}
           >
-            {/* カードヘッダー（タイトル） */}
             {mobileCardTitle && (
-              <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
-                <div className="font-semibold text-gray-900">
+              <CardHeader className="px-4 py-3 bg-muted/30 border-b">
+                <div className="font-semibold text-foreground">
                   {mobileCardTitle(item)}
                 </div>
-              </div>
+              </CardHeader>
             )}
 
-            {/* カードコンテンツ */}
-            <div className="px-4 py-3 space-y-2">
+            <CardContent className="px-4 py-3 space-y-2">
               {sortedColumns.map((column) => {
                 const value = column.render
                   ? column.render(item)
                   : String(item[column.key as keyof T] ?? "-");
 
                 return (
-                  <div key={String(column.key)} className="flex justify-between items-start gap-2">
-                    <span className="text-sm text-gray-500 flex-shrink-0">
+                  <div
+                    key={String(column.key)}
+                    className="flex justify-between items-start gap-2"
+                  >
+                    <span className="text-sm text-muted-foreground flex-shrink-0">
                       {column.label}
                     </span>
-                    <span className="text-sm text-gray-900 text-right font-medium">
+                    <span className="text-sm text-foreground text-right font-medium">
                       {value}
                     </span>
                   </div>
                 );
               })}
-            </div>
+            </CardContent>
 
-            {/* カードアクション */}
             {mobileCardActions && (
-              <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
-                <div onClick={(e) => e.stopPropagation()}>
+              <CardFooter className="px-4 py-3 bg-muted/30 border-t">
+                <div className="w-full" onClick={(e) => e.stopPropagation()}>
                   {mobileCardActions(item)}
                 </div>
-              </div>
+              </CardFooter>
             )}
-          </div>
+          </Card>
         ))}
       </div>
     );
@@ -123,51 +156,46 @@ export function ResponsiveTable<T extends Record<string, unknown>>({
 
   // タブレット・デスクトップ: テーブル形式
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            {columns.map((column) => (
-              <th
-                key={String(column.key)}
-                className={`
-                  px-4 lg:px-6 py-3
-                  text-left text-xs font-medium text-gray-500 uppercase tracking-wider
-                  ${column.hideOnMobile ? "hidden md:table-cell" : ""}
-                `}
-              >
-                {column.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {data.map((item) => (
-            <tr
-              key={String(item[keyField])}
-              className={`
-                ${onRowClick ? "cursor-pointer hover:bg-gray-50 transition-colors" : ""}
-              `}
-              onClick={() => onRowClick?.(item)}
+    <Table>
+      <TableHeader>
+        <TableRow className="bg-muted/50">
+          {columns.map((column) => (
+            <TableHead
+              key={String(column.key)}
+              className={cn(
+                "px-4 lg:px-6",
+                column.hideOnMobile && "hidden md:table-cell"
+              )}
             >
-              {columns.map((column) => (
-                <td
-                  key={String(column.key)}
-                  className={`
-                    px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900
-                    ${column.hideOnMobile ? "hidden md:table-cell" : ""}
-                  `}
-                >
-                  {column.render
-                    ? column.render(item)
-                    : String(item[column.key as keyof T] ?? "-")}
-                </td>
-              ))}
-            </tr>
+              {column.label}
+            </TableHead>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {data.map((item) => (
+          <TableRow
+            key={String(item[keyField])}
+            className={cn(onRowClick && "cursor-pointer")}
+            onClick={() => onRowClick?.(item)}
+          >
+            {columns.map((column) => (
+              <TableCell
+                key={String(column.key)}
+                className={cn(
+                  "px-4 lg:px-6 py-4",
+                  column.hideOnMobile && "hidden md:table-cell"
+                )}
+              >
+                {column.render
+                  ? column.render(item)
+                  : String(item[column.key as keyof T] ?? "-")}
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }
 

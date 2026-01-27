@@ -206,7 +206,7 @@ export default function ProfilePage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="w-full sm:w-auto bg-blue-600 text-white px-4 py-3 min-h-[44px] rounded-md text-sm font-medium hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 transition-colors"
+                className="w-full sm:w-auto bg-primary text-primary-foreground px-4 py-3 min-h-[44px] rounded-md text-sm font-medium hover:bg-primary/90 active:bg-primary/80 disabled:opacity-50 transition-colors"
               >
                 {saving ? '保存中...' : '保存'}
               </button>
