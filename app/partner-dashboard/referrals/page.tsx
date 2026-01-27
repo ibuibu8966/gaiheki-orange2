@@ -118,7 +118,7 @@ export default function PartnerReferralsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-        <h1 className="text-2xl sm:text-3xl font-bold">購入案件一覧</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">購入案件一覧</h1>
         <a
           href="/partner-dashboard"
           className="text-blue-600 hover:text-blue-800 text-sm min-h-[44px] flex items-center"

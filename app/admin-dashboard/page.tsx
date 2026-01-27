@@ -170,7 +170,7 @@ export default function AdminDashboardPage() {
     <div className="space-y-4 sm:space-y-6">
           {/* ヘッダー */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <h1 className="text-2xl sm:text-3xl font-bold">運営ダッシュボード</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">運営ダッシュボード</h1>
           </div>
 
           {/* KPI・グラフ期間選択ボタン */}

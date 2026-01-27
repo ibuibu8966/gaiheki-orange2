@@ -101,7 +101,7 @@ export default function AdminSettingsPage() {
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-        <h1 className="text-2xl sm:text-3xl font-bold">システム設定</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">システム設定</h1>
         <a
           href="/admin-dashboard"
           className="text-blue-600 hover:text-blue-800 text-sm min-h-[44px] flex items-center"

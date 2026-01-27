@@ -122,7 +122,7 @@ export default function PartnerSettingsPage() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <h1 className="text-xl sm:text-2xl font-bold">加盟店設定</h1>
+      <h1 className="text-xl sm:text-2xl font-bold text-gray-900">加盟店設定</h1>
 
       {message && (
         <div
@@ -137,7 +137,7 @@ export default function PartnerSettingsPage() {
       <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl">
         {/* 基本情報 */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">基本情報</h2>
+          <h2 className="text-xl font-semibold mb-4 text-gray-900">基本情報</h2>
           
           <div className="space-y-4">
             <div>
@@ -224,7 +224,7 @@ export default function PartnerSettingsPage() {
 
         {/* インボイス情報 */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">インボイス情報</h2>
+          <h2 className="text-xl font-semibold mb-4 text-gray-900">インボイス情報</h2>
           
           <div>
             <label className="block text-sm font-medium mb-1">インボイス登録番号</label>
@@ -244,7 +244,7 @@ export default function PartnerSettingsPage() {
 
         {/* 銀行口座情報 */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">銀行口座情報</h2>
+          <h2 className="text-xl font-semibold mb-4 text-gray-900">銀行口座情報</h2>
           
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
