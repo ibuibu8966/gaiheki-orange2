@@ -76,6 +76,14 @@ const FLOOR_AREA_LABELS: Record<string, string> = {
   OVER_501: '501㎡以上',
 };
 
+const CURRENT_SITUATION_LABELS: Record<string, string> = {
+  MARKET_RESEARCH: '相場を知りたい',
+  COMPARING_CONTRACTORS: '業者を比較したい',
+  CONSIDERING_CONSTRUCTION: '工事を検討中',
+  CONSTRUCTION_COMPLETED: '工事完了',
+  READY_TO_ORDER: 'すぐに発注したい'
+};
+
 export default function PartnerReferralsPage() {
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
@@ -261,7 +269,7 @@ export default function PartnerReferralsPage() {
         isOpen={!!selectedReferral}
         onClose={() => setSelectedReferral(null)}
         title={`案件詳細 - ${selectedReferral?.diagnosisNumber || ''}`}
-        size="lg"
+        size="xl"
         footer={
           <button
             onClick={() => setSelectedReferral(null)}
@@ -272,62 +280,64 @@ export default function PartnerReferralsPage() {
         }
       >
         {selectedReferral && (
-          <div className="space-y-6">
+          <div className="space-y-5">
             {/* 顧客情報 */}
             <div>
-              <h4 className="font-semibold text-gray-900 mb-3">顧客情報</h4>
-              <div className="bg-gray-50 p-4 rounded-lg space-y-3">
+              <h4 className="font-bold text-gray-800 mb-3 border-b border-gray-300 pb-2">顧客情報</h4>
+              <div className="bg-white border border-gray-200 p-4 rounded-lg space-y-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-500">顧客名</p>
-                    <p className="font-medium">{selectedReferral.customerName}</p>
+                    <p className="font-medium text-gray-900">{selectedReferral.customerName}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">電話番号</p>
-                    <p className="font-medium">{selectedReferral.customerPhone}</p>
+                    <p className="font-medium text-gray-900">{selectedReferral.customerPhone}</p>
                   </div>
                 </div>
-                {selectedReferral.customerEmail && (
-                  <div>
-                    <p className="text-sm text-gray-500">メールアドレス</p>
-                    <p className="font-medium break-all">{selectedReferral.customerEmail}</p>
-                  </div>
-                )}
-                {selectedReferral.customerAddress && (
-                  <div>
-                    <p className="text-sm text-gray-500">住所</p>
-                    <p className="font-medium">{selectedReferral.customerAddress}</p>
-                  </div>
-                )}
+                <div>
+                  <p className="text-sm text-gray-500">メールアドレス</p>
+                  <p className="font-medium text-gray-900 break-all">{selectedReferral.customerEmail || '未設定'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">住所</p>
+                  <p className="font-medium text-gray-900">{selectedReferral.customerAddress || '未設定'}</p>
+                </div>
               </div>
             </div>
 
             {/* 工事情報 */}
             <div>
-              <h4 className="font-semibold text-gray-900 mb-3">工事情報</h4>
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="font-bold text-gray-800 mb-3 border-b border-gray-300 pb-2">工事情報</h4>
+              <div className="bg-white border border-gray-200 p-4 rounded-lg">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-500">都道府県</p>
-                    <p className="font-medium">
+                    <p className="font-medium text-gray-900">
                       {PREFECTURE_LABELS[selectedReferral.prefecture] || selectedReferral.prefecture}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">工事種別</p>
-                    <p className="font-medium">
+                    <p className="font-medium text-gray-900">
                       {CONSTRUCTION_TYPE_LABELS[selectedReferral.constructionType] || selectedReferral.constructionType}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">延床面積</p>
-                    <p className="font-medium">
+                    <p className="font-medium text-gray-900">
                       {FLOOR_AREA_LABELS[selectedReferral.floorArea] || selectedReferral.floorArea}
                     </p>
                   </div>
                   <div>
+                    <p className="text-sm text-gray-500">現在の状況</p>
+                    <p className="font-medium text-gray-900">
+                      {CURRENT_SITUATION_LABELS[selectedReferral.currentSituation] || selectedReferral.currentSituation}
+                    </p>
+                  </div>
+                  <div>
                     <p className="text-sm text-gray-500">紹介日</p>
-                    <p className="font-medium">
+                    <p className="font-medium text-gray-900">
                       {new Date(selectedReferral.createdAt).toLocaleDateString('ja-JP')}
                     </p>
                   </div>
@@ -336,23 +346,23 @@ export default function PartnerReferralsPage() {
             </div>
 
             {/* コメント */}
-            {selectedReferral.adminNote && (
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-3">コメント</h4>
-                <div className="bg-yellow-50 p-4 rounded-lg">
-                  <p className="whitespace-pre-wrap text-gray-700">{selectedReferral.adminNote}</p>
-                </div>
+            <div>
+              <h4 className="font-bold text-gray-800 mb-3 border-b border-gray-300 pb-2">コメント</h4>
+              <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+                <p className="whitespace-pre-wrap text-gray-700">
+                  {selectedReferral.adminNote || 'コメントはありません'}
+                </p>
               </div>
-            )}
+            </div>
 
             {/* 紹介料 */}
             <div>
-              <h4 className="font-semibold text-gray-900 mb-3">紹介料</h4>
-              <div className="bg-orange-50 p-4 rounded-lg">
+              <h4 className="font-bold text-gray-800 mb-3 border-b border-gray-300 pb-2">紹介料</h4>
+              <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
                 <p className="text-2xl sm:text-3xl font-bold text-orange-600">
                   ¥{selectedReferral.referralFee.toLocaleString()}
                 </p>
-                <p className="text-sm text-orange-600 mt-1">税込</p>
+                <p className="text-sm text-orange-700 mt-1">税込</p>
               </div>
             </div>
           </div>

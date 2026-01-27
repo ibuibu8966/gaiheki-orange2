@@ -173,14 +173,22 @@ export async function PATCH(request: Request) {
     const body = await request.json();
     const {
       id,
+      // 顧客情報
       customerName,
       customerEmail,
       customerPhone,
       customerAddress,
+      // ヒアリング情報
       customerEnthusiasm,
       desiredPartnerCount,
       referralFee,
-      adminNote
+      adminNote,
+      // 診断情報（追加）
+      prefecture,
+      floorArea,
+      currentSituation,
+      constructionType,
+      status
     } = body;
 
     if (!id) {
@@ -195,14 +203,22 @@ export async function PATCH(request: Request) {
       updated_at: new Date()
     };
 
+    // 顧客情報
     if (customerName !== undefined) updateData.customer_name = customerName;
     if (customerEmail !== undefined) updateData.customer_email = customerEmail || null;
     if (customerPhone !== undefined) updateData.customer_phone = customerPhone;
     if (customerAddress !== undefined) updateData.customer_address = customerAddress || null;
+    // ヒアリング情報
     if (customerEnthusiasm !== undefined) updateData.customer_enthusiasm = customerEnthusiasm;
     if (desiredPartnerCount !== undefined) updateData.desired_partner_count = desiredPartnerCount;
     if (referralFee !== undefined) updateData.referral_fee = referralFee;
     if (adminNote !== undefined) updateData.admin_note = adminNote || null;
+    // 診断情報（追加）
+    if (prefecture !== undefined) updateData.prefecture = prefecture;
+    if (floorArea !== undefined) updateData.floor_area = floorArea;
+    if (currentSituation !== undefined) updateData.current_situation = currentSituation;
+    if (constructionType !== undefined) updateData.construction_type = constructionType;
+    if (status !== undefined) updateData.status = status;
 
     const updatedDiagnosis = await prisma.diagnosis_requests.update({
       where: { id },

@@ -46,14 +46,22 @@ interface Partner {
 }
 
 interface EditFormData {
+  // 顧客情報
   customerName: string;
   customerEmail: string;
   customerPhone: string;
   customerAddress: string;
+  // ヒアリング情報
   customerEnthusiasm: number | null;
   desiredPartnerCount: number;
   referralFee: number;
   adminNote: string;
+  // 診断情報
+  prefecture: string;
+  floorArea: string;
+  currentSituation: string;
+  constructionType: string;
+  status: string;
 }
 
 // ラベル変換用マッピング
@@ -150,8 +158,7 @@ const DiagnosesView = () => {
   const [newReferralFee, setNewReferralFee] = useState(30000);
   const [submittingReferral, setSubmittingReferral] = useState(false);
 
-  // 編集モード関連
-  const [isEditMode, setIsEditMode] = useState(false);
+  // 編集フォームデータ
   const [editFormData, setEditFormData] = useState<EditFormData>({
     customerName: '',
     customerEmail: '',
@@ -160,7 +167,12 @@ const DiagnosesView = () => {
     customerEnthusiasm: null,
     desiredPartnerCount: 3,
     referralFee: 30000,
-    adminNote: ''
+    adminNote: '',
+    prefecture: '',
+    floorArea: '',
+    currentSituation: '',
+    constructionType: '',
+    status: ''
   });
   const [saving, setSaving] = useState(false);
 
@@ -210,7 +222,22 @@ const DiagnosesView = () => {
 
   const openDetailModal = (diagnosis: Diagnosis) => {
     setSelectedDiagnosis(diagnosis);
-    setIsEditMode(false);
+    // モーダルを開いた時点でフォームデータを初期化
+    setEditFormData({
+      customerName: diagnosis.customerName,
+      customerEmail: diagnosis.customerEmail || '',
+      customerPhone: diagnosis.customerPhone,
+      customerAddress: diagnosis.address || '',
+      customerEnthusiasm: diagnosis.customerEnthusiasm,
+      desiredPartnerCount: diagnosis.desiredPartnerCount || 3,
+      referralFee: diagnosis.referralFee || 30000,
+      adminNote: diagnosis.adminNote || '',
+      prefecture: diagnosis.prefecture,
+      floorArea: diagnosis.floorArea,
+      currentSituation: diagnosis.currentSituation,
+      constructionType: diagnosis.constructionType,
+      status: diagnosis.status,
+    });
     setShowDetailModal(true);
   };
 
@@ -221,24 +248,6 @@ const DiagnosesView = () => {
     setShowReferralModal(true);
   };
 
-  const enterEditMode = () => {
-    if (!selectedDiagnosis) return;
-    setEditFormData({
-      customerName: selectedDiagnosis.customerName,
-      customerEmail: selectedDiagnosis.customerEmail || '',
-      customerPhone: selectedDiagnosis.customerPhone,
-      customerAddress: selectedDiagnosis.address || '',
-      customerEnthusiasm: selectedDiagnosis.customerEnthusiasm,
-      desiredPartnerCount: selectedDiagnosis.desiredPartnerCount || 3,
-      referralFee: selectedDiagnosis.referralFee || 30000,
-      adminNote: selectedDiagnosis.adminNote || ''
-    });
-    setIsEditMode(true);
-  };
-
-  const cancelEditMode = () => {
-    setIsEditMode(false);
-  };
 
   const handleSave = async () => {
     if (!selectedDiagnosis) return;
@@ -250,14 +259,22 @@ const DiagnosesView = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: selectedDiagnosis.id,
+          // 顧客情報
           customerName: editFormData.customerName,
           customerEmail: editFormData.customerEmail || null,
           customerPhone: editFormData.customerPhone,
           customerAddress: editFormData.customerAddress || null,
+          // ヒアリング情報
           customerEnthusiasm: editFormData.customerEnthusiasm,
           desiredPartnerCount: editFormData.desiredPartnerCount,
           referralFee: editFormData.referralFee,
-          adminNote: editFormData.adminNote || null
+          adminNote: editFormData.adminNote || null,
+          // 診断情報
+          prefecture: editFormData.prefecture,
+          floorArea: editFormData.floorArea,
+          currentSituation: editFormData.currentSituation,
+          constructionType: editFormData.constructionType,
+          status: editFormData.status
         }),
       });
 
@@ -265,7 +282,6 @@ const DiagnosesView = () => {
 
       if (result.success) {
         alert('保存しました');
-        setIsEditMode(false);
         setShowDetailModal(false);
         fetchDiagnoses();
       } else {
@@ -448,64 +464,42 @@ const DiagnosesView = () => {
       {selectedDiagnosis && (
         <ResponsiveModal
           isOpen={showDetailModal}
-          onClose={() => {
-            setShowDetailModal(false);
-            setIsEditMode(false);
-          }}
-          title={`${isEditMode ? '案件編集' : '案件詳細'} - ${selectedDiagnosis.diagnosisNumber}`}
-          size="xl"
+          onClose={() => setShowDetailModal(false)}
+          title={`案件詳細 - ${selectedDiagnosis.diagnosisNumber}`}
+          size="full"
           footer={
-            isEditMode ? (
-              <>
-                <button
-                  onClick={cancelEditMode}
-                  className="w-full sm:w-auto px-4 py-3 min-h-[44px] bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors"
-                >
-                  キャンセル
-                </button>
-                <button
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="w-full sm:w-auto px-4 py-3 min-h-[44px] bg-primary text-primary-foreground rounded-md hover:bg-primary/90 active:bg-primary/80 disabled:opacity-50 transition-colors"
-                >
-                  {saving ? '保存中...' : '保存'}
-                </button>
-              </>
-            ) : (
-              <>
-                {!isEditMode && (
-                  <button
-                    onClick={enterEditMode}
-                    className="w-full sm:w-auto px-4 py-3 min-h-[44px] bg-primary text-primary-foreground rounded-md hover:bg-primary/90 active:bg-primary/80 transition-colors"
-                  >
-                    編集
-                  </button>
-                )}
-                <button
-                  onClick={() => setShowDetailModal(false)}
-                  className="w-full sm:w-auto px-4 py-3 min-h-[44px] bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors"
-                >
-                  閉じる
-                </button>
-              </>
-            )
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <button
+                onClick={() => setShowDetailModal(false)}
+                className="w-full sm:w-auto px-4 py-3 min-h-[44px] bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="w-full sm:w-auto px-4 py-3 min-h-[44px] bg-primary text-primary-foreground rounded-md hover:bg-primary/90 active:bg-primary/80 disabled:opacity-50 transition-colors"
+              >
+                {saving ? '保存中...' : '保存'}
+              </button>
+            </div>
           }
         >
-          {isEditMode ? (
-            // 編集モード
-            <>
-              {/* 顧客情報（編集） */}
-              <div className="mb-6">
-                <h4 className="font-semibold text-gray-900 mb-3">顧客情報</h4>
-                <div className="bg-gray-50 p-4 rounded-md space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* 左カラム: 顧客情報 + 診断情報 */}
+            <div className="space-y-5">
+              {/* 顧客情報 */}
+              <div>
+                <h4 className="font-bold text-gray-800 mb-3 border-b border-gray-300 pb-2">顧客情報</h4>
+                <div className="bg-white border border-gray-200 p-4 rounded-md space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">氏名</label>
                       <input
                         type="text"
                         value={editFormData.customerName}
                         onChange={(e) => setEditFormData({ ...editFormData, customerName: e.target.value })}
-                        className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full px-3 py-2 min-h-[40px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                       />
                     </div>
                     <div>
@@ -514,7 +508,7 @@ const DiagnosesView = () => {
                         type="text"
                         value={editFormData.customerPhone}
                         onChange={(e) => setEditFormData({ ...editFormData, customerPhone: e.target.value })}
-                        className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full px-3 py-2 min-h-[40px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                       />
                     </div>
                   </div>
@@ -524,7 +518,7 @@ const DiagnosesView = () => {
                       type="email"
                       value={editFormData.customerEmail}
                       onChange={(e) => setEditFormData({ ...editFormData, customerEmail: e.target.value })}
-                      className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="w-full px-3 py-2 min-h-[40px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                     />
                   </div>
                   <div>
@@ -533,16 +527,96 @@ const DiagnosesView = () => {
                       type="text"
                       value={editFormData.customerAddress}
                       onChange={(e) => setEditFormData({ ...editFormData, customerAddress: e.target.value })}
-                      className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="w-full px-3 py-2 min-h-[40px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* ヒアリング情報（編集） */}
-              <div className="mb-6">
-                <h4 className="font-semibold text-gray-900 mb-3">ヒアリング情報</h4>
-                <div className="bg-gray-50 p-4 rounded-md space-y-4">
+              {/* 診断情報 */}
+              <div>
+                <h4 className="font-bold text-gray-800 mb-3 border-b border-gray-300 pb-2">診断情報</h4>
+                <div className="bg-white border border-gray-200 p-4 rounded-md space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">都道府県</label>
+                      <select
+                        value={editFormData.prefecture}
+                        onChange={(e) => setEditFormData({ ...editFormData, prefecture: e.target.value })}
+                        className="w-full px-3 py-2 min-h-[40px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
+                      >
+                        {Object.entries(PREFECTURE_LABELS).map(([key, label]) => (
+                          <option key={key} value={key}>{label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">延床面積</label>
+                      <select
+                        value={editFormData.floorArea}
+                        onChange={(e) => setEditFormData({ ...editFormData, floorArea: e.target.value })}
+                        className="w-full px-3 py-2 min-h-[40px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
+                      >
+                        {Object.entries(FLOOR_AREA_LABELS).map(([key, label]) => (
+                          <option key={key} value={key}>{label}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">現在の状況</label>
+                      <select
+                        value={editFormData.currentSituation}
+                        onChange={(e) => setEditFormData({ ...editFormData, currentSituation: e.target.value })}
+                        className="w-full px-3 py-2 min-h-[40px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
+                      >
+                        {Object.entries(CURRENT_SITUATION_LABELS).map(([key, label]) => (
+                          <option key={key} value={key}>{label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">工事箇所</label>
+                      <select
+                        value={editFormData.constructionType}
+                        onChange={(e) => setEditFormData({ ...editFormData, constructionType: e.target.value })}
+                        className="w-full px-3 py-2 min-h-[40px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
+                      >
+                        {Object.entries(CONSTRUCTION_TYPE_LABELS).map(([key, label]) => (
+                          <option key={key} value={key}>{label}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">ステータス</label>
+                    <select
+                      value={editFormData.status}
+                      onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
+                      className="w-full px-3 py-2 min-h-[40px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
+                    >
+                      {[
+                        { value: 'DESIGNATED', label: '業者指定' },
+                        { value: 'RECRUITING', label: '紹介募集中' },
+                        { value: 'COMPARING', label: '紹介中' },
+                        { value: 'DECIDED', label: '業者決定' },
+                        { value: 'CANCELLED', label: 'キャンセル' },
+                      ].map((s) => (
+                        <option key={s.value} value={s.value}>{s.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 右カラム: ヒアリング情報 + 紹介済み加盟店 */}
+            <div className="space-y-5">
+              {/* ヒアリング情報 */}
+              <div>
+                <h4 className="font-bold text-gray-800 mb-3 border-b border-gray-300 pb-2">ヒアリング情報</h4>
+                <div className="bg-white border border-gray-200 p-4 rounded-md space-y-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">熱量</label>
                     <StarRating
@@ -550,13 +624,13 @@ const DiagnosesView = () => {
                       onChange={(value) => setEditFormData({ ...editFormData, customerEnthusiasm: value })}
                     />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">紹介希望業者数</label>
                       <select
                         value={editFormData.desiredPartnerCount}
                         onChange={(e) => setEditFormData({ ...editFormData, desiredPartnerCount: Number(e.target.value) })}
-                        className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full px-3 py-2 min-h-[40px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                       >
                         {[1, 2, 3, 4].map((n) => (
                           <option key={n} value={n}>{n}社</option>
@@ -570,7 +644,7 @@ const DiagnosesView = () => {
                           type="number"
                           value={editFormData.referralFee}
                           onChange={(e) => setEditFormData({ ...editFormData, referralFee: Number(e.target.value) })}
-                          className="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                          className="w-full px-3 py-2 min-h-[40px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                         />
                         <span className="ml-2 text-gray-600">円</span>
                       </div>
@@ -581,123 +655,57 @@ const DiagnosesView = () => {
                     <textarea
                       value={editFormData.adminNote}
                       onChange={(e) => setEditFormData({ ...editFormData, adminNote: e.target.value })}
-                      rows={3}
-                      className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      rows={2}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                       placeholder="顧客が求めている業者の条件など..."
                     />
                   </div>
                 </div>
               </div>
-            </>
-          ) : (
-            // 閲覧モード
-            <>
-              {/* 顧客情報（閲覧） */}
-              <div className="mb-6">
-                <h4 className="font-semibold text-gray-900 mb-2">顧客情報</h4>
-                <div className="bg-gray-50 p-4 rounded-md space-y-2 text-gray-900">
-                  <p><span className="font-medium">氏名:</span> {selectedDiagnosis.customerName}</p>
-                  <p><span className="font-medium">電話:</span> {selectedDiagnosis.customerPhone}</p>
-                  {selectedDiagnosis.customerEmail && (
-                    <p><span className="font-medium">メール:</span> {selectedDiagnosis.customerEmail}</p>
-                  )}
-                  {selectedDiagnosis.address && (
-                    <p><span className="font-medium">住所:</span> {selectedDiagnosis.address}</p>
-                  )}
-                </div>
-              </div>
 
-              {/* ヒアリング情報（閲覧） */}
-              <div className="mb-6">
-                <h4 className="font-semibold text-gray-900 mb-2">ヒアリング情報</h4>
-                <div className="bg-gray-50 p-4 rounded-md space-y-3 text-gray-900">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0">
-                    <span className="font-medium sm:w-32">熱量:</span>
-                    <StarRating value={selectedDiagnosis.customerEnthusiasm} readonly />
-                  </div>
-                  <p>
-                    <span className="font-medium">紹介希望業者数:</span>{' '}
-                    {selectedDiagnosis.desiredPartnerCount || 3}社
-                  </p>
-                  <p>
-                    <span className="font-medium">情報単価:</span>{' '}
-                    ¥{(selectedDiagnosis.referralFee || 30000).toLocaleString()}
-                  </p>
-                  {selectedDiagnosis.adminNote && (
-                    <div>
-                      <span className="font-medium">求めている業者:</span>
-                      <div className="mt-1 p-3 bg-white rounded border border-gray-200 text-sm whitespace-pre-wrap">
-                        {selectedDiagnosis.adminNote}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* 診断情報（閲覧） */}
-              <div className="mb-6">
-                <h4 className="font-semibold text-gray-900 mb-2">診断情報</h4>
-                <div className="bg-gray-50 p-4 rounded-md space-y-2 text-gray-900">
-                  <p><span className="font-medium">都道府県:</span> {PREFECTURE_LABELS[selectedDiagnosis.prefecture] || selectedDiagnosis.prefecture}</p>
-                  <p><span className="font-medium">延床面積:</span> {FLOOR_AREA_LABELS[selectedDiagnosis.floorArea] || selectedDiagnosis.floorArea}</p>
-                  <p><span className="font-medium">現在の状況:</span> {CURRENT_SITUATION_LABELS[selectedDiagnosis.currentSituation] || selectedDiagnosis.currentSituation}</p>
-                  <p><span className="font-medium">工事箇所:</span> {CONSTRUCTION_TYPE_LABELS[selectedDiagnosis.constructionType] || selectedDiagnosis.constructionType}</p>
-                </div>
-              </div>
-
-              {/* 紹介済み加盟店（閲覧） */}
-              <div className="mb-6">
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
-                  <h4 className="font-semibold text-gray-900">
+              {/* 紹介済み加盟店 */}
+              <div>
+                <div className="flex justify-between items-center mb-3 border-b border-gray-300 pb-2">
+                  <h4 className="font-bold text-gray-800">
                     紹介済み加盟店 ({selectedDiagnosis.referralCount}件)
                   </h4>
-                  {selectedDiagnosis.status !== 'DECIDED' && selectedDiagnosis.status !== 'CANCELLED' && (
+                  {editFormData.status !== 'DECIDED' && editFormData.status !== 'CANCELLED' && (
                     <button
                       onClick={() => openReferralModal(selectedDiagnosis)}
-                      className="w-full sm:w-auto px-4 py-3 min-h-[44px] bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90 active:bg-primary/80 transition-colors"
+                      className="px-3 py-1.5 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90 active:bg-primary/80 transition-colors"
                     >
                       新規紹介
                     </button>
                   )}
                 </div>
-
-                {selectedDiagnosis.referralCount === 0 ? (
-                  <div className="bg-gray-50 p-4 rounded-md text-center text-gray-500">
-                    まだ紹介がありません
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {selectedDiagnosis.referrals.map((referral) => (
-                      <div
-                        key={referral.id}
-                        className="border rounded-lg p-4 bg-white"
-                      >
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                <div className="bg-white border border-gray-200 p-4 rounded-md max-h-48 overflow-y-auto">
+                  {selectedDiagnosis.referralCount === 0 ? (
+                    <p className="text-gray-500 text-center py-2">まだ紹介がありません</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {selectedDiagnosis.referrals.map((referral) => (
+                        <div key={referral.id} className="flex justify-between items-center text-sm border-b border-gray-100 pb-2 last:border-0 last:pb-0">
                           <div>
-                            <h5 className="font-semibold text-gray-900">{referral.partnerName}</h5>
-                            <p className="text-sm text-gray-600">
-                              紹介料: ¥{referral.referralFee.toLocaleString()}
-                            </p>
+                            <span className="font-medium text-gray-900">{referral.partnerName}</span>
+                            <span className="text-gray-600 ml-2">¥{referral.referralFee.toLocaleString()}</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            {referral.emailSent ? (
-                              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
-                                メール送信済み
-                              </span>
-                            ) : (
-                              <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded">
-                                メール未送信
-                              </span>
-                            )}
-                          </div>
+                          {referral.emailSent ? (
+                            <span className="px-2 py-0.5 bg-green-100 text-green-800 text-xs font-medium rounded">
+                              送信済
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 bg-yellow-100 text-yellow-800 text-xs font-medium rounded">
+                              未送信
+                            </span>
+                          )}
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            </>
-          )}
+            </div>
+          </div>
         </ResponsiveModal>
       )}
 
