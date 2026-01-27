@@ -64,7 +64,7 @@ const FLOOR_AREA_LABELS: Record<string, string> = {
 };
 
 export function generateReferralEmailContent(data: ReferralEmailData): { subject: string; text: string; html: string } {
-  const subject = `【外壁オレンジ】案件紹介のお知らせ - ${data.diagnosisNumber}`;
+  const subject = `【外壁塗装パートナーズ】案件紹介のお知らせ - ${data.diagnosisNumber}`;
 
   const prefectureLabel = PREFECTURE_LABELS[data.prefecture] || data.prefecture;
   const constructionTypeLabel = CONSTRUCTION_TYPE_LABELS[data.constructionType] || data.constructionType;
@@ -96,7 +96,7 @@ ${data.adminNote ? `\n■ コメント\n${data.adminNote}\n` : ''}
 ${APP_URL}/partner-dashboard/referrals
 
 ---
-外壁オレンジ
+外壁塗装パートナーズ
 このメールは自動送信されています。
 `;
 
@@ -189,7 +189,7 @@ ${APP_URL}/partner-dashboard/referrals
       </div>
     </div>
     <div class="footer">
-      <p>外壁オレンジ</p>
+      <p>外壁塗装パートナーズ</p>
       <p>このメールは自動送信されています。</p>
     </div>
   </div>
