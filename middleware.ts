@@ -5,6 +5,11 @@ import { getToken } from "next-auth/jwt"
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
+  // デバッグログ（本番環境でも一時的に有効）
+  const cookies = req.cookies.getAll().map(c => c.name)
+  console.log("[Middleware] Path:", pathname)
+  console.log("[Middleware] Cookies:", cookies)
+
   // Public routes - allow access
   if (
     pathname === "/" ||
@@ -31,6 +36,11 @@ export async function middleware(req: NextRequest) {
     req,
     secret: process.env.AUTH_SECRET
   })
+
+  console.log("[Middleware] Token exists:", !!token)
+  if (token) {
+    console.log("[Middleware] Token userType:", token.userType)
+  }
 
   // Admin routes protection
   if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
