@@ -37,8 +37,6 @@ const Footer = () => {
               <h3 className="text-sm font-bold text-white mb-3">運営会社</h3>
               <div className="text-sm text-white/60 space-y-1">
                 <p className="font-medium text-white/80">オムコン株式会社</p>
-                <p>代表取締役　大塚真央</p>
-                <p>資本金　2,000万円</p>
                 <p>〒113-0023 東京都文京区向丘2-18-13-2F</p>
               </div>
             </div>

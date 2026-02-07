@@ -73,7 +73,7 @@ const PartnerRegistrationPageContent = () => {
         {/* ヘッダー */}
         <div className="mb-8">
           <div className="flex items-center mb-4">
-            <svg className="w-8 h-8 text-orange-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-8 h-8 text-[#1B4F72] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
             <h1 className="text-3xl font-bold text-gray-800">加盟店登録フォーム</h1>
@@ -90,7 +90,7 @@ const PartnerRegistrationPageContent = () => {
           {/* 会社情報セクション */}
           <div>
             <div className="flex items-center mb-6">
-              <svg className="w-6 h-6 text-orange-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-[#1B4F72] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
               <h2 className="text-xl font-bold text-gray-800">会社情報</h2>
@@ -151,7 +151,7 @@ const PartnerRegistrationPageContent = () => {
           {/* 連絡先情報セクション */}
           <div>
             <div className="flex items-center mb-6">
-              <svg className="w-6 h-6 text-orange-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-[#1B4F72] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
               </svg>
               <h2 className="text-xl font-bold text-gray-800">連絡先情報</h2>
@@ -214,7 +214,7 @@ const PartnerRegistrationPageContent = () => {
           {/* 事業内容・アピールセクション */}
           <div>
             <div className="flex items-center mb-6">
-              <svg className="w-6 h-6 text-orange-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-[#1B4F72] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6-4h6m2 5l-3-3 3-3m-6 8.5a8 8 0 100-16 8 8 0 000 16z" />
               </svg>
               <h2 className="text-xl font-bold text-gray-800">事業内容・アピール</h2>
@@ -271,7 +271,7 @@ const PartnerRegistrationPageContent = () => {
               className={`font-bold py-3 px-12 min-h-[44px] rounded-lg transition-colors text-lg ${
                 isSubmitting
                   ? 'bg-gray-400 cursor-not-allowed text-white'
-                  : 'bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white'
+                  : 'bg-[#B94040] hover:bg-[#A03636] active:bg-[#8B2D2D] text-white'
               }`}
             >
               {isSubmitting ? '送信中...' : 'この内容で申請する'}
