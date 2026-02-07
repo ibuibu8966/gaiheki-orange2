@@ -42,11 +42,11 @@ const ColumnCard = memo(({ article }: { article: Article }) => (
           className="object-cover"
         />
       ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-[#d4874c] to-[#b06a3b]"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1B4F72] to-[#154360]"></div>
       )}
       <div className="absolute inset-0 bg-black/30"></div>
       <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4">
-        <div className="bg-[#d4874c]/90 px-4 py-2 rounded text-center">
+        <div className="bg-[#1B4F72]/90 px-4 py-2 rounded text-center">
           <p className="text-sm font-bold line-clamp-2">{article.title}</p>
         </div>
         <p className="text-xs mt-2 bg-black/40 px-2 py-1 rounded">{article.categoryLabel}</p>
@@ -205,7 +205,7 @@ const ColumnSection = () => {
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
             外壁・屋根塗装の関連コラム
           </h2>
-          <p className="hidden md:block text-[#d4a574] text-sm ml-4">
+          <p className="hidden md:block text-[#1B4F72]/50 text-sm ml-4">
             外壁塗装のコラムを紹介します
           </p>
         </div>

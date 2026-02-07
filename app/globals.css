@@ -7,14 +7,17 @@
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
 
-  /* メインカラー（オレンジ） */
-  --color-primary: #f16f21;
-  --color-primary-hover: #e05a10;
-  --color-primary-light: #ff8a3d;
-  --color-primary-bg: rgba(241, 111, 33, 0.1);
+  /* メインカラー（紺） */
+  --color-primary: #1B4F72;
+  --color-primary-hover: #154360;
+  --color-primary-light: #2E86C1;
+  --color-primary-bg: rgba(27, 79, 114, 0.1);
 
-  /* 旧カラー（互換性のため維持） */
-  --color-orange-600: #f16f21;
+  /* アクセントカラー（エンジ） */
+  --color-accent-brand: #B94040;
+  --color-accent-brand-hover: #A03636;
+
+  /* レガシーカラー */
   --navy-900: #0f172a;
   --navy-800: #1e293b;
   --navy-700: #334155;
@@ -29,8 +32,8 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  /* オレンジブランドカラー #f16f21 */
-  --primary: oklch(0.67 0.165 50);
+  /* 紺ブランドカラー #1B4F72 */
+  --primary: oklch(0.38 0.06 240);
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -61,13 +64,15 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  /* ブランドカラー（オレンジ）*/
-  --color-brand: #f16f21;
-  --color-brand-hover: #e05a10;
-  --color-brand-light: #ff8a3d;
-  --color-brand-bg: rgba(241, 111, 33, 0.1);
+  /* ブランドカラー（紺）*/
+  --color-brand: #1B4F72;
+  --color-brand-hover: #154360;
+  --color-brand-light: #2E86C1;
+  --color-brand-bg: rgba(27, 79, 114, 0.1);
 
-  --color-orange-600: var(--color-orange-600);
+  /* アクセントカラー（エンジ）*/
+  --color-accent: #B94040;
+  --color-accent-hover: #A03636;
   --font-serif: var(--font-noto-serif-jp);
   --font-sans: var(--font-noto-sans-jp);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -253,8 +258,8 @@ textarea::placeholder {
   background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
 }
 
-.gradient-orange {
-  background: linear-gradient(135deg, #f16f21 0%, #ff8a3d 100%);
+.gradient-brand {
+  background: linear-gradient(135deg, #1B4F72 0%, #2E86C1 100%);
 }
 
 /* オレンジボタン */
@@ -288,8 +293,8 @@ textarea::placeholder {
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  /* オレンジブランドカラー #ff8a3d (ダークモード用の明るいオレンジ) */
-  --primary: oklch(0.75 0.165 50);
+  /* 紺ブランドカラー (ダークモード用の明るい紺) */
+  --primary: oklch(0.50 0.08 240);
   --primary-foreground: oklch(0.15 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
@@ -329,11 +334,11 @@ textarea::placeholder {
 @keyframes phone-pulse {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 10px 30px rgba(241, 111, 33, 0.3);
+    box-shadow: 0 10px 30px rgba(185, 64, 64, 0.3);
   }
   50% {
     transform: scale(1.03);
-    box-shadow: 0 15px 40px rgba(241, 111, 33, 0.4);
+    box-shadow: 0 15px 40px rgba(185, 64, 64, 0.4);
   }
 }
 

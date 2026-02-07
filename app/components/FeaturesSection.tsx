@@ -11,7 +11,7 @@ const FeaturesSection = () => {
   };
 
   return (
-    <section className="bg-gradient-to-b from-[#faf6f1] to-[#f5efe8] py-16 md:py-24 px-4">
+    <section className="bg-gradient-to-b from-gray-50 to-gray-100 py-16 md:py-24 px-4">
       <div className="max-w-6xl mx-auto">
         {/* タイトル */}
         <div className="text-center mb-12 md:mb-16">
@@ -137,7 +137,7 @@ const FeaturesSection = () => {
         <div className="text-center">
           <button
             onClick={scrollToDiagnosisForm}
-            className="group inline-flex items-center justify-center bg-gradient-to-r from-brand to-brand-hover hover:from-brand-hover hover:to-[#d04a00] text-white font-bold py-4 px-12 rounded-full text-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+            className="group inline-flex items-center justify-center bg-gradient-to-r from-brand to-brand-hover hover:from-brand-hover hover:to-[#0F3350] text-white font-bold py-4 px-12 rounded-full text-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
           >
             施工店を探す
             <svg className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
