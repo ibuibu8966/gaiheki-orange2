@@ -40,16 +40,23 @@ const AboutServiceSection = () => {
               <span className="w-2.5 h-2.5 bg-[#e74c3c] rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></span>
               <span className="w-2.5 h-2.5 bg-[#e74c3c] rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></span>
             </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 drop-shadow-lg">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-lg">
               外壁塗装パートナーズとは
             </h2>
-            <p className="text-white text-sm md:text-base leading-relaxed max-w-3xl mx-auto drop-shadow">
+            <p className="text-white text-base md:text-lg leading-relaxed max-w-3xl mx-auto drop-shadow">
               全国の優良リフォーム会社、塗装専門会社とのネットワークを持ち、<br className="hidden md:block" />
               独立した第三者機関の立場からお客様のご要望やご希望に沿った会社をご案内しています。
             </p>
-            <p className="text-white text-sm md:text-base leading-relaxed max-w-3xl mx-auto mt-2 drop-shadow">
+            <p className="text-white text-base md:text-lg leading-relaxed max-w-3xl mx-auto mt-2 drop-shadow">
               また、ご紹介にとどまらず直営店舗も全国に構えており、外壁塗装パートナーズが責任をもって施工を承ることも可能です。
             </p>
+            {/* 信頼メッセージ */}
+            <div className="mt-6 inline-block bg-white/95 backdrop-blur-sm rounded-xl px-6 py-4 border-l-4 border-[#e74c3c]">
+              <p className="text-gray-800 text-base md:text-lg font-medium">
+                塗装会社を10年経営した経験を活かし、<br className="hidden sm:block" />
+                お客様に本当に信頼できる業者をご紹介します
+              </p>
+            </div>
           </div>
 
           {/* フローチャート */}
@@ -206,7 +213,7 @@ const AboutServiceSection = () => {
               <span className="w-2 h-2 bg-brand rounded-full"></span>
               <span className="w-2 h-2 bg-brand rounded-full"></span>
             </div>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800">
               業界の"常識"を変える、透明なプラットフォーム
             </h2>
           </div>
@@ -236,14 +243,14 @@ const AboutServiceSection = () => {
                   </div>
                 </div>
               </div>
-              <h3 className="text-base md:text-lg font-bold text-gray-800 text-center mb-3 leading-relaxed">
+              <h3 className="text-lg md:text-xl font-bold text-gray-800 text-center mb-3 leading-relaxed">
                 紹介だけで費用がかかる<br/>
                 仕組みをやめました
               </h3>
-              <p className="text-sm text-gray-600 text-center leading-relaxed px-2">
+              <p className="text-base text-gray-600 text-center leading-relaxed px-2">
                 一般的な見積サイトでは、受注が決まる前の"紹介"だけで手数料が発生。私たちはこの前提を見直しています。
               </p>
-              <div className="mt-3 text-xs text-left px-2">
+              <div className="mt-3 text-sm text-left px-2">
                 <p className="text-gray-700"><span className="font-bold text-brand">だから安心：</span>納得いくまで比較できる</p>
                 <p className="text-gray-700"><span className="font-bold text-brand">だから安い：</span>見積りが適正価格に</p>
               </div>
@@ -274,14 +281,14 @@ const AboutServiceSection = () => {
                   </div>
                 </div>
               </div>
-              <h3 className="text-base md:text-lg font-bold text-gray-800 text-center mb-3 leading-relaxed">
+              <h3 className="text-lg md:text-xl font-bold text-gray-800 text-center mb-3 leading-relaxed">
                 "多重下請け"で間を抜かれない<br/>
                 施工店と直結
               </h3>
-              <p className="text-sm text-gray-600 text-center leading-relaxed px-2">
+              <p className="text-base text-gray-600 text-center leading-relaxed px-2">
                 私たちは一次施工店と直接つながる前提で、価格と責任の見通しを良くします。
               </p>
-              <div className="mt-3 text-xs text-left px-2">
+              <div className="mt-3 text-sm text-left px-2">
                 <p className="text-gray-700"><span className="font-bold text-brand">だから安心：</span>責任の所在と品質が明確</p>
                 <p className="text-gray-700"><span className="font-bold text-brand">だから安い：</span>中間マージンを最小化</p>
               </div>
@@ -310,14 +317,14 @@ const AboutServiceSection = () => {
                   </div>
                 </div>
               </div>
-              <h3 className="text-base md:text-lg font-bold text-gray-800 text-center mb-3 leading-relaxed">
+              <h3 className="text-lg md:text-xl font-bold text-gray-800 text-center mb-3 leading-relaxed">
                 一度の入力で複数社<br/>
                 内訳まで横並び比較
               </h3>
-              <p className="text-sm text-gray-600 text-center leading-relaxed px-2">
+              <p className="text-base text-gray-600 text-center leading-relaxed px-2">
                 条件入力は1回。下地補修、塗料グレード、足場、保証などを同一フォーマットで見比べられます。
               </p>
-              <div className="mt-3 text-xs text-left px-2">
+              <div className="mt-3 text-sm text-left px-2">
                 <p className="text-gray-700"><span className="font-bold text-brand">だから安心：</span>"なぜ安い／高い"が分かる</p>
                 <p className="text-gray-700"><span className="font-bold text-brand">だから安い：</span>健全な競争で高値を回避</p>
               </div>

@@ -38,10 +38,10 @@ const FAQSection = () => {
         {/* タイトル */}
         <div className="flex items-center gap-4 mb-10 md:mb-12">
           <div className="w-1.5 h-10 bg-brand"></div>
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
             よくある質問
           </h2>
-          <p className="hidden md:block text-[#d4a574] text-sm ml-4">
+          <p className="hidden md:block text-[#d4a574] text-base ml-4">
             外壁塗装パートナーズのよくある質問についてお答えします
           </p>
         </div>
@@ -58,22 +58,22 @@ const FAQSection = () => {
                 className="w-full px-6 py-5 text-left flex items-center justify-between gap-4"
               >
                 <div className="flex items-center gap-5">
-                  <span className="bg-brand text-white text-sm font-bold w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0">
+                  <span className="bg-brand text-white text-base font-bold w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
                     Q
                   </span>
-                  <span className="font-medium text-gray-800">{faq.question}</span>
+                  <span className="font-medium text-lg text-gray-800">{faq.question}</span>
                 </div>
-                <span className="text-gray-300 text-2xl flex-shrink-0 font-light">
+                <span className="text-gray-300 text-3xl flex-shrink-0 font-light w-10 h-10 flex items-center justify-center">
                   {openIndex === index ? "−" : "+"}
                 </span>
               </button>
               {openIndex === index && (
                 <div className="px-6 pb-5">
                   <div className="flex gap-5 ml-0">
-                    <span className="bg-gray-500 text-white text-sm font-bold w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="bg-gray-500 text-white text-base font-bold w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
                       A
                     </span>
-                    <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
+                    <p className="text-base text-gray-600 leading-relaxed">{faq.answer}</p>
                   </div>
                 </div>
               )}

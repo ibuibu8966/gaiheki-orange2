@@ -5,6 +5,7 @@ import HowToUseSection from "./components/HowToUseSection";
 import FAQSection from "./components/FAQSection";
 import ColumnSection from "./components/ColumnSection";
 import CTASection from "./components/CTASection";
+import FloatingPhoneButton from "./components/FloatingPhoneButton";
 
 export const dynamic = 'force-dynamic';
 
@@ -18,6 +19,7 @@ export default function Home() {
       <FAQSection />
       <ColumnSection />
       <CTASection />
+      <FloatingPhoneButton />
     </div>
   );
 }

@@ -113,6 +113,14 @@ body {
   color: var(--foreground);
   font-family: var(--font-noto-sans-jp), sans-serif;
   letter-spacing: 0.02em;
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+@media (min-width: 768px) {
+  body {
+    font-size: 18px;
+  }
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -314,5 +322,39 @@ textarea::placeholder {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* 電話ボタン用アニメーション */
+@keyframes phone-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 10px 30px rgba(241, 111, 33, 0.3);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 15px 40px rgba(241, 111, 33, 0.4);
+  }
+}
+
+.phone-button-pulse {
+  animation: phone-pulse 2s ease-in-out infinite;
+}
+
+/* 大きなタッチターゲット（モバイル用） */
+.touch-target-large {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+/* 高コントラストテキスト */
+.high-contrast {
+  color: #1a1a1a;
+}
+
+/* 固定電話ボタンのマージン（モバイルでフッターが隠れないように） */
+@media (max-width: 767px) {
+  main {
+    padding-bottom: 80px;
   }
 }

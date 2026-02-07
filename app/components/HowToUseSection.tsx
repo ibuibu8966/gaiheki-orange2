@@ -5,7 +5,7 @@ const HowToUseSection = () => {
       title: "お建物のご状況を\nお知らせください",
       description: "ご希望の施工箇所や現在お困りのご状況を、本ページ内にある「外壁塗装の相場を診断」のフォームよりご入力ください。およそ10秒で簡単に入力できます。",
       icon: (
-        <svg className="w-14 h-14" viewBox="0 0 64 64" fill="none">
+        <svg className="w-20 h-20" viewBox="0 0 64 64" fill="none">
           {/* モニター外枠 */}
           <rect x="8" y="10" width="48" height="32" rx="2" stroke="#d4a574" strokeWidth="2" fill="white" />
           {/* モニター画面 */}
@@ -27,7 +27,7 @@ const HowToUseSection = () => {
       title: "専門の外壁アドバイザーが\nお電話にてご相談を承ります",
       description: "ご入力いただいた内容を元に、お客様のご状況を詳しくヒアリングさせていただきます。不安要素やお悩み、ご質問等なんでもお伺いいたします。",
       icon: (
-        <svg className="w-14 h-14" viewBox="0 0 64 64" fill="none">
+        <svg className="w-20 h-20" viewBox="0 0 64 64" fill="none">
           {/* 円形背景 */}
           <circle cx="32" cy="32" r="26" fill="#fef3c7" />
           {/* ヘッドセットバンド */}
@@ -48,7 +48,7 @@ const HowToUseSection = () => {
       title: "ご要望に沿った施工店を\nご紹介いたします",
       description: "\"外壁塗装パートナーズ\"の厳しい審査をクリアした優良施工店のうちご要望に沿った施工店をご紹介し、お見積りを取得することができます。",
       icon: (
-        <svg className="w-14 h-14" viewBox="0 0 64 64" fill="none">
+        <svg className="w-20 h-20" viewBox="0 0 64 64" fill="none">
           {/* 円形背景 */}
           <circle cx="32" cy="32" r="26" fill="#fef3c7" />
           {/* ドキュメント */}
@@ -73,10 +73,10 @@ const HowToUseSection = () => {
         <div className="flex items-center gap-4 mb-12 md:mb-16">
           <div className="w-1 h-12 bg-brand"></div>
           <div className="flex items-center gap-6">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800">
               ご相談の<span className="text-brand">流れ</span>
             </h2>
-            <p className="hidden md:block text-gray-500 text-sm border-l border-gray-300 pl-6">
+            <p className="hidden md:block text-gray-500 text-base border-l border-gray-300 pl-6">
               外壁塗装パートナーズのご相談の流れをご説明します
             </p>
           </div>
@@ -135,11 +135,11 @@ const HowToUseSection = () => {
                     {step.icon}
                   </div>
 
-                  <h3 className="hidden md:block text-base font-bold text-gray-800 mb-4 text-center whitespace-pre-line leading-relaxed">
+                  <h3 className="hidden md:block text-lg font-bold text-gray-800 mb-4 text-center whitespace-pre-line leading-relaxed">
                     {step.title}
                   </h3>
 
-                  <p className="text-sm text-gray-600 leading-relaxed flex-1">
+                  <p className="text-base text-gray-600 leading-relaxed flex-1">
                     {step.description}
                   </p>
                 </div>
