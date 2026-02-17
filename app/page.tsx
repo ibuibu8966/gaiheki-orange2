@@ -2,6 +2,7 @@ import HeroSection from "./components/HeroSection";
 import AboutServiceSection from "./components/AboutServiceSection";
 import DiagnosisForm from "./components/DiagnosisForm";
 import HowToUseSection from "./components/HowToUseSection";
+import CaseStudySection from "./components/CaseStudySection";
 import FAQSection from "./components/FAQSection";
 import ColumnSection from "./components/ColumnSection";
 import CTASection from "./components/CTASection";
@@ -16,6 +17,7 @@ export default function Home() {
       <DiagnosisForm />
       <AboutServiceSection />
       <HowToUseSection />
+      <CaseStudySection />
       <FAQSection />
       <ColumnSection />
       <CTASection />
