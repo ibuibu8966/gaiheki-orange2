@@ -22,7 +22,7 @@ const FeaturesSection = () => {
             <span className="w-2 h-2 bg-brand rounded-full"></span>
           </div>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800">
-            外壁塗装パートナーズの特徴
+            塗装の相談室の特徴
           </h2>
         </div>
 

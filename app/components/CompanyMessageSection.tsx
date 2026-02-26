@@ -88,7 +88,7 @@ export default function CompanyMessageSection() {
 
                 {/* 署名風のテキスト */}
                 <div className="mt-4 text-right">
-                  <p className="text-sm text-slate-600 font-medium">外壁塗装パートナーズ 運営チーム一同</p>
+                  <p className="text-sm text-slate-600 font-medium">塗装の相談室 運営チーム一同</p>
                 </div>
               </div>
             </div>

@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "利用規約 - 外壁塗装パートナーズ",
-  description: "外壁塗装パートナーズの利用規約をご確認ください。",
+  title: "利用規約 - 塗装の相談室",
+  description: "塗装の相談室の利用規約をご確認ください。",
 };
 
 export default function TermsPage() {
@@ -13,7 +13,7 @@ export default function TermsPage() {
         <div className="bg-white rounded-lg shadow-sm p-8 mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-4">利用規約</h1>
           <p className="text-gray-600">
-            本利用規約（以下「本規約」といいます）は、オムコン株式会社（以下「当社」といいます）が運営する「外壁塗装パートナーズ」（以下「本サービス」といいます）の利用条件を定めるものです。
+            本利用規約（以下「本規約」といいます）は、オムコン株式会社（以下「当社」といいます）が運営する「塗装の相談室」（以下「本サービス」といいます）の利用条件を定めるものです。
           </p>
         </div>
 

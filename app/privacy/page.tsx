@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "プライバシーポリシー - 外壁塗装パートナーズ",
-  description: "外壁塗装パートナーズのプライバシーポリシー（個人情報保護方針）をご確認ください。",
+  title: "プライバシーポリシー - 塗装の相談室",
+  description: "塗装の相談室のプライバシーポリシー（個人情報保護方針）をご確認ください。",
 };
 
 export default function PrivacyPage() {

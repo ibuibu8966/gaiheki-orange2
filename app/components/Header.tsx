@@ -67,7 +67,7 @@ const Header = () => {
             {/* ロゴ */}
             <div className="flex-shrink-0">
               <Link href="/" className="flex items-center">
-                <h1 className="font-serif text-xl md:text-2xl font-black text-[#1B4F72] cursor-pointer tracking-wide hover:opacity-80 transition-opacity duration-300">外壁塗装パートナーズ</h1>
+                <h1 className="font-serif text-xl md:text-2xl font-black text-[#1B4F72] cursor-pointer tracking-wide hover:opacity-80 transition-opacity duration-300">塗装の相談室</h1>
               </Link>
             </div>
 

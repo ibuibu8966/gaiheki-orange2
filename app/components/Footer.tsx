@@ -11,7 +11,7 @@ const Footer = () => {
           {/* ロゴ */}
           <div className="mb-6 md:mb-0">
             <Link href="/">
-              <h2 className="font-serif text-2xl font-black text-white tracking-wide hover:opacity-80 transition-opacity duration-300">外壁塗装パートナーズ</h2>
+              <h2 className="font-serif text-2xl font-black text-white tracking-wide hover:opacity-80 transition-opacity duration-300">塗装の相談室</h2>
             </Link>
           </div>
 
@@ -68,7 +68,7 @@ const Footer = () => {
         {/* 下部：コピーライト */}
         <div className="text-center">
           <p className="text-white/40 text-xs">
-            © 2025 外壁塗装パートナーズ. All Rights Reserved.
+            © 2025 塗装の相談室. All Rights Reserved.
           </p>
         </div>
       </div>

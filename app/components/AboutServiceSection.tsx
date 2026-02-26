@@ -5,7 +5,7 @@ import Image from "next/image";
 const AboutServiceSection = () => {
   return (
     <>
-      {/* セクション1: 外壁塗装パートナーズとは - 紺背景 */}
+      {/* セクション1: 塗装の相談室とは - 紺背景 */}
       <section className="relative bg-gradient-to-br from-[#1B4F72] to-[#154360] py-16 md:py-24 px-4 overflow-hidden">
         {/* 背景装飾 */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
@@ -17,14 +17,14 @@ const AboutServiceSection = () => {
             <p className="text-white/70 text-sm mb-3 tracking-[0.2em] font-medium uppercase">About Our Service</p>
             <div className="w-16 h-0.5 bg-[#B94040] mx-auto mb-6"></div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 drop-shadow-lg">
-              外壁塗装パートナーズとは
+              塗装の相談室とは
             </h2>
             <p className="text-white/80 text-base md:text-lg leading-relaxed max-w-3xl mx-auto">
               全国の優良リフォーム会社、塗装専門会社とのネットワークを持ち、
               独立した第三者機関の立場からお客様のご要望やご希望に沿った会社をご案内しています。
             </p>
             <p className="text-white/80 text-base md:text-lg leading-relaxed max-w-3xl mx-auto mt-2">
-              また、ご紹介にとどまらず直営店舗も全国に構えており、外壁塗装パートナーズが責任をもって施工を承ることも可能です。
+              また、ご紹介にとどまらず直営店舗も全国に構えており、塗装の相談室が責任をもって施工を承ることも可能です。
             </p>
             {/* 信頼メッセージ */}
             <div className="mt-6 inline-block bg-white/95 backdrop-blur-sm rounded-xl px-6 py-4 border-l-4 border-[#B94040]">

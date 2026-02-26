@@ -35,7 +35,7 @@ const HowToUseSection = () => {
     {
       number: "3",
       title: "ご要望に沿った施工店をご紹介",
-      description: "外壁塗装パートナーズの厳正な審査をクリアした優良施工店の中から、お客様のご要望に最適な施工店をご紹介し、お見積りをお取りいただけます。",
+      description: "塗装の相談室の厳正な審査をクリアした優良施工店の中から、お客様のご要望に最適な施工店をご紹介し、お見積りをお取りいただけます。",
       icon: (
         <svg className="w-20 h-20" viewBox="0 0 64 64" fill="none">
           <circle cx="32" cy="32" r="26" fill="#EBF5FB" />
@@ -62,7 +62,7 @@ const HowToUseSection = () => {
             ご相談の流れ
           </h2>
           <p className="mt-4 text-gray-500 text-base">
-            外壁塗装パートナーズのご利用方法をご案内いたします
+            塗装の相談室のご利用方法をご案内いたします
           </p>
         </div>
 
