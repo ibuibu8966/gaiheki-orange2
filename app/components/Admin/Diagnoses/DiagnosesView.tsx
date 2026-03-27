@@ -31,6 +31,9 @@ interface Diagnosis {
   desiredPartnerCount: number | null;
   referralFee: number;
   adminNote: string | null;
+  // 問い合わせ内容・備考
+  inquiryType: string | null;
+  remarks: string | null;
 }
 
 interface Partner {
@@ -530,6 +533,27 @@ const DiagnosesView = () => {
                   </div>
                 </div>
               </div>
+
+              {/* 問い合わせ内容・備考（フォームから送信された情報） */}
+              {(selectedDiagnosis.inquiryType || selectedDiagnosis.remarks) && (
+                <div>
+                  <h4 className="font-bold text-gray-800 mb-3 border-b border-gray-300 pb-2">問い合わせ内容</h4>
+                  <div className="bg-white border border-gray-200 p-4 rounded-md space-y-3">
+                    {selectedDiagnosis.inquiryType && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">問い合わせ種別</label>
+                        <p className="text-gray-900">{selectedDiagnosis.inquiryType}</p>
+                      </div>
+                    )}
+                    {selectedDiagnosis.remarks && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">備考</label>
+                        <p className="text-gray-900 whitespace-pre-wrap">{selectedDiagnosis.remarks}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* 右カラム: ヒアリング情報 + 紹介済み加盟店 */}

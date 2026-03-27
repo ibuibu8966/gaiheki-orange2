@@ -36,6 +36,8 @@ export async function GET(request: NextRequest) {
               current_situation: true,
               referral_fee: true,
               admin_note: true,
+              inquiry_type: true,
+              remarks: true,
             },
           },
         },
@@ -69,6 +71,8 @@ export async function GET(request: NextRequest) {
       currentSituation: r.diagnosis.current_situation,
       referralFee: r.referral_fee,
       adminNote: r.diagnosis.admin_note,
+      inquiryType: r.diagnosis.inquiry_type,
+      remarks: r.diagnosis.remarks,
       createdAt: r.created_at.toISOString(),
     }));
 

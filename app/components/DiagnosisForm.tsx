@@ -24,7 +24,9 @@ const DiagnosisForm = () => {
       currentSituation: "",
       constructionType: "",
       phone: "",
-      email: ""
+      email: "",
+      inquiryType: "",
+      remarks: ""
     }
   });
 
@@ -232,6 +234,38 @@ const DiagnosisForm = () => {
               <FormError message={errors.constructionType?.message} />
             </div>
 
+            {/* 問い合わせ内容 */}
+            <div>
+              <label className="block text-base font-medium text-gray-700 mb-1">
+                問い合わせ内容 <span className="text-gray-500 text-sm ml-1">任意</span>
+              </label>
+              <select
+                {...register("inquiryType")}
+                className="w-full px-4 py-3 text-base bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1B4F72] focus:border-[#1B4F72] text-gray-900"
+              >
+                <option value="">選択してください</option>
+                <option value="CONSTRUCTION">工事希望</option>
+                <option value="ESTIMATE">見積もり依頼</option>
+                <option value="MARKET_PRICE">相場診断</option>
+                <option value="CONSULTATION">相談</option>
+                <option value="GIFT_CARD">商品券について</option>
+                <option value="JOIN">加盟</option>
+              </select>
+            </div>
+
+            {/* 備考 */}
+            <div>
+              <label className="block text-base font-medium text-gray-700 mb-1">
+                備考 <span className="text-gray-500 text-sm ml-1">任意</span>
+              </label>
+              <textarea
+                {...register("remarks")}
+                placeholder="ご要望やご質問がございましたらご記入ください"
+                rows={4}
+                className="w-full px-4 py-3 text-base bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1B4F72] focus:border-[#1B4F72] text-gray-900 placeholder-gray-400 resize-vertical"
+              />
+            </div>
+
             {/* 携帯電話番号 */}
             <div>
               <label className="block text-base font-medium text-gray-700 mb-1">
@@ -245,8 +279,7 @@ const DiagnosisForm = () => {
               />
               <FormError message={errors.phone?.message} />
               <p className="text-xs text-gray-600 mt-1">
-                ※こちらの携帯電話番号にSMSメール概算相場価格と<br />
-                小冊子のダウンロードリンクをお送りしますのでお間違えのないようにご入力ください。
+                ※お客様のご要望をヒアリングし、最適な業者3〜4社を無料でご比較いただけます。
               </p>
             </div>
 
@@ -301,7 +334,7 @@ const DiagnosisForm = () => {
                 </svg>
                 0120-945-990
               </a>
-              <p className="text-sm text-gray-500 mt-2">受付時間 8:00〜21:00（年中無休）</p>
+              <p className="text-sm text-gray-500 mt-2">受付時間 8:00〜21:00（年中無休）<br />不在の場合は翌営業日にご連絡いたします</p>
             </div>
           </form>
         </div>

@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { name, phone, email, prefecture, floorArea, currentSituation, constructionType } = result.data;
+    const { name, phone, email, prefecture, floorArea, currentSituation, constructionType, inquiryType, remarks } = result.data;
     const { designatedPartnerId } = body;
 
     // 診断番号を生成
@@ -36,6 +36,8 @@ export async function POST(request: Request) {
         current_situation: currentSituation || 'CONSIDERING_CONSTRUCTION',
         construction_type: constructionType || 'EXTERIOR_PAINTING',
         designated_partner_id: designatedPartnerId || null,
+        inquiry_type: inquiryType || null,
+        remarks: remarks || null,
         updated_at: new Date()
       }
     });
@@ -135,7 +137,10 @@ export async function GET(request: Request) {
         customerEnthusiasm: diag.customer_enthusiasm,
         desiredPartnerCount: diag.desired_partner_count,
         referralFee: diag.referral_fee,
-        adminNote: diag.admin_note
+        adminNote: diag.admin_note,
+        // 問い合わせ内容・備考
+        inquiryType: diag.inquiry_type,
+        remarks: diag.remarks
       };
     });
 
@@ -178,7 +183,10 @@ export async function PATCH(request: Request) {
       prefecture,
       floorArea,
       currentSituation,
-      constructionType
+      constructionType,
+      // 問い合わせ内容・備考
+      inquiryType,
+      remarks
     } = body;
 
     if (!id) {
@@ -208,6 +216,9 @@ export async function PATCH(request: Request) {
     if (floorArea !== undefined) updateData.floor_area = floorArea;
     if (currentSituation !== undefined) updateData.current_situation = currentSituation;
     if (constructionType !== undefined) updateData.construction_type = constructionType;
+    // 問い合わせ内容・備考
+    if (inquiryType !== undefined) updateData.inquiry_type = inquiryType || null;
+    if (remarks !== undefined) updateData.remarks = remarks || null;
 
     const updatedDiagnosis = await prisma.diagnosis_requests.update({
       where: { id },

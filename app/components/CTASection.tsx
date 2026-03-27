@@ -32,7 +32,7 @@ const CTASection = () => {
               <span>0120-945-990</span>
             </a>
             <p className="text-white/60 text-sm text-center mb-8">
-              受付時間 8:00〜21:00（年中無休）
+              受付時間 8:00〜21:00（年中無休）<br />不在の場合は翌営業日にご連絡いたします
             </p>
 
             {/* お客様の声 */}
@@ -47,10 +47,10 @@ const CTASection = () => {
           {/* 右パネル: 白背景 - 診断CTA */}
           <div className="lg:w-1/2 bg-gray-50 p-8 md:p-12 flex flex-col justify-center">
             <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">
-              まずは無料の相場診断から
+              まずは無料の費用比較
             </h3>
             <p className="text-gray-600 mb-8 leading-relaxed">
-              お住まいの情報をご入力いただくだけで、外壁塗装の概算費用をお知らせいたします
+              ご要望等をヒアリングの上、最適な業者3〜4社を一括比較
             </p>
 
             {/* 診断ボタン */}

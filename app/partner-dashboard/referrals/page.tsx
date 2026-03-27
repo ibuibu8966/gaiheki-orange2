@@ -19,6 +19,8 @@ interface Referral {
   currentSituation: string;
   referralFee: number;
   adminNote: string | null;
+  inquiryType: string | null;
+  remarks: string | null;
   createdAt: string;
 }
 
@@ -343,6 +345,27 @@ export default function PartnerReferralsPage() {
                 </div>
               </div>
             </div>
+
+            {/* 問い合わせ内容・備考 */}
+            {(selectedReferral.inquiryType || selectedReferral.remarks) && (
+              <div>
+                <h4 className="font-bold text-gray-800 mb-3 border-b border-gray-300 pb-2">問い合わせ内容</h4>
+                <div className="bg-white border border-gray-200 p-4 rounded-lg space-y-3">
+                  {selectedReferral.inquiryType && (
+                    <div>
+                      <p className="text-sm text-gray-500">問い合わせ種別</p>
+                      <p className="font-medium text-gray-900">{selectedReferral.inquiryType}</p>
+                    </div>
+                  )}
+                  {selectedReferral.remarks && (
+                    <div>
+                      <p className="text-sm text-gray-500">備考</p>
+                      <p className="font-medium text-gray-900 whitespace-pre-wrap">{selectedReferral.remarks}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* コメント */}
             <div>

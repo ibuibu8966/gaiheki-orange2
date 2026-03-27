@@ -114,7 +114,17 @@ const ContactPageContent = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-800 mb-2">メールでのお問い合わせ</h3>
-                  <p className="text-lg text-gray-700">info@gaiheki-partners.com</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText("info@gaiheki-partners.com");
+                      alert("メールアドレスをコピーしました");
+                    }}
+                    className="text-lg text-gray-700 hover:text-[#1B4F72] cursor-pointer underline decoration-dotted underline-offset-4 transition-colors"
+                  >
+                    info@gaiheki-partners.com
+                  </button>
+                  <p className="text-xs text-gray-500 mt-1">クリックでコピー</p>
                 </div>
               </div>
 

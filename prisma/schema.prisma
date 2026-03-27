@@ -96,6 +96,10 @@ model diagnosis_requests {
   customer_address        String? @map("customer_address") @db.VarChar(500)
   customer_phone_verified String? @map("customer_phone_verified") @db.VarChar(20)
 
+  // 問い合わせ内容・備考
+  inquiry_type            String? @map("inquiry_type") @db.VarChar(50)
+  remarks                 String? @map("remarks") @db.Text
+
   designated_partner partners?        @relation("DesignatedDiagnoses", fields: [designated_partner_id], references: [id])
   referrals          Referral[]
   deposit_histories  DepositHistory[]

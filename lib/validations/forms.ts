@@ -22,6 +22,8 @@ export const diagnosisFormSchema = z.object({
   floorArea: z.string().min(1, "延面積を選択してください"),
   currentSituation: z.string().min(1, "現在の状況を選択してください"),
   constructionType: z.string().min(1, "工事箇所を選択してください"),
+  inquiryType: z.string().optional().or(z.literal("")),
+  remarks: z.string().max(1000).optional().or(z.literal("")),
 });
 
 // お問い合わせフォーム

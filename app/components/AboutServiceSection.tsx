@@ -20,7 +20,7 @@ const AboutServiceSection = () => {
               塗装の相談室とは
             </h2>
             <p className="text-white/80 text-base md:text-lg leading-relaxed max-w-3xl mx-auto">
-              全国の優良リフォーム会社、塗装専門会社とのネットワークを持ち、
+              優良リフォーム会社、塗装専門会社とのネットワークを持ち、
               独立した第三者機関の立場からお客様のご要望やご希望に沿った会社をご案内しています。
             </p>
             <p className="text-white/80 text-base md:text-lg leading-relaxed max-w-3xl mx-auto mt-2">
@@ -29,8 +29,9 @@ const AboutServiceSection = () => {
             {/* 信頼メッセージ */}
             <div className="mt-6 inline-block bg-white/95 backdrop-blur-sm rounded-xl px-6 py-4 border-l-4 border-[#B94040]">
               <p className="text-gray-800 text-base md:text-lg font-medium">
-                塗装会社を10年経営し、業界の裏側まで知っているからこそ、<br className="hidden sm:block" />
-                本当に信頼できる業者だけをご紹介できます
+                悪徳訪問販売や手抜き工事が後をたたない業界だからこそ、<br className="hidden sm:block" />
+                運営実績、施工実績豊富な専門家が第三者機関として厳選した<br className="hidden sm:block" />
+                信頼できる業者だけをご紹介させていただけます。
               </p>
             </div>
           </div>
