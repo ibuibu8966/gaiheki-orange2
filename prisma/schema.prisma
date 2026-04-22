@@ -80,6 +80,7 @@ model diagnosis_requests {
   floor_area            FloorArea
   current_situation     CurrentSituation
   construction_type     ConstructionType
+  status                DiagnosisStatus  @default(RECRUITING)
   created_at            DateTime         @default(now())
   updated_at            DateTime
 
@@ -274,7 +275,13 @@ enum CurrentSituation {
 
 // CustomerConstructionType, CustomerStatus enumは削除（customersテーブル削除に伴い不要）
 
-// DiagnosisStatus enum は削除されました
+enum DiagnosisStatus {
+  DESIGNATED
+  RECRUITING
+  COMPARING
+  DECIDED
+  CANCELLED
+}
 
 enum FloorArea {
   UNKNOWN
