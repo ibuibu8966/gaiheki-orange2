@@ -109,7 +109,7 @@ export default function PartnerDashboardPage() {
       </div>
 
       {/* KPIサマリーカード */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100">
           <CardHeader className="pb-2 p-3 sm:p-4">
             <CardTitle className="text-xs sm:text-sm font-medium text-blue-600">
@@ -151,23 +151,6 @@ export default function PartnerDashboardPage() {
               <span className="text-sm sm:text-lg">万</span>
             </p>
             <p className="text-xs text-green-600 mt-1">現在の残高</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-purple-50 to-white border-purple-100">
-          <CardHeader className="pb-2 p-3 sm:p-4">
-            <CardTitle className="text-xs sm:text-sm font-medium text-purple-600">
-              今月の紹介枠
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-3 sm:p-4 pt-0">
-            <p className="text-2xl sm:text-3xl font-bold text-purple-900">
-              {dashboardData.kpi.monthlyLeadsCount}
-              <span className="text-base sm:text-lg font-normal">
-                {dashboardData.kpi.monthlyDesiredLeads > 0 && ` / ${dashboardData.kpi.monthlyDesiredLeads}`}
-              </span>
-            </p>
-            <p className="text-xs text-purple-600 mt-1">件</p>
           </CardContent>
         </Card>
       </div>
