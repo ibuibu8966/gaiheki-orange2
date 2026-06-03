@@ -48,7 +48,7 @@ const Header = () => {
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
               </svg>
-              <a href="tel:0120-945-990" className="font-bold hover:text-white/80 transition-colors">0120-945-990</a>
+              <a href="tel:0120-83-2103" className="font-bold hover:text-white/80 transition-colors">0120-83-2103</a>
             </div>
             <span className="text-white/70">受付時間 8:00〜21:00（年中無休）</span>
           </div>
@@ -163,14 +163,14 @@ const Header = () => {
                 <div className="border-t border-gray-200 pt-4 mt-3">
                   <p className="text-sm text-gray-500 mb-2">お電話でのご相談</p>
                   <a
-                    href="tel:0120-945-990"
+                    href="tel:0120-83-2103"
                     className="flex items-center justify-center gap-3 bg-[#1B4F72] text-white rounded-xl py-4 px-6 hover:bg-[#154360] transition-colors duration-300"
                   >
                     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                     </svg>
                     <div className="text-center">
-                      <span className="font-black text-xl">0120-945-990</span>
+                      <span className="font-black text-xl">0120-83-2103</span>
                       <p className="text-xs opacity-90">8:00-21:00 年中無休</p>
                     </div>
                   </a>

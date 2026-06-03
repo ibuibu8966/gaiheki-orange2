@@ -99,7 +99,7 @@ const ContactPageContent = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-800 mb-2">お電話でのお問い合わせ</h3>
-                  <a href="tel:0120-945-990" className="text-2xl font-bold text-brand hover:text-brand-hover mb-2 block">0120-945-990</a>
+                  <a href="tel:0120-83-2103" className="text-2xl font-bold text-brand hover:text-brand-hover mb-2 block">0120-83-2103</a>
                   <p className="text-sm text-gray-600">受付時間: 9:00-18:00（土日祝除く）</p>
                 </div>
               </div>
@@ -117,12 +117,12 @@ const ContactPageContent = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      navigator.clipboard.writeText("info@gaiheki-partners.com");
+                      navigator.clipboard.writeText("tosou-soudan.omc@outlook.jp");
                       alert("メールアドレスをコピーしました");
                     }}
                     className="text-lg text-gray-700 hover:text-[#1B4F72] cursor-pointer underline decoration-dotted underline-offset-4 transition-colors"
                   >
-                    info@gaiheki-partners.com
+                    tosou-soudan.omc@outlook.jp
                   </button>
                   <p className="text-xs text-gray-500 mt-1">クリックでコピー</p>
                 </div>
