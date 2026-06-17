@@ -50,13 +50,13 @@ const HeroSection = () => {
         {/* CTAボタン */}
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fadeIn" style={{animationDelay: '0.4s'}}>
           <a
-            href="tel:0120-945-990"
+            href="tel:0120-83-2103"
             className="inline-flex items-center gap-3 bg-[#B94040] hover:bg-[#A03636] text-white font-bold py-4 px-8 rounded-xl text-xl transition-all duration-300 shadow-lg hover:shadow-xl phone-button-pulse"
           >
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
               <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
             </svg>
-            <span>0120-945-990</span>
+            <span>0120-83-2103</span>
           </a>
           <button
             onClick={scrollToDiagnosisForm}

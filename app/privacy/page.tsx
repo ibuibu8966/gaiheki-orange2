@@ -160,7 +160,7 @@ export default function PrivacyPage() {
               <div className="bg-gray-50 p-4 rounded-lg mt-4">
                 <p className="font-bold text-gray-800">オムコン株式会社　個人情報お問い合わせ窓口</p>
                 <p className="mt-2">〒113-0023 東京都文京区向丘2-18-13-2F</p>
-                <p>電話番号：0120-945-990</p>
+                <p>電話番号：0120-83-2103</p>
               </div>
             </div>
           </section>
