@@ -99,7 +99,7 @@ const ContactPageContent = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-800 mb-2">お電話でのお問い合わせ</h3>
-                  <a href="tel:0120-83-2103" className="text-2xl font-bold text-brand hover:text-brand-hover mb-2 block">0120-83-2103</a>
+                  <a href="tel:0120-832-103" className="text-2xl font-bold text-brand hover:text-brand-hover mb-2 block">0120-832-103</a>
                   <p className="text-sm text-gray-600">受付時間: 9:00-18:00（土日祝除く）</p>
                 </div>
               </div>

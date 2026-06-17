@@ -23,13 +23,13 @@ const CTASection = () => {
 
             {/* 電話ボタン */}
             <a
-              href="tel:0120-83-2103"
+              href="tel:0120-832-103"
               className="inline-flex items-center justify-center gap-4 bg-[#B94040] hover:bg-[#A03636] text-white font-black py-5 px-8 rounded-xl text-2xl md:text-3xl transition-all duration-300 shadow-lg hover:shadow-xl phone-button-pulse mb-4"
             >
               <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
               </svg>
-              <span>0120-83-2103</span>
+              <span>0120-832-103</span>
             </a>
             <p className="text-white/60 text-sm text-center mb-8">
               受付時間 8:00〜21:00（年中無休）<br />不在の場合は翌営業日にご連絡いたします

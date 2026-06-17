@@ -326,13 +326,13 @@ const DiagnosisForm = () => {
             <div className="mt-8 pt-6 border-t border-gray-200 text-center">
               <p className="text-base text-gray-600 mb-4">お電話でのお問い合わせも承っております</p>
               <a
-                href="tel:0120-83-2103"
+                href="tel:0120-832-103"
                 className="inline-flex items-center justify-center gap-3 bg-white border-2 border-[#1B4F72] text-[#1B4F72] hover:bg-[#1B4F72] hover:text-white font-bold py-4 px-8 rounded-xl text-xl transition-all duration-300"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                 </svg>
-                0120-83-2103
+                0120-832-103
               </a>
               <p className="text-sm text-gray-500 mt-2">受付時間 8:00〜21:00（年中無休）<br />不在の場合は翌営業日にご連絡いたします</p>
             </div>

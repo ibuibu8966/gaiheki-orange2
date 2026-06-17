@@ -33,7 +33,7 @@ const FloatingPhoneButton = () => {
     return (
       <div className="fixed bottom-0 left-0 right-0 z-[9999] bg-[#B94040] shadow-[0_-4px_20px_rgba(0,0,0,0.15)]">
         <a
-          href="tel:0120-83-2103"
+          href="tel:0120-832-103"
           className="flex items-center justify-center gap-3 py-4 px-6 text-white"
         >
           <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center animate-pulse">
@@ -42,7 +42,7 @@ const FloatingPhoneButton = () => {
             </svg>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-black tracking-wide">0120-83-2103</p>
+            <p className="text-2xl font-black tracking-wide">0120-832-103</p>
             <p className="text-xs opacity-90">8:00-21:00 年中無休</p>
           </div>
         </a>
@@ -54,7 +54,7 @@ const FloatingPhoneButton = () => {
   return (
     <div className="fixed bottom-6 right-6 z-[9999]">
       <a
-        href="tel:0120-83-2103"
+        href="tel:0120-832-103"
         className="group flex flex-col items-center"
       >
         {/* メインボタン */}
@@ -70,7 +70,7 @@ const FloatingPhoneButton = () => {
 
         {/* 電話番号と受付時間 */}
         <div className="mt-2 bg-white rounded-lg shadow-lg px-3 py-2 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <p className="text-[#B94040] font-black text-sm">0120-83-2103</p>
+          <p className="text-[#B94040] font-black text-sm">0120-832-103</p>
           <p className="text-gray-500 text-xs">8:00-21:00</p>
         </div>
       </a>
